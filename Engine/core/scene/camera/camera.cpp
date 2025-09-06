@@ -185,28 +185,12 @@ void Camera::setParallelScale(float scale)
 	{
 		mParallelScale = scale;
 		mProjectionMatrixDirty = true;
+		mViewProjectionMatrixDirty = true;
 	}
 }
 
 void Camera::computeViewMatrix()
 {
-	/*glm::mat4 translate { 1.0f };
-	glm::translate(translate, mPosition);
-
-	glm::mat4 rotate	{ 1.0f };
-	glm::vec4 up   { mViewUp.x, mViewUp.y, mViewUp.z, 0.0f };
-	glm::vec4 view { mViewPlaneNormal.x, mViewPlaneNormal.y, mViewPlaneNormal.z, 0.0f };
-	glm::vec3 right = glm::cross(mViewUp, mViewPlaneNormal);
-	glm::mat4 rotate
-	(
-		{ right.x, right.y, right.z, 0.0f }, 
-		up, 
-		view, 
-		{ 0.0f, 0.0f, 0.0f, 1.0f }
-	);
-	glm::mat4 cameraTransform = translate * rotate;
-	mViewMatrix = glm::inverse(cameraTransform);
-	mViewMatrixDirty = false;*/
 	mViewMatrix = glm::lookAt(mPosition, mCenter, mViewUp);
 	mViewMatrixDirty = false;
 }

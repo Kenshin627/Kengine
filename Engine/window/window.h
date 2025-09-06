@@ -12,6 +12,11 @@ public:
 	void attachRenderer(std::shared_ptr<Renderer> renderer);
 	uint getWidth() const { return mWidth; }
 	uint getHeight() const { return mHeight; }
+	void setWidth(uint width);
+	void setHeight(uint height);
+	void setWindSize(uint width, uint height);
+private:
+	void onWindowSizeChanged(GLFWwindow* window, int width, int height);
 private:
 	uint					  mWidth;
 	uint					  mHeight;

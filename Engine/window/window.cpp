@@ -4,6 +4,21 @@
 #include "logger.h"
 #include "graphic/renderer/renderer.h"
 
+static void windowSizeChanged(GLFWwindow* window, int width, int height)
+{
+	Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
+	if (!win)
+	{
+		assert(false);
+		return;
+	}	
+	if (width == win->getWidth() && height == win->getHeight())
+	{
+		return;
+	}
+	win->setWindSize(width, height);	
+}
+
 Window::Window(uint width, uint height, const char* title)
 	:mWidth(width),
 	 mHeight(height),
@@ -32,6 +47,9 @@ Window::Window(uint width, uint height, const char* title)
 		return;
 	}
 
+	//event callbacks
+	glfwSetWindowUserPointer(mWindow, this);
+	glfwSetWindowSizeCallback(mWindow, windowSizeChanged);
 }
 
 Window::~Window()
@@ -45,8 +63,8 @@ void Window::RunLoop()
 	{
 		if (mRenderer)
 		{
-			mRenderer->clear(0.2, 0.2, 0.2, 1.0);
-			mRenderer->setViewport(0, 0, mWidth, mHeight);
+			mRenderer->clear();
+			mRenderer->viewPort();
 			mRenderer->render();
 		}
 		glfwPollEvents();
@@ -62,4 +80,38 @@ void Window::attachRenderer(std::shared_ptr<Renderer> renderer)
 	{
 		mRenderer = renderer;
 	}
+}
+
+void Window::setWidth(uint width)
+{
+	if (width != mWidth)
+	{
+		setWindSize(width, mHeight);
+	}
+}
+
+void Window::setHeight(uint height)
+{
+	if (mHeight != height)
+	{
+		setWindSize(mWidth, height);
+	}
+}
+
+void Window::setWindSize(uint width, uint height)
+{
+	if (width == mWidth && height == mHeight)
+	{
+		return;
+	}
+	onWindowSizeChanged(mWindow, width, height);
+}
+
+void Window::onWindowSizeChanged(GLFWwindow* window, int width, int height)
+{
+	mWidth = width;
+	mHeight = height;
+	//TODO: pass framebuffer
+	//TODO: framebuffer resize 
+	mRenderer->onWindowSizeChanged(mWidth, mHeight);
 }

@@ -72,6 +72,11 @@ void Scene::setMainCamera(std::shared_ptr<Camera> camera)
 	}
 }
 
+std::shared_ptr<Camera> Scene::getCurrentCamera() const
+{
+	return mMainCamera;
+}
+
 const std::vector<std::shared_ptr<RenderObject>>& Scene::getRenderList() const
 {
 	return mRenderList;
@@ -87,6 +92,15 @@ void Scene::beginScene()
 	checkSceneReady();
 	mCameraBuffer->bind();
 	mLightBuffer->bind();
+	//update cameraBuffer if nessesary
+	if (mMainCamera && mMainCamera->isCameraUniformDirty())
+	{
+		glm::mat4 viewProj = mMainCamera->getViewProjectionMatrix();
+		glm::vec4 camPos = glm::vec4(mMainCamera->getPosition(), 1.0f);
+		mCameraBuffer->setData(sizeof(glm::mat4), &viewProj, 0);
+		mCameraBuffer->setData(sizeof(glm::vec4), &camPos, sizeof(glm::mat4));
+	}
+	//TODO: remove this to pass specification
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -124,3 +138,4 @@ uint Scene::getLightCount() const
 {
 	return mLightCount;
 }
+

@@ -34,6 +34,7 @@ public:
 	const glm::mat4&			   getProjectionMatrix();
 	const glm::mat4&			   getViewProjectionMatrix();
 	bool isViewProjectionDirty() const { return mViewProjectionMatrixDirty; }
+	bool isCameraUniformDirty() const { return mViewMatrixDirty || mProjectionMatrixDirty || mViewProjectionMatrixDirty; }
 private:
 	glm::vec3 mPosition        { 0.0f, 0.0f, 5.0f  };
 	glm::vec3 mCenter	       { 0.0f, 0.0f, 0.0f    };

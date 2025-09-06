@@ -17,6 +17,7 @@ Application::Application(uint width, uint height, const char* title)
 	mWindow->attachRenderer(renderer);
 	std::shared_ptr<Scene> scene = std::make_shared<Scene>();
 	renderer->setCurrentScene(scene);
+	renderer->setViewport({ 0, 0, width, height });
 	std::shared_ptr<Rectangle> rectangle = std::make_shared<Rectangle>(100.0f, 100.0f);
 	std::shared_ptr<Cube> cube = std::make_shared<Cube>(2.0f, 2.0f, 2.0f);
 	std::shared_ptr<PhongMaterial> phongMat = std::make_shared<PhongMaterial>("images/dog.jpg", "images/led.png");
