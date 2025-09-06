@@ -1,6 +1,6 @@
 #include "rectangle.h"
 
-const std::vector<Vertex> vertices = {
+std::vector<Vertex> vertices = {
    { { 0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, {1.0f, 1.0f} },
    { { 0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, {1.0f, 0.0f} },
    { {-0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, {0.0f, 0.0f} },
@@ -26,6 +26,15 @@ Rectangle::~Rectangle()
 
 void Rectangle::buildGeometry()
 {
+	//change vertices data depend on width and height
+	for (Vertex& vertex : vertices)
+	{
+		vertex.Position.x = vertex.Position.x * mWidth;
+		vertex.Position.y = vertex.Position.y * mHeight;
+		//repeat texture
+		vertex.Texcoord.x = vertex.Texcoord.x * mWidth;
+		vertex.Texcoord.y = vertex.Texcoord.y * mHeight;
+	}
 	std::unique_ptr<VertexArray> vao = std::make_unique< VertexArray>(6, GL_TRIANGLES);
 	uint vboId = vao->buildVertexBuffer(sizeof(Vertex) * vertices.size(), (void*)vertices.data(), GL_DYNAMIC_STORAGE_BIT);
 	vao->buildIndexBuffer(indices.data(), sizeof(uint) * indices.size(), GL_UNSIGNED_INT, GL_DYNAMIC_STORAGE_BIT);

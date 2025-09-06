@@ -55,4 +55,5 @@ void main()
 		float attenuation = 1.0 / (constant + linear * distance +quadratic * (distance * distance));
 		FragColor += vec4((ambient + diffuse + specular) * attenuation, 0.0);
 	}
+	//FragColor = vec4(diff, 1.0);
 }
