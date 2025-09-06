@@ -23,7 +23,7 @@ struct PointLight
 layout (std140, binding = 1) uniform LightBuffer
 {
 	PointLight pointLights[MAX_LIGHT_COUNT];
-	int lightCount;
+	vec4 lightCount;
 } lightBuffer;
 
 uniform sampler2D diffuseMap;
@@ -37,8 +37,9 @@ void main()
 	vec3 n = normalize(vNormal);
 	vec3 diff = texture(diffuseMap, vTexcoord).rgb;
 	float spec = texture(specularMap, vTexcoord).r;
-	int lightCount = lightBuffer.lightCount;
-	for(int i = 0; i < 1; i++)
+	int lightCount = int(lightBuffer.lightCount.r);
+	//TODO: update pointsLightCount
+	for(int i = 0; i < 3; i++)
 	{
 		vec3 lightPos = lightBuffer.pointLights[i].position.xyz;
 		vec3 l = lightPos - vPos;
@@ -55,5 +56,4 @@ void main()
 		float attenuation = 1.0 / (constant + linear * distance +quadratic * (distance * distance));
 		FragColor += vec4((ambient + diffuse + specular) * attenuation, 0.0);
 	}
-	//FragColor = vec4(diff, 1.0);
 }

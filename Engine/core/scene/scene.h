@@ -18,6 +18,7 @@ public:
 	void addRenderObject(std::shared_ptr<RenderObject> object);
 	void addRenderObject(const std::initializer_list<std::shared_ptr<RenderObject>>& objects);
 	void addPointLight(std::shared_ptr<PointLight> light);
+	void addPointLights(const std::initializer_list<std::shared_ptr<PointLight>>& lights);
 	void setMainCamera(std::shared_ptr<Camera> camera);
 	std::shared_ptr<Camera> getCurrentCamera() const;
 	const std::vector<std::shared_ptr<RenderObject>>& getRenderList() const;

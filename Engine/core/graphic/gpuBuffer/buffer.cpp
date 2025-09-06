@@ -40,10 +40,11 @@ void Buffer::setData(uint size, const void* data, uint offset) const
 	GLCALL(glNamedBufferSubData(mRendererID, offset, size, data));
 }
 
-void Buffer::map(uint length, uint offset, uint access) const
+void* Buffer::map(uint length, uint offset, uint access) const
 {
 	checkAllocated();
-	GLCALL(glMapNamedBufferRange(mRendererID, offset, length, access));
+	void* res = GLCALLRES(glMapNamedBufferRange(mRendererID, offset, length, access));
+	return res;
 }
 
 void Buffer::unMap() const

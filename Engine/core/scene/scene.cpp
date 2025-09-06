@@ -13,7 +13,7 @@ Scene::Scene()
 	mCameraBuffer = std::make_unique<UniformBuffer>(sizeof(glm::mat4) + sizeof(glm::vec4), 0); 
 	//light buffer bindingpoint 1
 	//position + padding  + color + padding + constant + linear + quadratic + padding + lightingCount + padding * 3
-	mLightBuffer = std::make_unique<UniformBuffer>(MAX_LIGHTS * (sizeof(glm::vec4) * 3) + sizeof(int), 1);
+	mLightBuffer = std::make_unique<UniformBuffer>(MAX_LIGHTS * (sizeof(glm::vec4) * 3) + sizeof(glm::vec4), 1);
 }
 
 void Scene::addRenderObject(std::shared_ptr<RenderObject> object)
@@ -32,18 +32,24 @@ void Scene::addRenderObject(const std::initializer_list<std::shared_ptr<RenderOb
 
 void Scene::addPointLight(std::shared_ptr<PointLight> light)
 {
-	if (mPointLights.size() == MAX_LIGHTS)
+	addPointLight({ light });	
+}
+
+void Scene::addPointLights(const std::initializer_list<std::shared_ptr<PointLight>>& lights)
+{
+	if (mPointLights.size() + lights.size() > MAX_LIGHTS)
 	{
 		KS_CORE_WARN("[SCENE WARNING]: Exceed max point lights in scene!");
 		return;
 	}
 
-	mPointLights.push_back(light);
-	mLightCount = static_cast<uint>(mPointLights.size());
+	mPointLights.insert(mPointLights.begin(), lights.begin(), lights.end());
+	mLightCount = mPointLights.size();
+	glm::vec4 lightCount{ mLightCount, 0.0, 0.0 ,0.0 };
 	//update light buffer
 	std::vector<glm::vec4> lightData;
 	lightData.resize(mLightCount * 3);
-	for (size_t i = 0; i < mPointLights.size(); i++)
+	for (size_t i = 0; i < mLightCount; i++)
 	{
 		lightData[i * 3 + 0] = glm::vec4(mPointLights[i]->getPosition(), 1.0f);
 		lightData[i * 3 + 1] = glm::vec4(mPointLights[i]->getColor(), 1.0f);
@@ -51,7 +57,10 @@ void Scene::addPointLight(std::shared_ptr<PointLight> light)
 	}
 
 	mLightBuffer->setData(sizeof(glm::vec4) * 3 * mLightCount, lightData.data(), 0);
-	mLightBuffer->setData(sizeof(int), &mLightCount, sizeof(glm::vec4) * 3 * mLightCount);
+	mLightBuffer->setData(sizeof(glm::vec4), &lightCount, sizeof(glm::vec4) * 3 * mLightCount);
+	//void* mapped = mLightBuffer->map(sizeof(glm::vec4) * 3 * mLightCount + sizeof(int), 0, GL_MAP_READ_BIT);
+	//float* a = static_cast<float*>(mapped);
+	//mLightBuffer->unMap();
 }
 
 void Scene::setMainCamera(std::shared_ptr<Camera> camera)

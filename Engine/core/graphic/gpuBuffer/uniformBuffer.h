@@ -7,7 +7,7 @@ class UniformBuffer : public Buffer
 {
 public:
 	UniformBuffer();
-	UniformBuffer(uint size, uint binding, const void* data = nullptr, uint bufferUsage = GL_DYNAMIC_STORAGE_BIT);
+	UniformBuffer(uint size, uint binding, const void* data = nullptr, uint bufferUsage = GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT);
 	~UniformBuffer() = default;
 	UniformBuffer(const UniformBuffer& obj) = delete;
 	UniformBuffer(UniformBuffer&& obj) = delete;
