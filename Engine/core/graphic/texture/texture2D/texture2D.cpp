@@ -147,6 +147,7 @@ uint Texture2D::convertToGLInternalFormat(TextureInternalFormat format)
 		case TextureInternalFormat::RGB32F:				return   GL_RGB32F;
 		case TextureInternalFormat::RGBA16F:			return   GL_RGBA16F;
 		case TextureInternalFormat::RGBA32F:			return   GL_RGBA32F;
+		case TextureInternalFormat::DEPTH24STENCIL8:	return   GL_DEPTH24_STENCIL8;
 		default: KS_CORE_ERROR("[TEXTURE INTERNAL FORMAT ERROR]: Unsupported texture internal format!"); return 0;	
 	}
 }

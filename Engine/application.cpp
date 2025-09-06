@@ -9,6 +9,7 @@
 #include "scene/camera/camera.h"
 #include "scene/light/pointLight/pointLight.h"
 #include "geometry/rectangle.h"
+#include "graphic/gpuBuffer/frameBuffer.h"
 
 Application::Application(uint width, uint height, const char* title)
 	:mWindow(std::make_unique<Window>(width, height, title))
@@ -42,6 +43,48 @@ Application::Application(uint width, uint height, const char* title)
 	auto light2 = std::make_shared<PointLight>(glm::vec3(3.0f, 7.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f, 0.09f, 0.032f);
 	auto light3 = std::make_shared<PointLight>(glm::vec3(-3.0f, 7.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	scene->addPointLights({ light1, light2 , light3 });
+
+	//test Framebuffer
+	std::initializer_list<FrameBufferSpecification> specs =
+	{
+		{
+			AttachmentType::Color, 
+			TextureInternalFormat::RGB8, 
+			TextureDataFormat::RGB, 
+			TextureWarpMode::CLAMP_TO_EDGE, 
+			TextureWarpMode::CLAMP_TO_EDGE, 
+			TextureFilter::NEAREST, 
+			TextureFilter::NEAREST
+		},
+		{
+			AttachmentType::Color,
+			TextureInternalFormat::RGB8,
+			TextureDataFormat::RGB,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureFilter::NEAREST,
+			TextureFilter::NEAREST
+		},
+		{
+			AttachmentType::Color,
+			TextureInternalFormat::RGBA8,
+			TextureDataFormat::RGBA,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureFilter::NEAREST,
+			TextureFilter::NEAREST
+		},
+		{
+			AttachmentType::DepthStencil,
+			TextureInternalFormat::DEPTH24STENCIL8,
+			TextureDataFormat::R,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureFilter::NEAREST,
+			TextureFilter::NEAREST
+		}
+	};
+	FrameBuffer fbo(width, height, specs);
 }
 
 Application::~Application()

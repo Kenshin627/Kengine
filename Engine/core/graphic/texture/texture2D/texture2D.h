@@ -9,7 +9,8 @@ enum class TextureInternalFormat
 	RGB16F,
 	RGB32F,
 	RGBA16F,
-	RGBA32F
+	RGBA32F,
+	DEPTH24STENCIL8
 };
 
 enum class TextureDataFormat
