@@ -1,0 +1,39 @@
+#pragma once
+#include <memory>
+#include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
+
+class Geometry;
+class Material;
+class Scene;
+class RenderObject
+{
+public:
+	RenderObject() = default;
+	RenderObject(std::shared_ptr<Geometry> mesh, std::shared_ptr<Material> material);
+	virtual ~RenderObject() = default;
+	RenderObject(const RenderObject& obj) = delete;
+	RenderObject(RenderObject&& obj) = delete;
+	RenderObject& operator=(const RenderObject& obj) = delete;
+	void setMaterial(std::shared_ptr<Material> material);
+	void draw() const;
+	void setPosition(const glm::vec3& pos);
+	void setPosition(float x, float y, float z);
+	void setRotation(const glm::vec3& rotation);
+	void setRotation(float val);
+	void setRotation(float x, float y, float z);
+	void setScale(const glm::vec3& scale);
+	void setScale(float x, float y, float z);
+	void setScale(float val);
+	void updateModelMatrix();
+	void setOwner(Scene* s);
+private:
+	std::shared_ptr<Geometry> mMesh;
+	std::shared_ptr<Material> mMaterial;
+	glm::vec3				  mPosition                     { 0,0,0 };
+	glm::vec3				  mRotation                     { 0,0,0 };
+	glm::vec3				  mScale                        { 1,1,1 };
+	glm::mat4				  mModelMatrix				  = glm::identity<glm::mat4>();
+	glm::mat4				  mModelMatrixInvertTranspose = glm::identity<glm::mat4>();
+	Scene*					  mOnwningScene                 { nullptr };
+};

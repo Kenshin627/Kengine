@@ -1,0 +1,155 @@
+#include <vector>
+#include <gtc/type_ptr.hpp>
+#include "core.h"
+#include "program.h"
+#pragma once
+
+Program::Program()
+	:mRendererID(0),
+	 mLinked(false)
+{
+	mRendererID = glCreateProgram();
+
+}
+
+Program::~Program()
+{
+	GLCALL(glDeleteProgram(mRendererID));
+}
+
+void Program::buildFromSources(const std::initializer_list<ShaderSource>& sources)
+{	
+	//mShaders.reserve(sources.size());
+	for (auto& shaderSource : sources)
+	{
+		//Ref<Shader> s = Shader::fromSource(shaderSource.type, shaderSource.source);
+		//mShaders.emplace_back(s);
+		attachShader(Shader::fromSource(shaderSource.type, shaderSource.source));
+	}
+	link();
+}
+
+void Program::buildFromFiles(const std::initializer_list<ShaderFile>& files)
+{
+	//mShaders.reserve(files.size());
+	for (auto& shaderFile : files)
+	{
+		//auto shader = Shader::fromFile(shaderFile.type, shaderFile.path);
+		//mShaders.push_back(shader);
+		attachShader(Shader::fromFile(shaderFile.type, shaderFile.path));
+	}
+	link();
+}
+
+void Program::attachShader(Ref<Shader> shader)
+{
+	GLCALL(glAttachShader(mRendererID, shader->id()));
+}
+
+void Program::link()
+{
+	mUniformLocationCache.clear();
+	GLCALL(glLinkProgram(mRendererID));
+	int success;
+	GLCALL(glGetProgramiv(mRendererID, GL_LINK_STATUS, &success));
+	if (!success)
+	{
+		int logLength = 0;
+		GLCALL(glGetProgramiv(mRendererID, GL_INFO_LOG_LENGTH, &logLength));
+		char errors[1024];
+		GLCALL(glGetProgramInfoLog(mRendererID, 1024, nullptr, errors));
+		KS_CORE_ERROR("[PROGRAM LINK FAIED]:");
+		KS_CORE_WARN("[ERROR]: {0}", errors);
+		mLinked = false;
+		//return;
+	}
+	mLinked = true;
+}
+
+void Program::bind() const
+{
+	checkLinkState();
+	GLCALL(glUseProgram(mRendererID));
+}
+
+void Program::unBind() const
+{
+	checkLinkState();
+	GLCALL(glUseProgram(0));
+}
+
+int Program::getUniformLocation(const char* name) const
+{
+	checkLinkState();
+	auto iter = mUniformLocationCache.find(name);
+	if (iter != mUniformLocationCache.end())
+	{
+		return iter->second;
+	}
+	int loc = glGetUniformLocation(mRendererID, name);
+	if (loc != -1)
+	{
+		mUniformLocationCache[name] = loc;
+		return loc;
+	}
+	else
+	{
+		KS_CORE_WARN("[UNIFORM NOT FOUND]: {0}", name);
+	}
+}
+
+void Program::setUniform(const char* name, int value) const
+{
+	checkLinkState();
+	GLCALL(glUniform1i(getUniformLocation(name), value));
+}
+
+void Program::setUniform(const char* name, float value) const
+{
+	checkLinkState();
+	GLCALL(glUniform1f(getUniformLocation(name), value));
+}
+
+void Program::setUniform(const char* name, const glm::vec2& value) const
+{
+	checkLinkState();
+	GLCALL(glUniform2f(getUniformLocation(name), value.x, value.y));
+}
+
+void Program::setUniform(const char* name, const glm::vec3& value) const
+{
+	checkLinkState();
+	GLCALL(glUniform3f(getUniformLocation(name), value.x, value.y, value.z));
+}
+
+void Program::setUniform(const char* name, const glm::vec4& value) const
+{
+	checkLinkState();
+	GLCALL(glUniform4f(getUniformLocation(name), value.x, value.y, value.z, value.w));
+}
+
+void Program::setUniform(const char* name, const glm::mat3& value, bool transpose) const
+{
+	checkLinkState();
+	GLCALL(glUniformMatrix3fv(getUniformLocation(name), 1, transpose, glm::value_ptr(value)));
+}
+
+void Program::setUniform(const char* name, const glm::mat4& value, bool transpose) const
+{
+	checkLinkState();
+	GLCALL(glProgramUniformMatrix4fv(mRendererID, getUniformLocation(name), 1, transpose, glm::value_ptr(value)));
+}
+
+uint Program::id() const
+{
+	return uint();
+}
+
+void Program::checkLinkState() const
+{
+	if (!mLinked)
+	{
+		KS_CORE_WARN("[PROGRAM HAS NOT LINKED ALREADY]");
+		return;
+	}
+}
