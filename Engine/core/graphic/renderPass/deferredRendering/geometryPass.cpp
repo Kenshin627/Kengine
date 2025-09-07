@@ -17,12 +17,12 @@ GeometryPass::GeometryPass(const RenderState& state)
 	{
 		{
 			AttachmentType::Color,
-			TextureInternalFormat::RGB8,
+			TextureInternalFormat::RGB16F,
 			TextureDataFormat::RGB,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,
-			TextureFilter::LINEAR,
-			TextureFilter::LINEAR
+			TextureFilter::NEAREST,
+			TextureFilter::NEAREST
 		},
 		{
 			AttachmentType::Color,
@@ -30,8 +30,8 @@ GeometryPass::GeometryPass(const RenderState& state)
 			TextureDataFormat::RGB,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,
-			TextureFilter::LINEAR,
-			TextureFilter::LINEAR
+			TextureFilter::NEAREST,
+			TextureFilter::NEAREST
 		},
 		{
 			AttachmentType::Color,
@@ -39,24 +39,24 @@ GeometryPass::GeometryPass(const RenderState& state)
 			TextureDataFormat::RGB,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,
-			TextureFilter::LINEAR,
-			TextureFilter::LINEAR
+			TextureFilter::NEAREST,
+			TextureFilter::NEAREST
 		},
 		{
 			AttachmentType::Color,
-			TextureInternalFormat::RGBA32F,
+			TextureInternalFormat::RGBA16F,
 			TextureDataFormat::RGBA,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,
-			TextureFilter::LINEAR,
-			TextureFilter::LINEAR
+			TextureFilter::NEAREST,
+			TextureFilter::NEAREST
 		},
 		{
 			AttachmentType::Depth,
 			TextureInternalFormat::DEPTH32,
 			TextureDataFormat::DEPTH,
-			TextureWarpMode::CLAMP_TO_BORDER,
-			TextureWarpMode::CLAMP_TO_BORDER,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureFilter::NEAREST,
 			TextureFilter::NEAREST
 		}

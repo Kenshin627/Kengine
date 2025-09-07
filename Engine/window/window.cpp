@@ -107,8 +107,14 @@ void Window::setWindSize(uint width, uint height)
 
 void Window::onWindowSizeChanged(GLFWwindow* window, int width, int height)
 {
+	//×îÐ¡»¯ÅÐ¶Ï
+	if (width == 0 || height == 0)
+	{
+		return;
+	}
 	mWidth = width;
 	mHeight = height;
+	
 	//TODO: pass framebuffer
 	//TODO: framebuffer resize 
 	mRenderer->onWindowSizeChanged(mWidth, mHeight);
