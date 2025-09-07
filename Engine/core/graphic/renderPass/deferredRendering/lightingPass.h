@@ -4,6 +4,6 @@
 class LightingPass : public RenderPass
 {
 public:
-	LightingPass(uint width, uint height);
+	LightingPass(const RenderState& state);
 	~LightingPass() = default;
 };

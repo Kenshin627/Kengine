@@ -9,7 +9,7 @@ FrameBuffer::FrameBuffer()
 	 mMaxAttachmentCount(0)
 {
 	GLCALL(glCreateFramebuffers(1, &mRendererID));
-	checkMaxColorAttachmentt();
+	checkMaxColorAttachment();
 }
 
 FrameBuffer::FrameBuffer(uint width, uint height, const std::initializer_list<FrameBufferSpecification>& attachmentSpecs)
@@ -20,7 +20,7 @@ FrameBuffer::FrameBuffer(uint width, uint height, const std::initializer_list<Fr
 	 mSpecifications(attachmentSpecs)
 {
 	GLCALL(glCreateFramebuffers(1, &mRendererID));
-	checkMaxColorAttachmentt();
+	checkMaxColorAttachment();
 	buildAttachments();
 }
 
@@ -48,6 +48,7 @@ void FrameBuffer::buildAttachments()
 {
 	//clear
 	mColorAttachments.clear();
+	mDrawBuffers.clear();
 	if (mDepthStencilAttachment)
 	{
 		mDepthStencilAttachment.reset();
@@ -185,7 +186,16 @@ void FrameBuffer::resize(uint width, uint height)
 	buildAttachments();
 }
 
-void FrameBuffer::checkMaxColorAttachmentt()
+void FrameBuffer::checkMaxColorAttachment()
 {
 	glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &mMaxAttachmentCount);
+}
+
+Texture2D* FrameBuffer::getColorAttachment(uint index) const
+{
+	if (index >= mColorAttachments.size())
+	{
+		KS_CORE_ERROR("Color attachment index out of range");
+	}
+	return mColorAttachments[index].get();
 }

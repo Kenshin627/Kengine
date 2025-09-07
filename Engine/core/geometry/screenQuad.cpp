@@ -2,10 +2,10 @@
 
 //SCREEN QUAD
 const std::vector<ScreenQuadVertex> vertices = {
-   {{ -1.0f, -1.0f },  { 0.0f, 0.0f}}, 
-   {{  1.0f, -1.0f },  { 1.0f, 0.0f}}, 
-   {{  1.0f,  1.0f },  { 1.0f, 1.0f}}, 
-   {{ -1.0f,  1.0f },  { 0.0f, 1.0f}}  
+   {{ -1.0f, -1.0f },  { 0.0f, 0.0f }}, 
+   {{  1.0f, -1.0f },  { 1.0f, 0.0f }}, 
+   {{  1.0f,  1.0f },  { 1.0f, 1.0f }}, 
+   {{ -1.0f,  1.0f },  { 0.0f, 1.0f }}  
 };
 
 const std::vector<uint> indices = {

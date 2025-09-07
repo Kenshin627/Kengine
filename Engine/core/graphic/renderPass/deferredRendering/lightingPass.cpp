@@ -2,7 +2,8 @@
 #include "graphic/program/program.h"
 #include "geometry/screenQuad.h"
 
-LightingPass::LightingPass(uint width, uint height)
+LightingPass::LightingPass(const RenderState& state)
+	:RenderPass(state)
 {
 	//to screen no fbo
 	mProgram = std::make_unique<Program>();
@@ -14,11 +15,11 @@ LightingPass::LightingPass(uint width, uint height)
 	mGeometry = std::make_shared<ScreenQuad>();
 
 	//set renderState
-	RenderState state;
-	state.width = width;
-	state.height = height;
-	state.viewport.z = width;
-	state.viewport.w = height;
-	state.target = RenderTarget::SCREEN;
-	setRenderState(state);
+	//RenderState state;
+	//state.width = width;
+	//state.height = height;
+	//state.viewport.z = width;
+	//state.viewport.w = height;
+	//state.target = RenderTarget::SCREEN;
+	//setRenderState(state);
 }

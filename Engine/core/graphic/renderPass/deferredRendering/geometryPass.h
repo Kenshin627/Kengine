@@ -5,6 +5,6 @@
 class GeometryPass :public RenderPass
 {
 public:
-	GeometryPass(uint width, uint height);
+	GeometryPass(const RenderState& state);
 	~GeometryPass() = default;
 };

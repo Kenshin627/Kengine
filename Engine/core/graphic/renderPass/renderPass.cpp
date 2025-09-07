@@ -4,9 +4,10 @@
 #include "graphic/program/program.h"
 #include "geometry/geometry.h"
 
-RenderPass::RenderPass()
-	 :mFrameBuffer(nullptr),
-	  mProgram(nullptr)
+RenderPass::RenderPass(const RenderState& state)
+	:mRenderState(state),
+	 mFrameBuffer(nullptr),
+	 mProgram(nullptr)
 {
 }
 
@@ -139,4 +140,14 @@ bool RenderPass::checkPassReady()
 		return false;
 	}
 	return true;
+}
+
+void RenderPass::setLastPassFBO(std::shared_ptr<FrameBuffer> fbo)
+{
+	mlastPassFrameBuffer = fbo;
+}
+
+std::shared_ptr<FrameBuffer> RenderPass::getCurrentFrameBuffer() const
+{
+	return mFrameBuffer;
 }

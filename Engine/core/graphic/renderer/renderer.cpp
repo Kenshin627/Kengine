@@ -9,6 +9,7 @@ Renderer::Renderer(uint width, uint height)
 	:mWidth(width),
 	 mHeight(height)
 {
+
 }
 
 Renderer::~Renderer() {}
@@ -16,11 +17,12 @@ Renderer::~Renderer() {}
 void Renderer::render()
 {
 	mCurrentScene->beginScene();
-	//run pass loop
 	if (mRenderPasses.empty())
 	{
 		setDefaultRenderPass();
-	}	
+	}
+
+	//run pass loop
 	for (auto& pass : mRenderPasses)
 	{
 		pass->beginPass();
@@ -67,5 +69,12 @@ void Renderer::setRenderPass(const std::initializer_list<std::shared_ptr<RenderP
 
 void Renderer::setDefaultRenderPass()
 {
-	setRenderPass({ std::make_shared<DefaultPass>(mWidth, mHeight) });
+	//set renderState
+	RenderState state;
+	state.width = mWidth;
+	state.height = mHeight;
+	state.viewport.z = mWidth;
+	state.viewport.w = mHeight;
+	state.target = RenderTarget::SCREEN;
+	setRenderPass({ std::make_shared<DefaultPass>(state) });
 }

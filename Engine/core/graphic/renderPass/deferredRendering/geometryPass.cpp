@@ -2,7 +2,8 @@
 #include "graphic/gpuBuffer/frameBuffer.h"
 #include "graphic/program/program.h"
 
-GeometryPass::GeometryPass(uint width, uint height)
+GeometryPass::GeometryPass(const RenderState& state)
+	:RenderPass(state)
 {
 	//GBUFFER
 	//|		RGB8  | worldPosition	| 
@@ -38,7 +39,7 @@ GeometryPass::GeometryPass(uint width, uint height)
 			TextureFilter::NEAREST
 		},
 		{
-			AttachmentType::Depth,
+			AttachmentType::DepthStencil,
 			TextureInternalFormat::DEPTH24STENCIL8,
 			TextureDataFormat::DELTHSTENCIL,
 			TextureWarpMode::CLAMP_TO_BORDER,
@@ -47,7 +48,7 @@ GeometryPass::GeometryPass(uint width, uint height)
 			TextureFilter::NEAREST
 		}
 	};
-	mFrameBuffer = std::make_unique<FrameBuffer>(width, height, specs);
+	mFrameBuffer = std::make_unique<FrameBuffer>(state.width, state.height, specs);
 	mProgram = std::make_unique<Program>();
 	mProgram->buildFromFiles({
 		{ "core/graphic/shaderSrc/deferredRendering/geometryPassShader/vs.glsl", ShaderType::Vertex },
@@ -55,11 +56,11 @@ GeometryPass::GeometryPass(uint width, uint height)
 	});
 
 	//set renderState
-	RenderState state;
-	state.width  = width;
-	state.height =  height;
-	state.viewport.z = width;
-	state.viewport.w = height;
-	state.target = RenderTarget::FRAMEBUFFER;
-	setRenderState(state);
+	//RenderState state;
+	//state.width  = width;
+	//state.height =  height;
+	//state.viewport.z = width;
+	//state.viewport.w = height;
+	//state.target = RenderTarget::FRAMEBUFFER;
+	//setRenderState(state);
 }

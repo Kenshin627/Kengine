@@ -36,7 +36,8 @@ public:
 	void addAttachments(const std::initializer_list<FrameBufferSpecification>& attachmentSpecs);
 	bool isComplete() const;
 	void resize(uint width, uint height);
-	void checkMaxColorAttachmentt();
+	void checkMaxColorAttachment();
+	Texture2D* getColorAttachment(uint index) const;
 private:
 	void buildAttachment(const FrameBufferSpecification& attachmentSpec);
 	void buildAttachments();

@@ -4,7 +4,7 @@
 class DefaultPass :public RenderPass
 {
 public:
-	DefaultPass(uint width, uint height);
+	DefaultPass(const RenderState& state);
 	~DefaultPass();
 	virtual void runPass(Scene* scene) override;
 };
