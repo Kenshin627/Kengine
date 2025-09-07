@@ -14,6 +14,7 @@ uniform sampler2D gSpecShiness;
 layout (std140, binding = 0) uniform CameraBuffer
 {
 	mat4 viewProjectionMatrix;
+	mat4 projectionMatrix;
 	vec3 position;
 } cameraBuffer;
 

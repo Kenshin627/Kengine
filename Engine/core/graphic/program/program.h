@@ -33,6 +33,7 @@ public:
 	void unBind() const;
 	int  getUniformLocation(const char* name) const;	
 	void setUniform(const char* name, int value) const;
+	void setUniform(const char* name, uint value) const;
 	void setUniform(const char* name, float value) const;
 	void setUniform(const char* name, const glm::vec2& value) const;
 	void setUniform(const char* name, const glm::vec3& value) const;

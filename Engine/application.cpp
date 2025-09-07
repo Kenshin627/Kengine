@@ -14,6 +14,7 @@
 #include "graphic/renderPass/postProcess/grayScaleEffect/grayScaleEffect.h"
 #include "graphic/renderPass/deferredRendering/geometryPass.h"
 #include "graphic/renderPass/deferredRendering/lightingPass.h"
+#include "graphic/renderPass/ssaoPass/ssaoPass.h"
 
 Application::Application(uint width, uint height, const char* title)
 	:mWindow(std::make_unique<Window>(width, height, title))
@@ -92,7 +93,20 @@ Application::Application(uint width, uint height, const char* title)
 	lightingPassState.target = RenderTarget::SCREEN;
 	std::shared_ptr<LightingPass> lightingPass = std::make_shared<LightingPass>(lightingPassState);
 	lightingPass->setLastPassFBO(gPass->getCurrentFrameBuffer());
-	renderer->setRenderPass({ gPass, lightingPass });
+
+	//PASS GROUP#3
+	//pass#1 geometryPass
+	//pass#2 ssaoPass
+	RenderState ssaoPassState;
+	ssaoPassState.width = width;
+	ssaoPassState.height = height;
+	ssaoPassState.viewport.z = width;
+	ssaoPassState.viewport.w = height;
+	ssaoPassState.depthTest = false;
+	ssaoPassState.target = RenderTarget::FRAMEBUFFER;
+	std::shared_ptr<SSAOPass> ssaoPass = std::make_shared<SSAOPass>(64, 4, ssaoPassState);
+	ssaoPass->setLastPassFBO(gPass->getCurrentFrameBuffer());
+	renderer->setRenderPass({ gPass, ssaoPass });
 }
 
 Application::~Application()

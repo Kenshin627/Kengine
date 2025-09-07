@@ -7,6 +7,7 @@ layout (location = 2) in vec2 aTexcoord;
 layout (std140, binding = 0) uniform CameraBuffer
 {
 	mat4 viewProjectionMatrix;
+	mat4 projectionMatrix;
 	vec3 position;
 } cameraBuffer;
 

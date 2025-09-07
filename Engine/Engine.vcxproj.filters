@@ -114,6 +114,9 @@
     <ClCompile Include="core\graphic\renderPass\postProcess\grayScaleEffect\grayScaleEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\graphic\renderPass\ssaoPass\ssaoPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -221,6 +224,9 @@
     <ClInclude Include="core\graphic\renderPass\postProcess\grayScaleEffect\grayScaleEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\ssaoPass\ssaoPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="core\graphic\shaderSrc\blinnPhong\vs.glsl" />
@@ -231,5 +237,7 @@
     <None Include="core\graphic\shaderSrc\deferredRendering\lightingPassShader\fs.glsl" />
     <None Include="core\graphic\shaderSrc\postProcess\grayScale\vs.glsl" />
     <None Include="core\graphic\shaderSrc\postProcess\grayScale\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\ssao\occlusion\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\ssao\occlusion\fs.glsl" />
   </ItemGroup>
 </Project>

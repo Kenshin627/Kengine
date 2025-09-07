@@ -98,6 +98,11 @@ void Program::setUniform(const char* name, int value) const
 	GLCALL(glUniform1i(getUniformLocation(name), value));
 }
 
+void Program::setUniform(const char* name, uint value) const
+{
+	GLCALL(glUniform1ui(getUniformLocation(name), value));
+}
+
 void Program::setUniform(const char* name, float value) const
 {
 	//checkLinkState();
