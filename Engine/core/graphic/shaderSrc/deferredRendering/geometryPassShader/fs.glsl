@@ -3,7 +3,8 @@
 //GBUFFER
 layout (location = 0) out vec3 gPosition;
 layout (location = 1) out vec3 gNormal;
-layout (location = 2) out vec4 gDiffuseSpec;
+layout (location = 2) out vec3 gDiffuse;
+layout (location = 3) out vec4 gSpecShiness;
 
 in vec3 vPos;
 in vec3 vNormal;
@@ -17,7 +18,7 @@ void main()
 {
 	gPosition = vPos;
 	gNormal = normalize(vNormal);
-	vec3 diff = texture(diffuseMap, vTexcoord).rgb;
-	float spec = texture(specularMap, vTexcoord).r;
-	gDiffuseSpec = vec4(diff, spec);
+	gDiffuse = texture(diffuseMap, vTexcoord).rgb;
+	gSpecShiness.rgb = texture(specularMap, vTexcoord).rgb;
+	gSpecShiness.a = shiness;
 }

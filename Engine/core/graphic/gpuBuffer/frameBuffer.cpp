@@ -121,11 +121,26 @@ void FrameBuffer::buildAttachment(const FrameBufferSpecification& attachmentSpec
 		GLCALL(glNamedFramebufferTexture(mRendererID, GL_DEPTH_STENCIL_ATTACHMENT, mDepthStencilAttachment->id(), 0));
 	}
 	//TODO:DEPTH ATTACHMENT
+	else if(attachmentSpec.attachmentType == AttachmentType::Depth)
+	{
+		TextureSpecification texSpec;
+		texSpec.width = mWidth;
+		texSpec.height = mHeight;
+		texSpec.warpS = attachmentSpec.warpS;
+		texSpec.warpT = attachmentSpec.warpT;
+		texSpec.minFilter = attachmentSpec.minFilter;
+		texSpec.magFilter = attachmentSpec.magFilter;
+		texSpec.internalFormat = attachmentSpec.internalFormat;
+		texSpec.dataFormat = attachmentSpec.dataFormat;
+		texSpec.mipmapLevel = 1;
+		mDepthStencilAttachment = std::make_unique<Texture2D>(texSpec);
+		GLCALL(glTextureStorage2D(mDepthStencilAttachment->id(), 1, mDepthStencilAttachment->convertToGLInternalFormat(texSpec.internalFormat), texSpec.width, texSpec.height));
+		GLCALL(glNamedFramebufferTexture(mRendererID, GL_DEPTH_ATTACHMENT, mDepthStencilAttachment->id(), 0));		
+	}
 	else
 	{
 		KS_CORE_WARN("[FRAMEBUFFER WARNING]: Unknown attachment type!");
 	}
-
 }
 
 void FrameBuffer::addAttachment(const FrameBufferSpecification& spec)

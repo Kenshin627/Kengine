@@ -11,7 +11,8 @@ GeometryPass::GeometryPass(const RenderState& state)
 	//GBUFFER
 	//|		RGB8  | worldPosition	| 
 	//|		RGB8  | worldNormal		|
-	//|		RGBA8 | diffuse + spec	|
+	//|		RGB8  | diffuse      	|
+	//|     RGBA8 | spec + shiness  |
 	std::initializer_list<FrameBufferSpecification> specs =
 	{
 		{
@@ -20,8 +21,8 @@ GeometryPass::GeometryPass(const RenderState& state)
 			TextureDataFormat::RGB,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,
-			TextureFilter::NEAREST,
-			TextureFilter::NEAREST
+			TextureFilter::LINEAR,
+			TextureFilter::LINEAR
 		},
 		{
 			AttachmentType::Color,
@@ -29,22 +30,31 @@ GeometryPass::GeometryPass(const RenderState& state)
 			TextureDataFormat::RGB,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,
-			TextureFilter::NEAREST,
-			TextureFilter::NEAREST
+			TextureFilter::LINEAR,
+			TextureFilter::LINEAR
 		},
 		{
 			AttachmentType::Color,
-			TextureInternalFormat::RGBA8,
+			TextureInternalFormat::RGB8,
+			TextureDataFormat::RGB,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureFilter::LINEAR,
+			TextureFilter::LINEAR
+		},
+		{
+			AttachmentType::Color,
+			TextureInternalFormat::RGBA32F,
 			TextureDataFormat::RGBA,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,
-			TextureFilter::NEAREST,
-			TextureFilter::NEAREST
+			TextureFilter::LINEAR,
+			TextureFilter::LINEAR
 		},
 		{
-			AttachmentType::DepthStencil,
-			TextureInternalFormat::DEPTH24STENCIL8,
-			TextureDataFormat::DELTHSTENCIL,
+			AttachmentType::Depth,
+			TextureInternalFormat::DEPTH32,
+			TextureDataFormat::DEPTH,
 			TextureWarpMode::CLAMP_TO_BORDER,
 			TextureWarpMode::CLAMP_TO_BORDER,
 			TextureFilter::NEAREST,

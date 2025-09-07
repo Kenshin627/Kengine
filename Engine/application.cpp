@@ -27,8 +27,8 @@ Application::Application(uint width, uint height, const char* title)
 	renderer->setCurrentScene(scene);
 	std::shared_ptr<Rectangle> rectangle = std::make_shared<Rectangle>(100.0f, 100.0f);
 	std::shared_ptr<Cube> cube = std::make_shared<Cube>(1.0f, 1.0f, 1.0f);
-	std::shared_ptr<PhongMaterial> phongMat = std::make_shared<PhongMaterial>("images/dog.jpg", "images/led.png");
-	std::shared_ptr<PhongMaterial> groundMat = std::make_shared<PhongMaterial>("images/grid3.jpg", "images/grid3.jpg");
+	std::shared_ptr<PhongMaterial> phongMat = std::make_shared<PhongMaterial>("images/dog.jpg", "images/dog.jpg", 128);
+	std::shared_ptr<PhongMaterial> groundMat = std::make_shared<PhongMaterial>("images/grid3.jpg", "images/grid3.jpg", 128);
 	std::shared_ptr<RenderObject> ground = std::make_shared<RenderObject>(rectangle, groundMat);
 	ground->setRotation(-90, 0, 0);
 	std::shared_ptr<RenderObject> box1 = std::make_shared<RenderObject>(cube, phongMat);
@@ -45,9 +45,9 @@ Application::Application(uint width, uint height, const char* title)
 	scene->setMainCamera(camera);
 
 	//light
-	auto light1 = std::make_shared<PointLight>(glm::vec3(0.0f, 6.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f);
-	auto light2 = std::make_shared<PointLight>(glm::vec3(3.0f, 6.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f, 0.09f, 0.032f);
-	auto light3 = std::make_shared<PointLight>(glm::vec3(-3.0f, 6.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	auto light1 = std::make_shared<PointLight>(glm::vec3(0.0f, 6.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	auto light2 = std::make_shared<PointLight>(glm::vec3(3.0f, 6.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	auto light3 = std::make_shared<PointLight>(glm::vec3(-3.0f, 6.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	scene->addPointLights({ light1, light2 , light3 });
 	
 	//pass

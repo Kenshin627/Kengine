@@ -29,11 +29,15 @@ void LightingPass::beginPass()
 	//set uniform textureSampler2D
 	auto gPos = mlastPassFrameBuffer->getColorAttachment(0);
 	auto gNormal = mlastPassFrameBuffer->getColorAttachment(1);
-	auto gDiffSpec = mlastPassFrameBuffer->getColorAttachment(2);
+	auto gDiff = mlastPassFrameBuffer->getColorAttachment(2);
+	auto gSpecShiness = mlastPassFrameBuffer->getColorAttachment(3);
 	gPos->bind(0);
 	gNormal->bind(1);
-	gDiffSpec->bind(2);
+	gDiff->bind(2);
+	gSpecShiness->bind(3);
+
 	mProgram->setUniform("gPosition", 0);
 	mProgram->setUniform("gNormal", 1);
-	mProgram->setUniform("gDiffuseSpec", 2);
+	mProgram->setUniform("gDiffuse", 2);
+	mProgram->setUniform("gSpecShiness", 3);
 }
