@@ -10,6 +10,12 @@ struct Vertex
 	glm::vec2 Texcoord;
 };
 
+struct ScreenQuadVertex
+{
+	glm::vec2 Position;
+	glm::vec2 Texcoord;
+};
+
 class Geometry
 {
 public:
@@ -19,6 +25,8 @@ public:
 	Geometry(const Geometry& obj) = delete;
 	Geometry(Geometry&& obj) = delete;
 	Geometry& operator=(const Geometry& obj) = delete;
+	void beginDraw() const;
+	void endDraw();
 	void draw() const;
 protected:
 	void setVAO(std::unique_ptr<VertexArray> vao) { mVAO = std::move(vao); }

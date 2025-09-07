@@ -2,71 +2,70 @@
 #include "scene/scene.h"
 #include "renderer.h"
 #include "scene/camera/camera.h"
+#include "graphic/renderPass/renderPass.h"
+#include "graphic/renderPass/defaultToScreen/defaultPass.h"
 
-Renderer::Renderer()
+Renderer::Renderer(uint width, uint height)
+	:mWidth(width),
+	 mHeight(height)
 {
 }
 
-Renderer::~Renderer()
-{
-}
-
-void Renderer::clear()
-{
-	//TODO: set in pass
-	glClear(mClearBits);
-	glClearColor(mClearColor.r, mClearColor.g, mClearColor.b, mClearColor.a);
-	glClearDepth(mClearDepth);
-}
-
-void Renderer::setViewport(const glm::vec4& viewport)
-{
-	mViewport = viewport;
-}
-
-void Renderer::viewPort() const
-{
-	//TODO: set in pass
-	glViewport(mViewport[0], mViewport[1], mViewport[2], mViewport[3]);
-}
-
-void Renderer::setClearColor(const glm::vec4& c)
-{
-	setClearColor(c.r, c.g, c.b, c.a);
-}
-
-void Renderer::setClearColor(float r, float g, float b, float a)
-{
-	mClearColor.r = r;
-	mClearColor.g = g;
-	mClearColor.b = b;
-	mClearColor.a = a;
-}
-
-void Renderer::setClearDepth(double d)
-{
-	mClearDepth = d;
-}
+Renderer::~Renderer() {}
 
 void Renderer::render()
 {
 	mCurrentScene->beginScene();
-	// Render Passes
-	mCurrentScene->draw();
+	//run pass loop
+	if (mRenderPasses.empty())
+	{
+		setDefaultRenderPass();
+	}	
+	for (auto& pass : mRenderPasses)
+	{
+		pass->beginPass();
+		pass->runPass(mCurrentScene.get());
+		pass->endPass();
+	}
+	
 	mCurrentScene->endScene();
 }
 
 void Renderer::onWindowSizeChanged(uint width, uint height)
 {
-	//set viewport
-	setViewport(glm::vec4(mViewport[0], mViewport[1], width, height));
+	mWidth = width;
+	mHeight = height;
 	//set camera aspect ratio
 	if (mCurrentScene)
 	{
 		auto camera = mCurrentScene->getCurrentCamera();
 		if (camera)
 		{
+			//set dirty, next time update ubo
 			camera->setAspectRatio(static_cast<float>(width) / static_cast<float>(height));
 		}
 	}
+	//update renderPass, because renderPass maybe include fbo & viewport resize 
+	for (auto& pass : mRenderPasses)
+	{
+		pass->resize(width, height);
+	}
+}
+
+void Renderer::setRenderPass(const std::initializer_list<std::shared_ptr<RenderPass>>& passes)
+{
+	if (passes.size() == 0)
+	{
+		return;
+	}
+	mRenderPasses.clear();
+	for (auto& pass : passes)
+	{
+		mRenderPasses.push_back(pass);
+	}
+}
+
+void Renderer::setDefaultRenderPass()
+{
+	setRenderPass({ std::make_shared<DefaultPass>(mWidth, mHeight) });
 }

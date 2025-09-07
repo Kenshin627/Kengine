@@ -14,11 +14,10 @@
 Application::Application(uint width, uint height, const char* title)
 	:mWindow(std::make_unique<Window>(width, height, title))
 {
-	std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>();
+	std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(width, height);
 	mWindow->attachRenderer(renderer);
 	std::shared_ptr<Scene> scene = std::make_shared<Scene>();
 	renderer->setCurrentScene(scene);
-	renderer->setViewport({ 0, 0, width, height });
 	std::shared_ptr<Rectangle> rectangle = std::make_shared<Rectangle>(100.0f, 100.0f);
 	std::shared_ptr<Cube> cube = std::make_shared<Cube>(1.0f, 1.0f, 1.0f);
 	std::shared_ptr<PhongMaterial> phongMat = std::make_shared<PhongMaterial>("images/dog.jpg", "images/led.png");
@@ -39,9 +38,9 @@ Application::Application(uint width, uint height, const char* title)
 	auto camera = std::make_shared<Camera>(glm::vec3(3, 3, 5), 45.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.1f, 100.0f);
 	scene->setMainCamera(camera);
 	//lights
-	auto light1 = std::make_shared<PointLight>(glm::vec3(0.0f, 7.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f);
-	auto light2 = std::make_shared<PointLight>(glm::vec3(3.0f, 7.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f, 0.09f, 0.032f);
-	auto light3 = std::make_shared<PointLight>(glm::vec3(-3.0f, 7.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	auto light1 = std::make_shared<PointLight>(glm::vec3(0.0f, 6.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f);
+	auto light2 = std::make_shared<PointLight>(glm::vec3(3.0f, 6.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f, 0.09f, 0.032f);
+	auto light3 = std::make_shared<PointLight>(glm::vec3(-3.0f, 6.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	scene->addPointLights({ light1, light2 , light3 });
 
 	//test Framebuffer

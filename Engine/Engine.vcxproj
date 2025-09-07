@@ -162,12 +162,17 @@
     <ClCompile Include="core\geometry\cube.cpp" />
     <ClCompile Include="core\geometry\geometry.cpp" />
     <ClCompile Include="core\geometry\rectangle.cpp" />
+    <ClCompile Include="core\geometry\screenQuad.cpp" />
     <ClCompile Include="core\graphic\gpuBuffer\buffer.cpp" />
     <ClCompile Include="core\graphic\gpuBuffer\frameBuffer.cpp" />
     <ClCompile Include="core\graphic\gpuBuffer\indexBuffer.cpp" />
     <ClCompile Include="core\graphic\gpuBuffer\uniformBuffer.cpp" />
     <ClCompile Include="core\graphic\gpuBuffer\vertexArray.cpp" />
     <ClCompile Include="core\graphic\gpuBuffer\vertexBuffer.cpp" />
+    <ClCompile Include="core\graphic\renderPass\defaultToScreen\defaultPass.cpp" />
+    <ClCompile Include="core\graphic\renderPass\deferredRendering\geometryPass.cpp" />
+    <ClCompile Include="core\graphic\renderPass\deferredRendering\lightingPass.cpp" />
+    <ClCompile Include="core\graphic\renderPass\renderPass.cpp" />
     <ClCompile Include="core\graphic\program\program.cpp" />
     <ClCompile Include="core\graphic\program\shader.cpp" />
     <ClCompile Include="core\graphic\renderer\renderer.cpp" />
@@ -193,6 +198,7 @@
     <ClInclude Include="core\geometry\cube.h" />
     <ClInclude Include="core\geometry\geometry.h" />
     <ClInclude Include="core\geometry\rectangle.h" />
+    <ClInclude Include="core\geometry\screenQuad.h" />
     <ClInclude Include="core\graphic\const.h" />
     <ClInclude Include="core\graphic\gpuBuffer\buffer.h" />
     <ClInclude Include="core\graphic\gpuBuffer\frameBuffer.h" />
@@ -200,6 +206,10 @@
     <ClInclude Include="core\graphic\gpuBuffer\uniformBuffer.h" />
     <ClInclude Include="core\graphic\gpuBuffer\vertexArray.h" />
     <ClInclude Include="core\graphic\gpuBuffer\vertexBuffer.h" />
+    <ClInclude Include="core\graphic\renderPass\defaultToScreen\defaultPass.h" />
+    <ClInclude Include="core\graphic\renderPass\deferredRendering\geometryPass.h" />
+    <ClInclude Include="core\graphic\renderPass\deferredRendering\lightingPass.h" />
+    <ClInclude Include="core\graphic\renderPass\renderPass.h" />
     <ClInclude Include="core\graphic\program\program.h" />
     <ClInclude Include="core\graphic\program\shader.h" />
     <ClInclude Include="core\graphic\renderer\renderer.h" />
@@ -217,6 +227,10 @@
   <ItemGroup>
     <None Include="core\graphic\shaderSrc\blinnPhong\fs.glsl" />
     <None Include="core\graphic\shaderSrc\blinnPhong\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\deferredRendering\geometryPassShader\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\deferredRendering\geometryPassShader\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\deferredRendering\lightingPassShader\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\deferredRendering\lightingPassShader\vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

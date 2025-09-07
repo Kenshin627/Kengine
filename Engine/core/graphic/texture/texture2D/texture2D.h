@@ -10,6 +10,7 @@ enum class TextureInternalFormat
 	RGB32F,
 	RGBA16F,
 	RGBA32F,
+	DEPTH32,
 	DEPTH24STENCIL8
 };
 
@@ -17,7 +18,9 @@ enum class TextureDataFormat
 {
 	R,
 	RGB,
-	RGBA
+	RGBA,
+	DEPTH,
+	DELTHSTENCIL
 };
 
 enum class TextureWarpMode

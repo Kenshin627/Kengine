@@ -96,6 +96,21 @@
     <ClCompile Include="core\geometry\rectangle.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\graphic\renderPass\renderPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\graphic\renderPass\deferredRendering\geometryPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\graphic\renderPass\deferredRendering\lightingPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\geometry\screenQuad.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\graphic\renderPass\defaultToScreen\defaultPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -185,9 +200,28 @@
     <ClInclude Include="core\geometry\rectangle.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\renderPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\deferredRendering\geometryPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\deferredRendering\lightingPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\geometry\screenQuad.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\defaultToScreen\defaultPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="core\graphic\shaderSrc\blinnPhong\vs.glsl" />
     <None Include="core\graphic\shaderSrc\blinnPhong\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\deferredRendering\geometryPassShader\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\deferredRendering\geometryPassShader\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\deferredRendering\lightingPassShader\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\deferredRendering\lightingPassShader\fs.glsl" />
   </ItemGroup>
 </Project>

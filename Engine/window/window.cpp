@@ -63,8 +63,6 @@ void Window::RunLoop()
 	{
 		if (mRenderer)
 		{
-			mRenderer->clear();
-			mRenderer->viewPort();
 			mRenderer->render();
 		}
 		glfwPollEvents();

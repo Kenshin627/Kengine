@@ -109,8 +109,6 @@ void Scene::beginScene()
 		mCameraBuffer->setData(sizeof(glm::mat4), &viewProj, 0);
 		mCameraBuffer->setData(sizeof(glm::vec4), &camPos, sizeof(glm::mat4));
 	}
-	//TODO: remove this to pass specification
-	glEnable(GL_DEPTH_TEST);
 }
 
 void Scene::endScene()

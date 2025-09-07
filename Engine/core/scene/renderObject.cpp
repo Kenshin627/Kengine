@@ -20,10 +20,11 @@ void RenderObject::draw() const
 	if (mMaterial)
 	{
 		mMaterial->beginDraw();
-		//set model matrix uniform
 		mMaterial->getProgram()->setUniform("modelMatrix", mModelMatrix);
 		mMaterial->getProgram()->setUniform("modelMatrixInvertTranspose", mModelMatrixInvertTranspose);
+		mMesh->beginDraw();
 		mMesh->draw();
+		mMesh->endDraw();
 		mMaterial->endDraw();
 	}
 }
