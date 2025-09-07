@@ -1,6 +1,9 @@
 #include "geometryPass.h"
 #include "graphic/gpuBuffer/frameBuffer.h"
 #include "graphic/program/program.h"
+#include "scene/scene.h"
+#include "scene/renderObject.h"
+#include "material/material.h"
 
 GeometryPass::GeometryPass(const RenderState& state)
 	:RenderPass(state)
@@ -54,13 +57,14 @@ GeometryPass::GeometryPass(const RenderState& state)
 		{ "core/graphic/shaderSrc/deferredRendering/geometryPassShader/vs.glsl", ShaderType::Vertex },
 		{ "core/graphic/shaderSrc/deferredRendering/geometryPassShader/fs.glsl", ShaderType::Fragment }
 	});
+}
 
-	//set renderState
-	//RenderState state;
-	//state.width  = width;
-	//state.height =  height;
-	//state.viewport.z = width;
-	//state.viewport.w = height;
-	//state.target = RenderTarget::FRAMEBUFFER;
-	//setRenderState(state);
+void GeometryPass::runPass(Scene* scene)
+{
+	for (auto& renderObject : scene->getRenderList())
+	{
+		renderObject->beginDraw(mProgram.get());
+		renderObject->draw();
+		renderObject->endDraw(mProgram.get());
+	}
 }

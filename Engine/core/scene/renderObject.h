@@ -6,6 +6,8 @@
 class Geometry;
 class Material;
 class Scene;
+class Program;
+
 class RenderObject
 {
 public:
@@ -16,7 +18,9 @@ public:
 	RenderObject(RenderObject&& obj) = delete;
 	RenderObject& operator=(const RenderObject& obj) = delete;
 	void setMaterial(std::shared_ptr<Material> material);
+	void beginDraw(Program* program = nullptr);
 	void draw() const;
+	void endDraw(Program* p = nullptr);
 	void setPosition(const glm::vec3& pos);
 	void setPosition(float x, float y, float z);
 	void setRotation(const glm::vec3& rotation);
@@ -27,6 +31,7 @@ public:
 	void setScale(float val);
 	void updateModelMatrix();
 	void setOwner(Scene* s);
+	std::shared_ptr<Material> getMaterial() const;
 private:
 	std::shared_ptr<Geometry> mMesh;
 	std::shared_ptr<Material> mMaterial;

@@ -2,7 +2,7 @@
 #define MAX_LIGHT_COUNT 16
 
 //TO SCREEN
-layout (location = 0) out vec4 fragColor;
+layout (location = 0) out vec4 FragColor;
 
 in vec2 vTexcoord;
 
@@ -56,6 +56,6 @@ void main()
 		//TODO: store shiness to gbuffer
 		vec3 specular = pow(max(dot(n, h), 0.0), 128) * lightColor * spec;
 		float attenuation = 1.0 / (constant + linear * distance +quadratic * (distance * distance));
-		fragColor += vec4((ambient + diffuse + specular) * attenuation, 0.0);
+		FragColor += vec4((ambient + diffuse + specular) * attenuation, 0.0);
 	}
 }

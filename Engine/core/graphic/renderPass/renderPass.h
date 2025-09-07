@@ -51,9 +51,9 @@ public:
 	RenderPass(RenderPass&& pass) = delete;
 	RenderPass& operator=(const RenderPass& pass) = delete;
 	RenderPass& operator=(const RenderPass&& pass) = delete;
-	void beginPass();
+	virtual void beginPass();
 	virtual void runPass(Scene* scene) = 0;
-	void endPass();
+	virtual void endPass();
 	void resize(uint width, uint height);
 	//update per pass per frame
 	void updateRenderState() const;

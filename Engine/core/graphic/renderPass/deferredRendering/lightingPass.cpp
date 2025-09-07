@@ -1,6 +1,7 @@
 #include "lightingPass.h"
 #include "graphic/program/program.h"
 #include "geometry/screenQuad.h"
+#include "graphic/gpuBuffer/frameBuffer.h"
 
 LightingPass::LightingPass(const RenderState& state)
 	:RenderPass(state)
@@ -13,13 +14,26 @@ LightingPass::LightingPass(const RenderState& state)
 	});
 
 	mGeometry = std::make_shared<ScreenQuad>();
+}
 
-	//set renderState
-	//RenderState state;
-	//state.width = width;
-	//state.height = height;
-	//state.viewport.z = width;
-	//state.viewport.w = height;
-	//state.target = RenderTarget::SCREEN;
-	//setRenderState(state);
+void LightingPass::runPass(Scene* scene)
+{	
+	mGeometry->draw();
+}
+
+void LightingPass::beginPass()
+{
+	//binding program first
+	RenderPass::beginPass();
+	//get colorattachment from gpass
+	//set uniform textureSampler2D
+	auto gPos = mlastPassFrameBuffer->getColorAttachment(0);
+	auto gNormal = mlastPassFrameBuffer->getColorAttachment(1);
+	auto gDiffSpec = mlastPassFrameBuffer->getColorAttachment(2);
+	gPos->bind(0);
+	gNormal->bind(1);
+	gDiffSpec->bind(2);
+	mProgram->setUniform("gPosition", 0);
+	mProgram->setUniform("gNormal", 1);
+	mProgram->setUniform("gDiffuseSpec", 2);
 }

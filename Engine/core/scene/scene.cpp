@@ -123,7 +123,9 @@ void Scene::draw()
 	checkSceneReady();
 	for (const auto& obj : mRenderList)
 	{
+		obj->beginDraw();
 		obj->draw();
+		obj->endDraw();
 	}
 }
 

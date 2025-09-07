@@ -12,6 +12,8 @@
 #include "graphic/gpuBuffer/frameBuffer.h"
 #include "graphic/renderPass/defaultToScreen/defaultPass.h"
 #include "graphic/renderPass/postProcess/grayScaleEffect/grayScaleEffect.h"
+#include "graphic/renderPass/deferredRendering/geometryPass.h"
+#include "graphic/renderPass/deferredRendering/lightingPass.h"
 
 Application::Application(uint width, uint height, const char* title)
 	:mWindow(std::make_unique<Window>(width, height, title))
@@ -49,6 +51,7 @@ Application::Application(uint width, uint height, const char* title)
 	scene->addPointLights({ light1, light2 , light3 });
 	
 	//pass
+	//PASS GROUP#1
 	//pass#1 to framebuffer
 	RenderState defaultPassState;
 	defaultPassState.width = width;
@@ -68,7 +71,28 @@ Application::Application(uint width, uint height, const char* title)
 	grayScalePassState.depthTest = false;
 	std::shared_ptr<GrayScaleEffect> grayScalePass = std::make_shared<GrayScaleEffect>(grayScalePassState);
 	grayScalePass->setLastPassFBO(defaultPass->getCurrentFrameBuffer());
-	renderer->setRenderPass({ defaultPass, grayScalePass });
+
+	//PASS GROUP#2
+	//pass#1 geometryPass
+	RenderState geometryPassState;
+	geometryPassState.width = width;
+	geometryPassState.height = height;
+	geometryPassState.viewport.z = width;
+	geometryPassState.viewport.w = height;
+	geometryPassState.target = RenderTarget::FRAMEBUFFER;
+	std::shared_ptr<GeometryPass> gPass = std::make_shared<GeometryPass>(geometryPassState);
+
+	//pass#2 lightingPass
+	RenderState lightingPassState;
+	lightingPassState.width = width;
+	lightingPassState.height = height;
+	lightingPassState.viewport.z = width;
+	lightingPassState.viewport.w = height;
+	lightingPassState.depthTest = false;
+	lightingPassState.target = RenderTarget::SCREEN;
+	std::shared_ptr<LightingPass> lightingPass = std::make_shared<LightingPass>(lightingPassState);
+	lightingPass->setLastPassFBO(gPass->getCurrentFrameBuffer());
+	renderer->setRenderPass({ gPass, lightingPass });
 }
 
 Application::~Application()

@@ -7,4 +7,5 @@ class GeometryPass :public RenderPass
 public:
 	GeometryPass(const RenderState& state);
 	~GeometryPass() = default;
+	virtual void runPass(Scene* scene) override;
 };

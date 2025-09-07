@@ -15,16 +15,36 @@ void RenderObject::setMaterial(std::shared_ptr<Material> material)
 	mMaterial = material;
 }
 
-void RenderObject::draw() const
+void RenderObject::beginDraw(Program* p)
 {
-	if (mMaterial)
+	//program from pass, program has binded in begin pass, so no bind here
+	if (p)
+	{
+		mMaterial->setUniforms(p);
+		p->setUniform("modelMatrix", mModelMatrix);
+		p->setUniform("modelMatrixInvertTranspose", mModelMatrixInvertTranspose);
+	}
+	else if (mMaterial)
 	{
 		mMaterial->beginDraw();
 		mMaterial->getProgram()->setUniform("modelMatrix", mModelMatrix);
 		mMaterial->getProgram()->setUniform("modelMatrixInvertTranspose", mModelMatrixInvertTranspose);
-		mMesh->beginDraw();
-		mMesh->draw();
-		mMesh->endDraw();
+	}
+	mMesh->beginDraw();
+}
+
+
+
+void RenderObject::draw() const
+{	
+	mMesh->draw();			
+}
+
+void RenderObject::endDraw(Program* p)
+{
+	mMesh->endDraw();
+	if (!p)
+	{
 		mMaterial->endDraw();
 	}
 }
@@ -91,4 +111,10 @@ void RenderObject::updateModelMatrix()
 void RenderObject::setOwner(Scene* s)
 {
 	mOnwningScene = s;
+}
+
+
+std::shared_ptr<Material> RenderObject::getMaterial() const
+{
+	return mMaterial;
 }
