@@ -86,57 +86,98 @@ int Program::getUniformLocation(const char* name) const
 		mUniformLocationCache.insert({ name, loc });
 		return loc;
 	}
-	else
-	{
-		KS_CORE_WARN("[UNIFORM NOT FOUND]: {0}", name);
-	}
+	//else
+	//{
+	//	KS_CORE_WARN("[UNIFORM NOT FOUND]: {0}", name);
+	//}
+	return -1;
 }
 
 void Program::setUniform(const char* name, int value) const
 {
 	//checkLinkState();
-	GLCALL(glUniform1i(getUniformLocation(name), value));
+	int loc = getUniformLocation(name);
+	if (loc != -1)
+	{
+
+		GLCALL(glUniform1i(loc, value));
+	}
 }
 
 void Program::setUniform(const char* name, uint value) const
 {
-	GLCALL(glUniform1ui(getUniformLocation(name), value));
+	int loc = getUniformLocation(name);
+	if (loc != -1)
+	{
+
+		GLCALL(glUniform1ui(loc, value));
+	}
 }
 
 void Program::setUniform(const char* name, float value) const
 {
 	//checkLinkState();
-	GLCALL(glUniform1f(getUniformLocation(name), value));
+	int loc = getUniformLocation(name);
+	if (loc != -1)
+	{
+
+		GLCALL(glUniform1f(loc, value));
+	}
 }
 
 void Program::setUniform(const char* name, const glm::vec2& value) const
 {
 	//checkLinkState();
-	GLCALL(glUniform2f(getUniformLocation(name), value.x, value.y));
+	int loc = getUniformLocation(name);
+	if (loc != -1)
+	{
+
+		GLCALL(glUniform2f(loc, value.x, value.y));
+	}
 }
 
 void Program::setUniform(const char* name, const glm::vec3& value) const
 {
 	//checkLinkState();
-	GLCALL(glUniform3f(getUniformLocation(name), value.x, value.y, value.z));
+	int loc = getUniformLocation(name);
+	if (loc != -1)
+	{
+
+		GLCALL(glUniform3f(loc, value.x, value.y, value.z));
+	}
 }
 
 void Program::setUniform(const char* name, const glm::vec4& value) const
 {
 	//checkLinkState();
-	GLCALL(glUniform4f(getUniformLocation(name), value.x, value.y, value.z, value.w));
+	int loc = getUniformLocation(name);
+	if (loc != -1)
+	{
+
+		GLCALL(glUniform4f(loc, value.x, value.y, value.z, value.w));
+	}
 }
 
 void Program::setUniform(const char* name, const glm::mat3& value, bool transpose) const
 {
 	//checkLinkState();
-	GLCALL(glUniformMatrix3fv(getUniformLocation(name), 1, transpose, glm::value_ptr(value)));
+	int loc = getUniformLocation(name);
+	if (loc != -1)
+	{
+
+		GLCALL(glUniformMatrix3fv(getUniformLocation(name), 1, transpose, glm::value_ptr(value)));
+	}
 }
 
 void Program::setUniform(const char* name, const glm::mat4& value, bool transpose) const
 {
 	//checkLinkState();
-	GLCALL(glProgramUniformMatrix4fv(mRendererID, getUniformLocation(name), 1, transpose, glm::value_ptr(value)));
+	int loc = getUniformLocation(name);
+	if (loc != -1)
+	{
+
+		GLCALL(glProgramUniformMatrix4fv(mRendererID, getUniformLocation(name), 1, transpose, glm::value_ptr(value)));
+	}
 }
 
 uint Program::id() const

@@ -6,7 +6,7 @@ class Texture2D;
 class SSAOPass :public RenderPass
 {
 public:
-	SSAOPass(uint kernelSize, uint radius, const RenderState& state);
+	SSAOPass(uint kernelSize, float radius, const RenderState& state);
 	~SSAOPass() = default;
 	void setKernelSize(uint kernelSize);
 	uint getKernelSize() const;
@@ -23,7 +23,7 @@ private:
 	}
 private:
 	uint					   mKernelSize;
-	uint					   mRadius;
-	std::vector<glm::vec3>	   mKernelSamplers;
+	float					   mRadius;
+	std::vector<glm::vec4>	   mKernelSamplers;
 	std::unique_ptr<Texture2D> mNoiseTexture;
 };

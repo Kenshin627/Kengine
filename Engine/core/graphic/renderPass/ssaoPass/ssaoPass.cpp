@@ -4,7 +4,7 @@
 #include "geometry/screenQuad.h"
 #include <random>
 
-SSAOPass::SSAOPass(uint kernelSize = 64, uint radius = 1, const RenderState& state = RenderState())
+SSAOPass::SSAOPass(uint kernelSize = 64, float radius = 0.5f, const RenderState& state = RenderState())
 	:RenderPass(state),
 	 mKernelSize(kernelSize),
 	 mRadius(radius)
@@ -45,7 +45,7 @@ SSAOPass::SSAOPass(uint kernelSize = 64, uint radius = 1, const RenderState& sta
 			TextureFilter::NEAREST
 		}
 	};
-	mFrameBuffer = std::make_unique<FrameBuffer>(state.width, state.height, specs);
+	//mFrameBuffer = std::make_unique<FrameBuffer>(state.width, state.height, specs);
 	//buildScreenQuad
 	mGeometry = std::make_shared<ScreenQuad>();
 }
@@ -79,7 +79,9 @@ void SSAOPass::beginPass()
 	RenderPass::beginPass();
 	//send kernelSampler array to GPU use uniform
 	for (GLuint i = 0; i < 64; ++i)
+	{
 		glUniform3fv(glGetUniformLocation(mProgram->id(), ("samplers[" + std::to_string(i) + "]").c_str()), 1, &mKernelSamplers[i][0]);
+	}
 	//send radius to GPU use uniform
 	mProgram->setUniform("samperRadius", mRadius);
 	//send kernelSize to GPU use uniform
@@ -89,7 +91,7 @@ void SSAOPass::beginPass()
 	Texture2D* gNormal = mlastPassFrameBuffer->getColorAttachment(1);
 	gPosDepth->bind(0);
 	gNormal->bind(1);
-	mProgram->setUniform("gPositionDepth", 0);
+	mProgram->setUniform("gPosition", 0);
 	mProgram->setUniform("gNormal", 1);
 	//upload noiseTexture
 	mNoiseTexture->bind(2);
@@ -115,16 +117,17 @@ void SSAOPass::buildSamplers()
 	mKernelSamplers.reserve(mKernelSize);
 	for (size_t i = 0; i < mKernelSize; i++)
 	{
-		glm::vec3 sampler
+		glm::vec4 sampler
 		{
 			randomFloats(engine) * 2.0f - 1.0f,
 			randomFloats(engine) * 2.0f - 1.0f,
-			randomFloats(engine)
+			randomFloats(engine),
+			0.0f
 		};
 		sampler = glm::normalize(sampler);
 		sampler *= randomFloats(engine);
 		float scale = i / static_cast<float>(mKernelSize);
-		scale = lerp(0.0f, 1.0f, scale * scale);
+		scale = lerp(0.1f, 1.0f, scale * scale);
 		sampler *= scale;
 		mKernelSamplers.push_back(sampler);
 	}

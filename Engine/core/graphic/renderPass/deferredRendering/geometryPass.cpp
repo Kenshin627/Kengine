@@ -9,8 +9,8 @@ GeometryPass::GeometryPass(const RenderState& state)
 	:RenderPass(state)
 {
 	//GBUFFER
-	//|		RGB8  | worldPosition	| 
-	//|		RGB8  | worldNormal		|
+	//|		RGB8  | viewPosition	| 
+	//|		RGB8  | viewNormal		|
 	//|		RGB8  | diffuse      	|
 	//|     RGBA8 | spec + shiness  |
 	std::initializer_list<FrameBufferSpecification> specs =

@@ -8,6 +8,7 @@ layout (std140, binding = 0) uniform CameraBuffer
 {
 	mat4 viewProjectionMatrix;
 	mat4 projectionMatrix;
+	mat4 viewMatrix;
 	vec3 position;
 } cameraBuffer;
 
@@ -19,10 +20,12 @@ out vec3 vNormal;
 out vec2 vTexcoord;
 
 void main()
-{
-	vec4 worldPos = modelMatrix * vec4(aPos, 1.0);
-	vPos = worldPos.xyz / worldPos.w;
-	vNormal = normalize((vec3(modelMatrixInvertTranspose * vec4(aNormal, 0.0))));
+{	
+	mat4 modelViewMatrix = cameraBuffer.viewMatrix* modelMatrix;
+	mat4 modelViewMatrixInverseTranspose = transpose(inverse(modelViewMatrix));
+	vec4 viewPos = modelViewMatrix * vec4(aPos, 1.0);
+	vPos = viewPos.xyz / viewPos.w;
+	vNormal = normalize((vec3(modelViewMatrixInverseTranspose * vec4(aNormal, 0.0))));
 	vTexcoord = aTexcoord;
-	gl_Position =  cameraBuffer.viewProjectionMatrix * worldPos;
+	gl_Position =  cameraBuffer.projectionMatrix * viewPos;
 }

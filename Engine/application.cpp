@@ -103,8 +103,8 @@ Application::Application(uint width, uint height, const char* title)
 	ssaoPassState.viewport.z = width;
 	ssaoPassState.viewport.w = height;
 	ssaoPassState.depthTest = false;
-	ssaoPassState.target = RenderTarget::FRAMEBUFFER;
-	std::shared_ptr<SSAOPass> ssaoPass = std::make_shared<SSAOPass>(64, 4, ssaoPassState);
+	ssaoPassState.target = RenderTarget::SCREEN;
+	std::shared_ptr<SSAOPass> ssaoPass = std::make_shared<SSAOPass>(64, 1, ssaoPassState);
 	ssaoPass->setLastPassFBO(gPass->getCurrentFrameBuffer());
 	renderer->setRenderPass({ gPass, ssaoPass });
 }
