@@ -9,6 +9,7 @@
 #include "scene/camera/camera.h"
 #include "scene/light/pointLight/pointLight.h"
 #include "geometry/rectangle.h"
+#include "geometry/sphere.h"
 #include "graphic/gpuBuffer/frameBuffer.h"
 #include "graphic/renderPass/defaultToScreen/defaultPass.h"
 #include "graphic/renderPass/postProcess/grayScaleEffect/grayScaleEffect.h"
@@ -28,18 +29,21 @@ Application::Application(uint width, uint height, const char* title)
 	renderer->setCurrentScene(scene);
 	std::shared_ptr<Rectangle> rectangle = std::make_shared<Rectangle>(100.0f, 100.0f);
 	std::shared_ptr<Cube> cube = std::make_shared<Cube>(1.0f, 1.0f, 1.0f);
+	std::shared_ptr<Sphere> sphereGeometry = std::make_shared<Sphere>(1.0f, 32.0f, 32.0f);
 	std::shared_ptr<PhongMaterial> phongMat = std::make_shared<PhongMaterial>("images/dog.jpg", "images/dog.jpg", 128);
 	std::shared_ptr<PhongMaterial> groundMat = std::make_shared<PhongMaterial>("images/grid3.jpg", "images/grid3.jpg", 128);
 	std::shared_ptr<RenderObject> ground = std::make_shared<RenderObject>(rectangle, groundMat);
 	ground->setRotation(-90, 0, 0);
 	std::shared_ptr<RenderObject> box1 = std::make_shared<RenderObject>(cube, phongMat);
 	std::shared_ptr<RenderObject> box2 = std::make_shared<RenderObject>(cube, phongMat);
+	std::shared_ptr<RenderObject> sphere = std::make_shared<RenderObject>(sphereGeometry, phongMat);
 	box1->setRotation(0, 45, 0);
 	box1->setPosition(0, 0.5, 0);
 	box2->setRotation(0, 45, 0);
 	box2->setPosition(2, 0.5, 0);
 	box2->setScale(0.5);
-	scene->addRenderObject({ ground, box1, box2 });
+	sphere->setPosition(-3, 1.0, -2);
+	scene->addRenderObject({ ground, box1, box2, sphere });
 
 	//camera
 	auto camera = std::make_shared<Camera>(glm::vec3(3, 3, 5), 45.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.1f, 100.0f);
@@ -59,7 +63,7 @@ Application::Application(uint width, uint height, const char* title)
 	defaultPassState.height = height;
 	defaultPassState.viewport.z = width;
 	defaultPassState.viewport.w = height;
-	defaultPassState.target = RenderTarget::FRAMEBUFFER;
+	defaultPassState.target = RenderTarget::SCREEN;
 	std::shared_ptr<DefaultPass> defaultPass = std::make_shared<DefaultPass>(defaultPassState);
 
 	//pass#2 graySCcale effect
@@ -107,6 +111,7 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<SSAOPass> ssaoPass = std::make_shared<SSAOPass>(64, 1, ssaoPassState);
 	ssaoPass->setLastPassFBO(gPass->getCurrentFrameBuffer());
 	renderer->setRenderPass({ gPass, ssaoPass });
+	//renderer->setRenderPass({ defaultPass });
 }
 
 Application::~Application()

@@ -10,6 +10,8 @@ uniform mat4 modelMatrixInvertTranspose;
 layout (std140, binding = 0) uniform CameraBuffer
 {
 	mat4 viewProjectionMatrix;
+	mat4 projectionMatrix;
+	mat4 viewMatrix;
 	vec3 position;
 } cameraBuffer;
 

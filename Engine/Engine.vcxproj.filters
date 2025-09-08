@@ -117,6 +117,9 @@
     <ClCompile Include="core\graphic\renderPass\ssaoPass\ssaoPass.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\geometry\sphere.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -225,6 +228,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="core\graphic\renderPass\ssaoPass\ssaoPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\geometry\sphere.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

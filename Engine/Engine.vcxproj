@@ -163,6 +163,7 @@
     <ClCompile Include="core\geometry\geometry.cpp" />
     <ClCompile Include="core\geometry\rectangle.cpp" />
     <ClCompile Include="core\geometry\screenQuad.cpp" />
+    <ClCompile Include="core\geometry\sphere.cpp" />
     <ClCompile Include="core\graphic\gpuBuffer\buffer.cpp" />
     <ClCompile Include="core\graphic\gpuBuffer\frameBuffer.cpp" />
     <ClCompile Include="core\graphic\gpuBuffer\indexBuffer.cpp" />
@@ -201,6 +202,7 @@
     <ClInclude Include="core\geometry\geometry.h" />
     <ClInclude Include="core\geometry\rectangle.h" />
     <ClInclude Include="core\geometry\screenQuad.h" />
+    <ClInclude Include="core\geometry\sphere.h" />
     <ClInclude Include="core\graphic\const.h" />
     <ClInclude Include="core\graphic\gpuBuffer\buffer.h" />
     <ClInclude Include="core\graphic\gpuBuffer\frameBuffer.h" />
