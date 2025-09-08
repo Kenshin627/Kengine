@@ -45,7 +45,7 @@ SSAOPass::SSAOPass(uint kernelSize = 64, float radius = 0.5f, const RenderState&
 			TextureFilter::NEAREST
 		}
 	};
-	//mFrameBuffer = std::make_unique<FrameBuffer>(state.width, state.height, specs);
+	mFrameBuffer = std::make_unique<FrameBuffer>(state.width, state.height, specs);
 	//buildScreenQuad
 	mGeometry = std::make_shared<ScreenQuad>();
 }
@@ -87,8 +87,9 @@ void SSAOPass::beginPass()
 	//send kernelSize to GPU use uniform
 	mProgram->setUniform("kernelSize", mKernelSize);
 	//upload gPositionTexture + gNormalTexture
-	Texture2D* gPosDepth = mlastPassFrameBuffer->getColorAttachment(0);
-	Texture2D* gNormal = mlastPassFrameBuffer->getColorAttachment(1);
+	//TODO
+	Texture2D* gPosDepth = mlastPassFrameBuffer[0] ->getColorAttachment(0);
+	Texture2D* gNormal = mlastPassFrameBuffer[0]->getColorAttachment(1);
 	gPosDepth->bind(0);
 	gNormal->bind(1);
 	mProgram->setUniform("gPosition", 0);
@@ -156,9 +157,9 @@ void SSAOPass::buildNoiseTexture()
 	textureSpec.minFilter = TextureFilter::NEAREST;
 	textureSpec.magFilter = TextureFilter::NEAREST;
 	textureSpec.mipmapLevel = 1;
-	textureSpec.internalFormat = TextureInternalFormat::RGB16F;
+	textureSpec.internalFormat = TextureInternalFormat::RGB32F;
 	textureSpec.dataFormat = TextureDataFormat::RGB;
 	textureSpec.chanel = 3;
 	mNoiseTexture = std::make_unique<Texture2D>(textureSpec);
-	mNoiseTexture->loadFromData(4, 4, noiseData.data(), 3, TextureInternalFormat::RGB16F, TextureDataFormat::RGB);
+	mNoiseTexture->loadFromData(4, 4, noiseData.data(), 3, TextureInternalFormat::RGB32F, TextureDataFormat::RGB, GL_FLOAT);
 }

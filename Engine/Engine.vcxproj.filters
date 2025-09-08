@@ -120,6 +120,9 @@
     <ClCompile Include="core\geometry\sphere.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\graphic\renderPass\blurPass\blurPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -233,6 +236,9 @@
     <ClInclude Include="core\geometry\sphere.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\blurPass\blurPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="core\graphic\shaderSrc\blinnPhong\vs.glsl" />
@@ -245,5 +251,7 @@
     <None Include="core\graphic\shaderSrc\postProcess\grayScale\fs.glsl" />
     <None Include="core\graphic\shaderSrc\ssao\occlusion\vs.glsl" />
     <None Include="core\graphic\shaderSrc\ssao\occlusion\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\ssao\blur\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\ssao\blur\fs.glsl" />
   </ItemGroup>
 </Project>

@@ -25,7 +25,7 @@ Texture2D::Texture2D(const TextureSpecification& spec)
 
 }
 
-void Texture2D::loadFromData(uint width, uint height, const void* data, uint chanel, TextureInternalFormat internalFormat, TextureDataFormat dataFormat)
+void Texture2D::loadFromData(uint width, uint height, const void* data, uint chanel, TextureInternalFormat internalFormat, TextureDataFormat dataFormat, uint dataType)
 {
 	if (!data)
 	{	
@@ -37,7 +37,7 @@ void Texture2D::loadFromData(uint width, uint height, const void* data, uint cha
 	mInternalFormat = internalFormat;
 	mDataFormat = dataFormat;
 	GLCALL(glTextureStorage2D(mRendererID, mMipmapLevels, convertToGLInternalFormat(mInternalFormat), width, height));
-	glTextureSubImage2D(mRendererID, 0, 0, 0, width, height, convertToGLDataFormat(mDataFormat), GL_UNSIGNED_BYTE, data);
+	GLCALL(glTextureSubImage2D(mRendererID, 0, 0, 0, width, height, convertToGLDataFormat(mDataFormat), dataType, data));
 	if (mMipmapLevels > 1)
 	{
 		if (mMinFilter == TextureFilter::NEAREST_MIPMAP_NEAREST ||
@@ -88,7 +88,8 @@ void Texture2D::loadFromFile(const char* path, bool flipY)
 		default:
 			break;
 	}
-	loadFromData(width, height, data, channels, internalFormat, dataFormat);
+	//TODO: CHECK DATATYPE
+	loadFromData(width, height, data, channels, internalFormat, dataFormat, GL_UNSIGNED_BYTE);
 }
 
 void Texture2D::bind(uint slot) const

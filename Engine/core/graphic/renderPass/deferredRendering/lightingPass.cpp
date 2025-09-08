@@ -27,10 +27,11 @@ void LightingPass::beginPass()
 	RenderPass::beginPass();
 	//get colorattachment from gpass
 	//set uniform textureSampler2D
-	auto gPos = mlastPassFrameBuffer->getColorAttachment(0);
-	auto gNormal = mlastPassFrameBuffer->getColorAttachment(1);
-	auto gDiff = mlastPassFrameBuffer->getColorAttachment(2);
-	auto gSpecShiness = mlastPassFrameBuffer->getColorAttachment(3);
+	std::shared_ptr<FrameBuffer> geometryBuffer = mlastPassFrameBuffer[0];
+	auto gPos = geometryBuffer->getColorAttachment(0);
+	auto gNormal = geometryBuffer->getColorAttachment(1);
+	auto gDiff = geometryBuffer->getColorAttachment(2);
+	auto gSpecShiness = geometryBuffer->getColorAttachment(3);
 	gPos->bind(0);
 	gNormal->bind(1);
 	gDiff->bind(2);
@@ -40,4 +41,9 @@ void LightingPass::beginPass()
 	mProgram->setUniform("gNormal", 1);
 	mProgram->setUniform("gDiffuse", 2);
 	mProgram->setUniform("gSpecShiness", 3);
+
+	std::shared_ptr<FrameBuffer> blurSsaoBuffer = mlastPassFrameBuffer[1];
+	auto blurSsao = blurSsaoBuffer->getColorAttachment(0);
+	blurSsao->bind(4);
+	mProgram->setUniform("ssaoMap", 4);
 }

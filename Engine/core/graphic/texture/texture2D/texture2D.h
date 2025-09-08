@@ -63,7 +63,7 @@ class Texture2D
 {
 public:
 	Texture2D(const TextureSpecification& spec = TextureSpecification());
-	void loadFromData(uint width, uint height, const void* data, uint chanel, TextureInternalFormat internalFormat, TextureDataFormat dataFormat);
+	void loadFromData(uint width, uint height, const void* data, uint chanel, TextureInternalFormat internalFormat, TextureDataFormat dataFormat, uint dataType);
 	void loadFromFile(const char* path, bool flipY = true);
 	virtual ~Texture2D() = default;
 	Texture2D(const Texture2D& obj) = delete;

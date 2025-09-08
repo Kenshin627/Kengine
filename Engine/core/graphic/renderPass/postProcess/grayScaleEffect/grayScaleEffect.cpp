@@ -19,9 +19,10 @@ GrayScaleEffect::GrayScaleEffect(const RenderState& state)
 void GrayScaleEffect::runPass(Scene* scene)
 {
 	//get screenMap texuture
-	if (mlastPassFrameBuffer)
+	if (!mlastPassFrameBuffer.empty())
 	{
-		Texture2D* tex = mlastPassFrameBuffer->getColorAttachment(0);
+		//TODO
+		Texture2D* tex = mlastPassFrameBuffer[0]->getColorAttachment(0);
 		if (!tex)
 		{
 			KS_CORE_ERROR("framebuffer attachment at index {0} is null", 0);

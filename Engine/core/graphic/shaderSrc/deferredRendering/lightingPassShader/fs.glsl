@@ -10,6 +10,7 @@ uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gDiffuse;
 uniform sampler2D gSpecShiness;
+uniform sampler2D ssaoMap;
 
 layout (std140, binding = 0) uniform CameraBuffer
 {
@@ -37,6 +38,7 @@ void main()
 	vec3 n   =  normalize(texture(gNormal, vTexcoord).xyz);
 	vec3 camaraPos = cameraBuffer.position;
 	vec3 v = normalize(camaraPos - fragmentPos);
+	float ambientOcclusion = texture(ssaoMap, vTexcoord).r;
 	vec3 diff = texture(gDiffuse, vTexcoord).rgb;
 	vec4 specShiness = texture(gSpecShiness, vTexcoord);
 	float spec = specShiness.r;
@@ -54,11 +56,14 @@ void main()
 		float constant = lightBuffer.pointLights[i].factor.r;
 		float linear = lightBuffer.pointLights[i].factor.g;
 		float quadratic = lightBuffer.pointLights[i].factor.b;
-		vec3 ambient = 0.1 * lightColor * diff;
+		vec3 ambient = 0.3 * lightColor * diff;
 		vec3 diffuse = max(dot(n, l), 0.0) * lightColor * diff;
 		//TODO: store shiness to gbuffer
 		vec3 specular = pow(max(dot(n, h), 0.0), shiness) * lightColor * spec;
 		float attenuation = 1.0 / (constant + linear * distance +quadratic * (distance * distance));
-		FragColor += vec4((ambient + diffuse + specular) * attenuation, 0.0);
+		diffuse *= attenuation;
+		specular *= attenuation;
+		ambient *= ambientOcclusion;
+		FragColor += vec4(ambient + diffuse +  specular, 0.0);
 	}
 }

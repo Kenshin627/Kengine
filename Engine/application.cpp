@@ -16,6 +16,7 @@
 #include "graphic/renderPass/deferredRendering/geometryPass.h"
 #include "graphic/renderPass/deferredRendering/lightingPass.h"
 #include "graphic/renderPass/ssaoPass/ssaoPass.h"
+#include "graphic/renderPass/blurPass/blurPass.h"
 
 Application::Application(uint width, uint height, const char* title)
 	:mWindow(std::make_unique<Window>(width, height, title))
@@ -31,7 +32,7 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<Cube> cube = std::make_shared<Cube>(1.0f, 1.0f, 1.0f);
 	std::shared_ptr<Sphere> sphereGeometry = std::make_shared<Sphere>(1.0f, 32.0f, 32.0f);
 	std::shared_ptr<PhongMaterial> phongMat = std::make_shared<PhongMaterial>("images/dog.jpg", "images/dog.jpg", 128);
-	std::shared_ptr<PhongMaterial> groundMat = std::make_shared<PhongMaterial>("images/grid3.jpg", "images/grid3.jpg", 128);
+	std::shared_ptr<PhongMaterial> groundMat = std::make_shared<PhongMaterial>("images/grid3.png", "images/grid3.png", 128);
 	std::shared_ptr<RenderObject> ground = std::make_shared<RenderObject>(rectangle, groundMat);
 	ground->setRotation(-90, 0, 0);
 	std::shared_ptr<RenderObject> box1 = std::make_shared<RenderObject>(cube, phongMat);
@@ -75,9 +76,9 @@ Application::Application(uint width, uint height, const char* title)
 	grayScalePassState.target = RenderTarget::SCREEN;
 	grayScalePassState.depthTest = false;
 	std::shared_ptr<GrayScaleEffect> grayScalePass = std::make_shared<GrayScaleEffect>(grayScalePassState);
-	grayScalePass->setLastPassFBO(defaultPass->getCurrentFrameBuffer());
+	grayScalePass->setLastPassFBOs({ defaultPass->getCurrentFrameBuffer() });
 
-	//PASS GROUP#2
+	//PASS GROUP #2
 	//pass#1 geometryPass
 	RenderState geometryPassState;
 	geometryPassState.width = width;
@@ -87,7 +88,28 @@ Application::Application(uint width, uint height, const char* title)
 	geometryPassState.target = RenderTarget::FRAMEBUFFER;
 	std::shared_ptr<GeometryPass> gPass = std::make_shared<GeometryPass>(geometryPassState);
 
-	//pass#2 lightingPass
+	//pass#2 ssaoPass
+	RenderState ssaoPassState;
+	ssaoPassState.width = width;
+	ssaoPassState.height = height;
+	ssaoPassState.viewport.z = width;
+	ssaoPassState.viewport.w = height;
+	ssaoPassState.depthTest = false;
+	ssaoPassState.target = RenderTarget::FRAMEBUFFER;
+	std::shared_ptr<SSAOPass> ssaoPass = std::make_shared<SSAOPass>(64, 1, ssaoPassState);
+	ssaoPass->setLastPassFBOs({ gPass->getCurrentFrameBuffer() });
+
+	//pass#3 blurPass
+	RenderState blurPasState;
+	blurPasState.width = width;
+	blurPasState.height = height;
+	blurPasState.viewport.z = width;
+	blurPasState.viewport.w = height;
+	blurPasState.depthTest = false;
+	blurPasState.target = RenderTarget::FRAMEBUFFER;
+	std::shared_ptr<BlurPass> blurPass = std::make_shared<BlurPass>(4, blurPasState);
+	blurPass->setLastPassFBOs({ ssaoPass->getCurrentFrameBuffer() });
+	//pass#4 lightingPass
 	RenderState lightingPassState;
 	lightingPassState.width = width;
 	lightingPassState.height = height;
@@ -96,22 +118,10 @@ Application::Application(uint width, uint height, const char* title)
 	lightingPassState.depthTest = false;
 	lightingPassState.target = RenderTarget::SCREEN;
 	std::shared_ptr<LightingPass> lightingPass = std::make_shared<LightingPass>(lightingPassState);
-	lightingPass->setLastPassFBO(gPass->getCurrentFrameBuffer());
 
-	//PASS GROUP#3
-	//pass#1 geometryPass
-	//pass#2 ssaoPass
-	RenderState ssaoPassState;
-	ssaoPassState.width = width;
-	ssaoPassState.height = height;
-	ssaoPassState.viewport.z = width;
-	ssaoPassState.viewport.w = height;
-	ssaoPassState.depthTest = false;
-	ssaoPassState.target = RenderTarget::SCREEN;
-	std::shared_ptr<SSAOPass> ssaoPass = std::make_shared<SSAOPass>(64, 1, ssaoPassState);
-	ssaoPass->setLastPassFBO(gPass->getCurrentFrameBuffer());
-	renderer->setRenderPass({ gPass, ssaoPass });
-	//renderer->setRenderPass({ defaultPass });
+	lightingPass->setLastPassFBOs({ gPass->getCurrentFrameBuffer(), blurPass->getCurrentFrameBuffer()});
+
+	renderer->setRenderPass({ gPass, ssaoPass, blurPass, lightingPass });
 }
 
 Application::~Application()

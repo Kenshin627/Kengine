@@ -170,6 +170,7 @@
     <ClCompile Include="core\graphic\gpuBuffer\uniformBuffer.cpp" />
     <ClCompile Include="core\graphic\gpuBuffer\vertexArray.cpp" />
     <ClCompile Include="core\graphic\gpuBuffer\vertexBuffer.cpp" />
+    <ClCompile Include="core\graphic\renderPass\blurPass\blurPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\defaultToScreen\defaultPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\deferredRendering\geometryPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\deferredRendering\lightingPass.cpp" />
@@ -210,6 +211,7 @@
     <ClInclude Include="core\graphic\gpuBuffer\uniformBuffer.h" />
     <ClInclude Include="core\graphic\gpuBuffer\vertexArray.h" />
     <ClInclude Include="core\graphic\gpuBuffer\vertexBuffer.h" />
+    <ClInclude Include="core\graphic\renderPass\blurPass\blurPass.h" />
     <ClInclude Include="core\graphic\renderPass\defaultToScreen\defaultPass.h" />
     <ClInclude Include="core\graphic\renderPass\deferredRendering\geometryPass.h" />
     <ClInclude Include="core\graphic\renderPass\deferredRendering\lightingPass.h" />
@@ -239,6 +241,8 @@
     <None Include="core\graphic\shaderSrc\deferredRendering\lightingPassShader\vs.glsl" />
     <None Include="core\graphic\shaderSrc\postProcess\grayScale\fs.glsl" />
     <None Include="core\graphic\shaderSrc\postProcess\grayScale\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\ssao\blur\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\ssao\blur\vs.glsl" />
     <None Include="core\graphic\shaderSrc\ssao\occlusion\fs.glsl" />
     <None Include="core\graphic\shaderSrc\ssao\occlusion\vs.glsl" />
   </ItemGroup>

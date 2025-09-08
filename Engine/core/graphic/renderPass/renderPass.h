@@ -1,6 +1,7 @@
 #pragma once
 #include<glad/glad.h>
 #include <glm.hpp>
+#include <vector>
 #include <memory>
 #include "typedef.h"
 
@@ -59,12 +60,12 @@ public:
 	void updateRenderState() const;
 	void setRenderState(const RenderState& state);
 	bool checkPassReady();
-	void setLastPassFBO(std::shared_ptr<FrameBuffer> fbo);
+	void setLastPassFBOs(const std::initializer_list<std::shared_ptr<FrameBuffer>>& fbo);
 	std::shared_ptr<FrameBuffer> getCurrentFrameBuffer() const;
 protected:
-	std::shared_ptr<Program>		mProgram;
-	std::shared_ptr<FrameBuffer>    mFrameBuffer;
-	std::shared_ptr<FrameBuffer>    mlastPassFrameBuffer;
-	std::shared_ptr<Geometry>       mGeometry;
-	RenderState						mRenderState;
+	std::shared_ptr<Program>					 mProgram;
+	std::shared_ptr<FrameBuffer>				 mFrameBuffer;
+	std::vector<std::shared_ptr<FrameBuffer>>    mlastPassFrameBuffer;
+	std::shared_ptr<Geometry>					 mGeometry;
+	RenderState									 mRenderState;
 };

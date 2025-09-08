@@ -142,7 +142,7 @@ bool RenderPass::checkPassReady()
 	return true;
 }
 
-void RenderPass::setLastPassFBO(std::shared_ptr<FrameBuffer> fbo)
+void RenderPass::setLastPassFBOs(const std::initializer_list<std::shared_ptr<FrameBuffer>>& fbo)
 {
 	mlastPassFrameBuffer = fbo;
 }
