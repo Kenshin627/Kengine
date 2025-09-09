@@ -13,7 +13,7 @@ Scene::Scene()
 	mCameraBuffer = std::make_unique<UniformBuffer>(sizeof(glm::mat4) * 3 + sizeof(glm::vec4), 0); 
 	//light buffer bindingpoint 1
 	//position + padding  + color + padding + constant + linear + quadratic + padding + lightingCount + padding * 3
-	mLightBuffer = std::make_unique<UniformBuffer>(MAX_LIGHTS * (sizeof(glm::vec4) * 3) + sizeof(glm::vec4), 1);
+	mLightBuffer = std::make_unique<UniformBuffer>(MAX_LIGHTS * (sizeof(glm::vec4) * 3), 1);
 }
 
 void Scene::addRenderObject(std::shared_ptr<RenderObject> object)
@@ -57,10 +57,7 @@ void Scene::addPointLights(const std::initializer_list<std::shared_ptr<PointLigh
 	}
 
 	mLightBuffer->setData(sizeof(glm::vec4) * 3 * mLightCount, lightData.data(), 0);
-	mLightBuffer->setData(sizeof(glm::vec4), &lightCount, sizeof(glm::vec4) * 3 * mLightCount);
-	//void* mapped = mLightBuffer->map(sizeof(glm::vec4) * 3 * mLightCount + sizeof(int), 0, GL_MAP_READ_BIT);
-	//float* a = static_cast<float*>(mapped);
-	//mLightBuffer->unMap();
+	//mLightBuffer->setData(sizeof(glm::vec4), &lightCount, sizeof(glm::vec4) * 3 * mLightCount);
 }
 
 void Scene::setMainCamera(std::shared_ptr<Camera> camera)
@@ -109,9 +106,13 @@ void Scene::beginScene()
 	if (mMainCamera && mMainCamera->isCameraUniformDirty())
 	{
 		glm::mat4 viewProj = mMainCamera->getViewProjectionMatrix();
+		const glm::mat4& proj = mMainCamera->getProjectionMatrix();
+		const glm::mat4& view = mMainCamera->getViewMatrix();
 		glm::vec4 camPos = glm::vec4(mMainCamera->getPosition(), 1.0f);
 		mCameraBuffer->setData(sizeof(glm::mat4), &viewProj, 0);
-		mCameraBuffer->setData(sizeof(glm::vec4), &camPos, sizeof(glm::mat4));
+		mCameraBuffer->setData(sizeof(glm::mat4), &proj, sizeof(glm::mat4));
+		mCameraBuffer->setData(sizeof(glm::mat4), &view, sizeof(glm::mat4) * 2);
+		mCameraBuffer->setData(sizeof(glm::vec4), &camPos, sizeof(glm::mat4) * 3);
 	}
 }
 

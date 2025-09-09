@@ -32,8 +32,8 @@ void Rectangle::buildGeometry()
 		vertex.Position.x = vertex.Position.x * mWidth;
 		vertex.Position.y = vertex.Position.y * mHeight;
 		//repeat texture
-		vertex.Texcoord.x = vertex.Texcoord.x * mWidth;
-		vertex.Texcoord.y = vertex.Texcoord.y * mHeight;
+		vertex.Texcoord.x = vertex.Texcoord.x * mWidth * 0.05;
+		vertex.Texcoord.y = vertex.Texcoord.y * mHeight * 0.05;
 	}
 	std::unique_ptr<VertexArray> vao = std::make_unique< VertexArray>(6, GL_TRIANGLES);
 	uint vboId = vao->buildVertexBuffer(sizeof(Vertex) * vertices.size(), (void*)vertices.data(), GL_DYNAMIC_STORAGE_BIT);
