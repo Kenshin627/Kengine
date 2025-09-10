@@ -6,6 +6,7 @@
 #include "scene/camera/camera.h"
 #include "scene/light/pointLight/pointLight.h"
 #include "scene/light/spotLight/spotLight.h"
+#include "scene/model/model.h"
 
 #include "material/phongMaterial.h"
 
@@ -49,8 +50,12 @@ Application::Application(uint width, uint height, const char* title)
 	box2->setPosition(2, 0.5, 0);
 	box2->setScale(0.5);
 	sphere->setPosition(-1, 1.0, 2);
-	scene->addRenderObject({ ground, box1, box2, sphere });
+	
+	//model
+	Model model("models/backpack/backpack.obj");
 
+	//scene->addRenderObject({ ground, box1, box2, sphere });
+	scene->addRenderObject(model.getRenderList());
 	//camera
 	auto camera = std::make_shared<Camera>(glm::vec3(3, 3, 5), 45.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.1f, 100.0f);
 	scene->setMainCamera(camera);
@@ -59,9 +64,9 @@ Application::Application(uint width, uint height, const char* title)
 	auto light1 = std::make_shared<PointLight>(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	auto light2 = std::make_shared<PointLight>(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	auto light3 = std::make_shared<PointLight>(glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	auto spotLight1 = std::make_shared<SpotLight>(glm::vec3(1.0f, 3.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 35.f, 5.f);
-	auto spotLight2 = std::make_shared<SpotLight>(glm::vec3(-1.0f, 3.0f, 2.0f), glm::vec3(-0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), 1.0f, 0.09f, 0.032f, 35.f, 5.f);
-	scene->addLights({ spotLight1, spotLight2 });
+	auto spotLight1 = std::make_shared<SpotLight>(glm::vec3(2.0f, 5.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 15.f, 5.f);
+	auto spotLight2 = std::make_shared<SpotLight>(glm::vec3(-2.0f, 5.0f, 2.0f), glm::vec3(-0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), 1.0f, 0.09f, 0.032f, 15.f, 5.f);
+	scene->addLights({ light1, light2, light3, spotLight1 });
 	
 	//pass
 	//PASS GROUP#1

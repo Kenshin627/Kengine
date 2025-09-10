@@ -7,11 +7,13 @@ layout (location = 2) out vec3 gDiffuse;
 layout (location = 3) out vec4 gSpecShiness;
 
 in vec3 vPos;
-in vec3 vNormal;
+//in vec3 vNormal;
 in vec2 vTexcoord;
+in mat3 vTBN;
 
 uniform sampler2D diffuseMap;
 uniform sampler2D specularMap;
+uniform sampler2D normalMap;
 uniform float     shiness;
 
 //TODO: update by uniform or cameraBuffer
@@ -21,9 +23,11 @@ const float FAR = 100;
 void main()
 {
 	gPosition.xyz = vPos;
-	//gPosition.w = depthToLinear(gl_FragCoord.z);
-	gNormal = normalize(vNormal);
-	gDiffuse = texture(diffuseMap, vTexcoord).rgb;
+	//gNormal = normalize(vNormal);
+	vec3 normal		 = texture(normalMap, vTexcoord).xyz;
+	normal			 = normal * 2.0 - 1.0;
+	gNormal			 = normalize(vTBN * normal);
+	gDiffuse		 = texture(diffuseMap, vTexcoord).rgb;
 	gSpecShiness.rgb = texture(specularMap, vTexcoord).rgb;
-	gSpecShiness.a = shiness;
+	gSpecShiness.a   = shiness;
 }

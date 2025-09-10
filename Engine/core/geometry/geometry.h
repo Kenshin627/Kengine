@@ -30,7 +30,6 @@ public:
 	void beginDraw() const;
 	void endDraw();
 	void draw() const;
-protected:
 	void setVAO(std::unique_ptr<VertexArray> vao) { mVAO = std::move(vao); }
 private:
 	std::unique_ptr<VertexArray> mVAO;

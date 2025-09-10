@@ -51,7 +51,7 @@ void main()
 	float shiness		   = specShiness.a;
 
 	//TODO: update pointsLightCount
-	for(int i = 0; i < 2; i++)
+	for(int i = 0; i < 4; i++)
 	{
 		vec4 viewLightPos = cameraBuffer.viewMatrix * vec4(lightBuffer.lights[i].position.xyz, 1.0);
 		vec3 lightPos = viewLightPos.xyz / viewLightPos.w;
@@ -66,7 +66,7 @@ void main()
 		vec3 ambient = 0.02 * lightColor * diff;
 		vec3 diffuse = max(dot(n, l), 0.0) * lightColor * diff;
 		//TODO: store shiness to gbuffer
-		vec3 specular = pow(max(dot(n, h), 0.0), 128) * lightColor * 0.5;
+		vec3 specular = pow(max(dot(n, h), 0.0), 128) * lightColor * spec;
 		float attenuation = 1.0 / (constant + linear * d +quadratic * (d * d));
 
 		//check if spotLight

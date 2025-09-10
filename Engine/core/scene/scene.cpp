@@ -45,6 +45,15 @@ void Scene::addRenderObject(const std::initializer_list<std::shared_ptr<RenderOb
 	mRenderList.insert(mRenderList.end(), objects.begin(), objects.end());
 }
 
+void Scene::addRenderObject(const std::vector<std::shared_ptr<RenderObject>>& objects)
+{
+	if (objects.size() == 0)
+	{
+		return;
+	}
+	mRenderList.insert(mRenderList.end(), objects.begin(), objects.end());
+}
+
 void Scene::addLight(std::shared_ptr<Light> light)
 {
 	addLight({ light });	

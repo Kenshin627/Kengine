@@ -17,6 +17,7 @@ public:
 	~Scene() = default;
 	void addRenderObject(std::shared_ptr<RenderObject> object);
 	void addRenderObject(const std::initializer_list<std::shared_ptr<RenderObject>>& objects);
+	void addRenderObject(const std::vector<std::shared_ptr<RenderObject>>& objects);
 	void addLight(std::shared_ptr<Light> light);
 	void addLights(const std::initializer_list<std::shared_ptr<Light>>& lights);
 	void setMainCamera(std::shared_ptr<Camera> camera);
