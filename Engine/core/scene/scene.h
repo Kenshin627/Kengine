@@ -4,11 +4,11 @@
 #include "typedef.h"
 #include "graphic/gpuBuffer/uniformBuffer.h"
 
-constexpr int MAX_LIGHTS = 8;
+constexpr int MAX_LIGHTS = 16;
 
 class RenderObject;
 class Camera;
-class PointLight;
+class Light;
 
 class Scene
 {
@@ -17,12 +17,12 @@ public:
 	~Scene() = default;
 	void addRenderObject(std::shared_ptr<RenderObject> object);
 	void addRenderObject(const std::initializer_list<std::shared_ptr<RenderObject>>& objects);
-	void addPointLight(std::shared_ptr<PointLight> light);
-	void addPointLights(const std::initializer_list<std::shared_ptr<PointLight>>& lights);
+	void addLight(std::shared_ptr<Light> light);
+	void addLights(const std::initializer_list<std::shared_ptr<Light>>& lights);
 	void setMainCamera(std::shared_ptr<Camera> camera);
 	std::shared_ptr<Camera> getCurrentCamera() const;
 	const std::vector<std::shared_ptr<RenderObject>>& getRenderList() const;
-	const std::vector<std::shared_ptr<PointLight>>& getPointLights() const;
+	const std::vector<std::shared_ptr<Light>>& getLights() const;
 	void beginScene();
 	void endScene();
 	void draw();
@@ -30,7 +30,7 @@ public:
 	uint getLightCount() const;
 private:
 	std::vector<std::shared_ptr<RenderObject>> mRenderList;
-	std::vector<std::shared_ptr<PointLight>>   mPointLights;
+	std::vector<std::shared_ptr<Light>>		   mLights;
 	std::shared_ptr<Camera>					   mMainCamera;
 	std::unique_ptr<UniformBuffer>			   mCameraBuffer;
 	std::unique_ptr<UniformBuffer>			   mLightBuffer;

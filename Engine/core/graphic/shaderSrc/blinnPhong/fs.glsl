@@ -54,7 +54,7 @@ void main()
 		float quadratic = lightBuffer.pointLights[i].factor.b;
 		vec3 ambient = 0.1 * lightColor * diff;
 		vec3 diffuse = max(dot(n, l), 0.0) * lightColor * diff;
-		vec3 specular = pow(max(dot(n, h), 0.0), shiness) * lightColor * spec;
+		vec3 specular = pow(max(dot(n, h), 0.0), 32) * lightColor * spec;
 		float attenuation = 1.0 / (constant + linear * distance +quadratic * (distance * distance));
 		FragColor += vec4((ambient + diffuse + specular) * attenuation, 0.0);
 	}

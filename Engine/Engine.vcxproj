@@ -89,10 +89,10 @@
     <LibraryPath>$(SolutionDir)Dependences\GLAD\lib;$(SolutionDir)Dependences\GLFW\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Dependences\GLAD\include;$(SolutionDir)Dependences\GLFW\include;$(ProjectDir)\common;$(SolutionDir)Dependences\glm;$(SolutionDir)Dependences\STB_IMAGE;$(SolutionDir)Dependences\spdlog\include;$(ProjectDir)\core</IncludePath>
+    <IncludePath>$(SolutionDir)Dependences\GLAD\include;$(SolutionDir)Dependences\GLFW\include;$(ProjectDir)\common;$(SolutionDir)Dependences\glm;$(SolutionDir)Dependences\STB_IMAGE;$(SolutionDir)Dependences\spdlog\include;$(ProjectDir)\core;$(SolutionDir)Dependences\Assimp\include</IncludePath>
     <ReferencePath>
     </ReferencePath>
-    <LibraryPath>$(SolutionDir)Dependences\GLAD\lib;$(SolutionDir)Dependences\GLFW\lib-vc2022;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Dependences\GLAD\lib;$(SolutionDir)Dependences\GLFW\lib-vc2022;$(SolutionDir)Dependences\Assimp\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -134,7 +134,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;GLAD.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;GLAD.lib;assimp-vc143-mt.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -183,6 +183,9 @@
     <ClCompile Include="core\graphic\texture\texture2D\texture2D.cpp" />
     <ClCompile Include="core\material\material.cpp" />
     <ClCompile Include="core\material\phongMaterial.cpp" />
+    <ClCompile Include="core\scene\light\light.cpp" />
+    <ClCompile Include="core\scene\light\spotLight\spotLight.cpp" />
+    <ClCompile Include="core\scene\model\model.cpp" />
     <ClCompile Include="core\scene\camera\camera.cpp" />
     <ClCompile Include="core\scene\light\directionLight\directionLight.cpp" />
     <ClCompile Include="core\scene\light\pointLight\pointLight.cpp" />
@@ -224,6 +227,9 @@
     <ClInclude Include="core\graphic\texture\texture2D\texture2D.h" />
     <ClInclude Include="core\material\material.h" />
     <ClInclude Include="core\material\phongMaterial.h" />
+    <ClInclude Include="core\scene\light\light.h" />
+    <ClInclude Include="core\scene\light\spotLight\spotLight.h" />
+    <ClInclude Include="core\scene\model\model.h" />
     <ClInclude Include="core\scene\camera\camera.h" />
     <ClInclude Include="core\scene\light\directionLight\directionLight.h" />
     <ClInclude Include="core\scene\light\pointLight\pointLight.h" />

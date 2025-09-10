@@ -1,16 +1,20 @@
 #include <memory>
 #include "application.h"
 #include "window/window.h"
+#include "graphic/gpuBuffer/frameBuffer.h"
 #include "scene/scene.h"
-#include "geometry/cube.h"
-#include "material/phongMaterial.h"
-#include "graphic/renderer/renderer.h"
-#include "scene/renderObject.h"
 #include "scene/camera/camera.h"
 #include "scene/light/pointLight/pointLight.h"
+#include "scene/light/spotLight/spotLight.h"
+
+#include "material/phongMaterial.h"
+
+#include "scene/renderObject.h"
+#include "geometry/cube.h"
 #include "geometry/rectangle.h"
 #include "geometry/sphere.h"
-#include "graphic/gpuBuffer/frameBuffer.h"
+
+#include "graphic/renderer/renderer.h"
 #include "graphic/renderPass/defaultToScreen/defaultPass.h"
 #include "graphic/renderPass/postProcess/grayScaleEffect/grayScaleEffect.h"
 #include "graphic/renderPass/deferredRendering/geometryPass.h"
@@ -31,9 +35,9 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<Rectangle> rectangle = std::make_shared<Rectangle>(100.0f, 100.0f);
 	std::shared_ptr<Cube> cube = std::make_shared<Cube>(1.0f, 1.0f, 1.0f);
 	std::shared_ptr<Sphere> sphereGeometry = std::make_shared<Sphere>(1.0f, 32.0f, 32.0f);
-	std::shared_ptr<PhongMaterial> wooden = std::make_shared<PhongMaterial>("images/wooden1.jpg", "images/wooden1.png", 64);
-	std::shared_ptr<PhongMaterial> grey = std::make_shared<PhongMaterial>("images/greyDiff.jpg", "images/greyDisp.png", 64);
-	std::shared_ptr<PhongMaterial> groundMat = std::make_shared<PhongMaterial>("images/groundSpec2.jpg", "images/groundSpec2.png", 64);
+	std::shared_ptr<PhongMaterial> wooden = std::make_shared<PhongMaterial>("images/wooden1.jpg", "images/wooden1.png");
+	std::shared_ptr<PhongMaterial> grey = std::make_shared<PhongMaterial>("images/greyDiff.jpg", "images/greyDisp.png");
+	std::shared_ptr<PhongMaterial> groundMat = std::make_shared<PhongMaterial>("images/groundSpec2.jpg", "images/groundSpec2.png");
 	std::shared_ptr<RenderObject> ground = std::make_shared<RenderObject>(rectangle, groundMat);
 	ground->setRotation(-90, 0, 0);
 	std::shared_ptr<RenderObject> box1 = std::make_shared<RenderObject>(cube, wooden);
@@ -52,10 +56,12 @@ Application::Application(uint width, uint height, const char* title)
 	scene->setMainCamera(camera);
 
 	//light
-	auto light1 = std::make_shared<PointLight>(glm::vec3(1.0f, 3.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	auto light2 = std::make_shared<PointLight>(glm::vec3(3.0f, 3.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	auto light3 = std::make_shared<PointLight>(glm::vec3(-3.0f, 3.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	scene->addPointLights({ light1, light2 , light3 });
+	auto light1 = std::make_shared<PointLight>(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	auto light2 = std::make_shared<PointLight>(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	auto light3 = std::make_shared<PointLight>(glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	auto spotLight1 = std::make_shared<SpotLight>(glm::vec3(1.0f, 3.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 35.f, 5.f);
+	auto spotLight2 = std::make_shared<SpotLight>(glm::vec3(-1.0f, 3.0f, 2.0f), glm::vec3(-0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), 1.0f, 0.09f, 0.032f, 35.f, 5.f);
+	scene->addLights({ spotLight1, spotLight2 });
 	
 	//pass
 	//PASS GROUP#1
@@ -97,7 +103,7 @@ Application::Application(uint width, uint height, const char* title)
 	ssaoPassState.viewport.w = height;
 	ssaoPassState.depthTest = false;
 	ssaoPassState.target = RenderTarget::FRAMEBUFFER;
-	std::shared_ptr<SSAOPass> ssaoPass = std::make_shared<SSAOPass>(128, 0.5, ssaoPassState);
+	std::shared_ptr<SSAOPass> ssaoPass = std::make_shared<SSAOPass>(128, 2.0, ssaoPassState);
 	ssaoPass->setLastPassFBOs({ gPass->getCurrentFrameBuffer() });
 
 	//pass#3 blurPass

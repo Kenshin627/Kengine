@@ -5,7 +5,7 @@ class Texture2D;
 class PhongMaterial : public Material
 {
 public:
-	PhongMaterial(const char* diffuseMap, const char* specularMap, float shiness = 32.0f);
+	PhongMaterial(const char* diffuseMap, const char* specularMap, const char* normalMap = nullptr, const char* roughnessMap = nullptr);
 	virtual ~PhongMaterial() = default;
 	PhongMaterial(const PhongMaterial& obj) = delete;
 	PhongMaterial(PhongMaterial&& obj) = delete;
@@ -15,5 +15,7 @@ public:
 private:
 	std::shared_ptr<Texture2D> mDiffuseMap;
 	std::shared_ptr<Texture2D> mSpecularMap;
+	std::shared_ptr<Texture2D> mNormalMap;
+	std::shared_ptr<Texture2D> mShinessMap;
 	float					   mShiness;
 };

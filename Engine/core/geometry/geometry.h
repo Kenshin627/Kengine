@@ -8,6 +8,8 @@ struct Vertex
 	glm::vec3 Position;
 	glm::vec3 Normal;
 	glm::vec2 Texcoord;
+	glm::vec3 tangent;
+	glm::vec3 bitangent;
 };
 
 struct ScreenQuadVertex

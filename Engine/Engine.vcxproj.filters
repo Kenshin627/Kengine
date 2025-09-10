@@ -123,6 +123,15 @@
     <ClCompile Include="core\graphic\renderPass\blurPass\blurPass.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\scene\model\model.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\scene\light\light.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\scene\light\spotLight\spotLight.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -237,6 +246,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="core\graphic\renderPass\blurPass\blurPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\scene\model\model.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\scene\light\light.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\scene\light\spotLight\spotLight.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

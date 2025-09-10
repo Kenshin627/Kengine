@@ -1,19 +1,34 @@
 #include "renderObject.h"
 #include "camera/camera.h"
 #include "light/pointLight/pointLight.h"
+#include "light/spotLight/spotLight.h"
 #include "scene.h"
 #include "core.h"
 
 Scene::Scene()
 	  :mLightCount(0)
 {
-	/////////////////////////////////INIT UNIFORM BUFFER ///////////////////////////////////
-	//camera buffer bindingpoint 0
+	/////////////////////////////////INIT UNIFORM BUFFER ////////////////////////////////////
+	
+	/////////////////////////////////////////////////////////////////////////////////////////
+	//CAMERABUFFER BINDINGPOINT 0
+	// /////////////////////////////////////////////////////////////////////////////////////
+	// | VIEWPROJECTIONMATRIX mat4                                                  |
+	// | PROJECTIONMATRIX     mat4                                                  |
+	// | VIEWMATRIX			  mat4                                                  |
+	// | POSITION vec3		       + padding float                                  |
 	//viewprojectionMatrix + projectionMatrix + viewMatrix + position + padding
 	mCameraBuffer = std::make_unique<UniformBuffer>(sizeof(glm::mat4) * 3 + sizeof(glm::vec4), 0); 
-	//light buffer bindingpoint 1
-	//position + padding  + color + padding + constant + linear + quadratic + padding + lightingCount + padding * 3
-	mLightBuffer = std::make_unique<UniformBuffer>(MAX_LIGHTS * (sizeof(glm::vec4) * 3), 1);
+
+	/////////////////////////////////////////////////////////////////////////////////////////
+	//LIGHTBUFFER BINDINGPOINT 1
+	// /////////////////////////////////////////////////////////////////////////////////////
+	// | POSITION  vec3 + padding	  float											|
+	// | DIRECTION vec3 + padding	  float											|
+	// | COLOR     vec3 + padding	  float											|
+	// | ATTENTION vec3 + padding	  float											|
+	// | TYPE float		+ INNERCUTOFF float + OUTTERCUTOFF float + padding          |
+	mLightBuffer = std::make_unique<UniformBuffer>(MAX_LIGHTS * sizeof(GPULightBufferData), 1);
 }
 
 void Scene::addRenderObject(std::shared_ptr<RenderObject> object)
@@ -30,34 +45,61 @@ void Scene::addRenderObject(const std::initializer_list<std::shared_ptr<RenderOb
 	mRenderList.insert(mRenderList.end(), objects.begin(), objects.end());
 }
 
-void Scene::addPointLight(std::shared_ptr<PointLight> light)
+void Scene::addLight(std::shared_ptr<Light> light)
 {
-	addPointLight({ light });	
+	addLight({ light });	
 }
 
-void Scene::addPointLights(const std::initializer_list<std::shared_ptr<PointLight>>& lights)
+void Scene::addLights(const std::initializer_list<std::shared_ptr<Light>>& lights)
 {
-	if (mPointLights.size() + lights.size() > MAX_LIGHTS)
+	if (mLights.size() + lights.size() > MAX_LIGHTS)
 	{
 		KS_CORE_WARN("[SCENE WARNING]: Exceed max point lights in scene!");
 		return;
 	}
 
-	mPointLights.insert(mPointLights.begin(), lights.begin(), lights.end());
-	mLightCount = mPointLights.size();
-	glm::vec4 lightCount{ mLightCount, 0.0, 0.0 ,0.0 };
+	mLights.insert(mLights.begin(), lights.begin(), lights.end());
+	mLightCount = mLights.size();
 	//update light buffer
-	std::vector<glm::vec4> lightData;
-	lightData.resize(mLightCount * 3);
-	for (size_t i = 0; i < mLightCount; i++)
+	std::vector<GPULightBufferData> gpuLightBufferData;
+	gpuLightBufferData.reserve(mLightCount);
+
+	for (auto& light : mLights)
 	{
-		lightData[i * 3 + 0] = glm::vec4(mPointLights[i]->getPosition(), 1.0f);
-		lightData[i * 3 + 1] = glm::vec4(mPointLights[i]->getColor(), 1.0f);
-		lightData[i * 3 + 2] = glm::vec4(mPointLights[i]->getConstant(), mPointLights[i]->getLinear(), mPointLights[i]->getQuadratic(), 1.0f);
+		GPULightBufferData lightData;
+		lightData.position = glm::vec4(light->getPosition(), 0.0);
+		lightData.direction = glm::vec4(glm::normalize(light->getDirection()), 0.0);
+		lightData.color = glm::vec4(light->getColor(), 0.0);
+		lightData.attentionFactor.x = light->getConstant();
+		lightData.attentionFactor.y = light->getLinear();
+		lightData.attentionFactor.z = light->getQuadratic();
+		LightType type = light->getType();
+		switch (type)
+		{
+		case LightType::PointLight:
+		{
+			lightData.type = LightType::PointLight;
+			break;
+		}
+		case LightType::SpotLight:
+		{
+			auto spotLight = std::static_pointer_cast<SpotLight>(light);
+			lightData.type = LightType::SpotLight;
+			lightData.innerCutoff = spotLight->getInner();
+			lightData.outterCutoff = spotLight->getOutter();
+			break;
+		}
+
+		default:
+		{
+			KS_CORE_ERROR("unknown light type");
+			break;
+		}
+		}
+		gpuLightBufferData.push_back(lightData);
 	}
 
-	mLightBuffer->setData(sizeof(glm::vec4) * 3 * mLightCount, lightData.data(), 0);
-	//mLightBuffer->setData(sizeof(glm::vec4), &lightCount, sizeof(glm::vec4) * 3 * mLightCount);
+	mLightBuffer->setData(mLightCount * sizeof(GPULightBufferData), gpuLightBufferData.data());
 }
 
 void Scene::setMainCamera(std::shared_ptr<Camera> camera)
@@ -92,9 +134,9 @@ const std::vector<std::shared_ptr<RenderObject>>& Scene::getRenderList() const
 	return mRenderList;
 }
 
-const std::vector<std::shared_ptr<PointLight>>& Scene::getPointLights() const
+const std::vector<std::shared_ptr<Light>>& Scene::getLights() const
 {
-	return mPointLights;
+	return mLights;
 }
 
 void Scene::beginScene()
@@ -141,7 +183,7 @@ void Scene::checkSceneReady() const
 		KS_CORE_ERROR("[SCENE ERROR]: No main camera in scene!");
 		return;
 	}
-	if (mPointLights.size() == 0)
+	if (mLights.size() == 0)
 	{
 		KS_CORE_WARN("[SCENE WARNING]: No point light in scene!");
 		return;
