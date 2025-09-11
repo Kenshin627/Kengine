@@ -152,10 +152,10 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene)
 	if (mat)
 	{
 		//texs
-		auto diffTex = processTexture(mat, aiTextureType_DIFFUSE);
-		auto specTex = processTexture(mat, aiTextureType_SPECULAR);
-		auto normalTex = processTexture(mat, aiTextureType_HEIGHT);
-		auto shinessTex = processTexture(mat, aiTextureType_SHININESS);
+		spec.diffuseMap = processTexture(mat, aiTextureType_DIFFUSE);
+		spec.specularMap = processTexture(mat, aiTextureType_SPECULAR);
+		spec.normalMap = processTexture(mat, aiTextureType_NORMALS);
+		spec.shinessMap = processTexture(mat, aiTextureType_SHININESS);
 
 		//colors
 		aiColor3D diffColor;

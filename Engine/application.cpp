@@ -75,10 +75,10 @@ Application::Application(uint width, uint height, const char* title)
 	sphere->setPosition(-1, 1.0, 2);
 	
 	//model
-	//Model model("models/backpack/backpack.obj");
+	Model model("models/backpack/backpack.obj");
 
 	scene->addRenderObject({ ground, box1, box2, sphere });
-	//scene->addRenderObject(model.getRenderList());
+	scene->addRenderObject(model.getRenderList());
 	//camera
 	auto camera = std::make_shared<Camera>(glm::vec3(3, 3, 5), 45.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.1f, 100.0f);
 	scene->setMainCamera(camera);
