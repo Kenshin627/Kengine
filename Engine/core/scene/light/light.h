@@ -1,5 +1,6 @@
 #pragma once
 #include<glm.hpp>
+#include<vector>
 
 enum class LightType
 {
@@ -17,7 +18,13 @@ struct GPULightBufferData
 	float	  outterCutoff	 { 17.5f					 };
 	float	  innerCutoff	 { 12.5f					 };
 	LightType type			 { LightType::PointLight	 };
-	float	  padding		 { 0.0f					     };
+	int		  lightCount	 { 0					     };
+};
+
+struct GPULightBufferDataWrapper
+{
+	std::vector<GPULightBufferData> lights;
+	glm::vec4 lightCount;
 };
 
 class Light

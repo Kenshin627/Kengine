@@ -11,6 +11,7 @@ uniform sampler2D gNormal;
 uniform sampler2D gDiffuse;
 uniform sampler2D gSpecShiness;
 uniform sampler2D ssaoMap;
+uniform int lightCount;
 
 layout (std140, binding = 0) uniform CameraBuffer
 {
@@ -29,7 +30,7 @@ struct Light
 	float	outterCutoff;
 	float	innerCutoff;
 	int		type;
-	float	padding;
+	int		lightCount;
 };
 
 layout (std140, binding = 1) uniform LightBuffer
@@ -49,9 +50,8 @@ void main()
 	vec4 specShiness	   = texture(gSpecShiness, vTexcoord);
 	float spec			   = specShiness.r;
 	float shiness		   = specShiness.a;
-
-	//TODO: update pointsLightCount
-	for(int i = 0; i < 4; i++)
+	int lightCount = lightBuffer.lights[0].lightCount;
+	for(int i = 0; i < lightCount; i++)
 	{
 		vec4 viewLightPos = cameraBuffer.viewMatrix * vec4(lightBuffer.lights[i].position.xyz, 1.0);
 		vec3 lightPos = viewLightPos.xyz / viewLightPos.w;
@@ -66,7 +66,7 @@ void main()
 		vec3 ambient = 0.02 * lightColor * diff;
 		vec3 diffuse = max(dot(n, l), 0.0) * lightColor * diff;
 		//TODO: store shiness to gbuffer
-		vec3 specular = pow(max(dot(n, h), 0.0), 128) * lightColor * spec;
+		vec3 specular = pow(max(dot(n, h), 0.0), 32) * lightColor * spec;
 		float attenuation = 1.0 / (constant + linear * d +quadratic * (d * d));
 
 		//check if spotLight

@@ -61,12 +61,12 @@ Application::Application(uint width, uint height, const char* title)
 	scene->setMainCamera(camera);
 
 	//light
-	auto light1 = std::make_shared<PointLight>(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	auto light2 = std::make_shared<PointLight>(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	auto light1 = std::make_shared<PointLight>(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	auto light2 = std::make_shared<PointLight>(glm::vec3(1.0f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	auto light3 = std::make_shared<PointLight>(glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	auto spotLight1 = std::make_shared<SpotLight>(glm::vec3(2.0f, 5.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 15.f, 5.f);
 	auto spotLight2 = std::make_shared<SpotLight>(glm::vec3(-2.0f, 5.0f, 2.0f), glm::vec3(-0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), 1.0f, 0.09f, 0.032f, 15.f, 5.f);
-	scene->addLights({ light1, light2, light3, spotLight1 });
+	scene->addLights({ light1 });
 	
 	//pass
 	//PASS GROUP#1

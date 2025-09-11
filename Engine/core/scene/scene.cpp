@@ -28,6 +28,7 @@ Scene::Scene()
 	// | COLOR     vec3 + padding	  float											|
 	// | ATTENTION vec3 + padding	  float											|
 	// | TYPE float		+ INNERCUTOFF float + OUTTERCUTOFF float + padding          |
+	// | LIGHTCOUNT float + padding + 3										        |
 	mLightBuffer = std::make_unique<UniformBuffer>(MAX_LIGHTS * sizeof(GPULightBufferData), 1);
 }
 
@@ -83,6 +84,7 @@ void Scene::addLights(const std::initializer_list<std::shared_ptr<Light>>& light
 		lightData.attentionFactor.y = light->getLinear();
 		lightData.attentionFactor.z = light->getQuadratic();
 		LightType type = light->getType();
+		
 		switch (type)
 		{
 		case LightType::PointLight:
@@ -105,6 +107,7 @@ void Scene::addLights(const std::initializer_list<std::shared_ptr<Light>>& light
 			break;
 		}
 		}
+		lightData.lightCount = mLightCount;
 		gpuLightBufferData.push_back(lightData);
 	}
 
@@ -165,6 +168,8 @@ void Scene::beginScene()
 		mCameraBuffer->setData(sizeof(glm::mat4), &view, sizeof(glm::mat4) * 2);
 		mCameraBuffer->setData(sizeof(glm::vec4), &camPos, sizeof(glm::mat4) * 3);
 	}
+	//update lightCount
+
 }
 
 void Scene::endScene()
