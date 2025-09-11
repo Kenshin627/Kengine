@@ -142,8 +142,10 @@ void Sphere::buildGeometry()
     uint stride = sizeof(Vertex);
     std::initializer_list<AttributeLayout> layouts = {
         {0, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, Position), 0},
-        {1, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, Normal),   0},
-        {2, vboId, 0, 0, stride, 2, GL_FLOAT, false, offsetof(Vertex, Texcoord), 0}
+        {1, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, Normal), 0},
+        {2, vboId, 0, 0, stride, 2, GL_FLOAT, false, offsetof(Vertex, Texcoord), 0},
+        {3, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, tangent),0},
+        {4, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, bitangent), 0}
     };
     vao->addAttributes(layouts);
     setVAO(std::move(vao));

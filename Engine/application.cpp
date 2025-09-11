@@ -22,6 +22,7 @@
 #include "graphic/renderPass/deferredRendering/lightingPass.h"
 #include "graphic/renderPass/ssaoPass/ssaoPass.h"
 #include "graphic/renderPass/blurPass/blurPass.h"
+#include "graphic/texture/textureSystem.h"
 
 Application::Application(uint width, uint height, const char* title)
 	:mWindow(std::make_unique<Window>(width, height, title))
@@ -30,43 +31,65 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(width, height);
 	mWindow->attachRenderer(renderer);
 
-	//scene
+	////////SCENE//////////////////////////////////////////////
+
+	//GEOMETRY
 	std::shared_ptr<Scene> scene = std::make_shared<Scene>();
 	renderer->setCurrentScene(scene);
 	std::shared_ptr<Rectangle> rectangle = std::make_shared<Rectangle>(100.0f, 100.0f);
 	std::shared_ptr<Cube> cube = std::make_shared<Cube>(1.0f, 1.0f, 1.0f);
 	std::shared_ptr<Sphere> sphereGeometry = std::make_shared<Sphere>(1.0f, 32.0f, 32.0f);
-	std::shared_ptr<PhongMaterial> wooden = std::make_shared<PhongMaterial>("images/wooden1.jpg", "images/wooden1.png");
-	std::shared_ptr<PhongMaterial> grey = std::make_shared<PhongMaterial>("images/greyDiff.jpg", "images/greyDisp.png");
-	std::shared_ptr<PhongMaterial> groundMat = std::make_shared<PhongMaterial>("images/groundSpec2.jpg", "images/groundSpec2.png");
+
+	//TEXTURE
+	TextureSystem& ts = TextureSystem::getInstance();
+	auto woodenDiffuse = ts.getTexture("images/wooden1.jpg");
+
+	auto greyDiffuse = ts.getTexture("images/greyDiff.jpg");
+
+	auto groundDiffuse = ts.getTexture("images/groundSpec2.jpg");
+
+	//MATERIAL
+	BlinnPhongMaterialSpecification spec1;
+	spec1.diffuseMap = woodenDiffuse;
+	std::shared_ptr<PhongMaterial> wooden = std::make_shared<PhongMaterial>(spec1);
+
+	BlinnPhongMaterialSpecification spec2;
+	spec2.diffuseMap = greyDiffuse;
+	std::shared_ptr<PhongMaterial> grey = std::make_shared<PhongMaterial>(spec2);
+
+	BlinnPhongMaterialSpecification spec3;
+	spec3.diffuseMap = groundDiffuse;
+	std::shared_ptr<PhongMaterial> groundMat = std::make_shared<PhongMaterial>(spec3);
+	
+	//RENDER OBJECT
 	std::shared_ptr<RenderObject> ground = std::make_shared<RenderObject>(rectangle, groundMat);
-	ground->setRotation(-90, 0, 0);
+	
 	std::shared_ptr<RenderObject> box1 = std::make_shared<RenderObject>(cube, wooden);
 	std::shared_ptr<RenderObject> box2 = std::make_shared<RenderObject>(cube, wooden);
 	std::shared_ptr<RenderObject> sphere = std::make_shared<RenderObject>(sphereGeometry, grey);
-	box1->setRotation(0, 45, 0);
+	//box1->setRotation(0, 45, 0);
 	box1->setPosition(0, 0.5, 0);
-	box2->setRotation(0, 45, 0);
+	//box2->setRotation(0, 45, 0);
 	box2->setPosition(2, 0.5, 0);
 	box2->setScale(0.5);
 	sphere->setPosition(-1, 1.0, 2);
 	
 	//model
-	Model model("models/backpack/backpack.obj");
+	//Model model("models/backpack/backpack.obj");
 
-	//scene->addRenderObject({ ground, box1, box2, sphere });
-	scene->addRenderObject(model.getRenderList());
+	scene->addRenderObject({ ground, box1, box2, sphere });
+	//scene->addRenderObject(model.getRenderList());
 	//camera
 	auto camera = std::make_shared<Camera>(glm::vec3(3, 3, 5), 45.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.1f, 100.0f);
 	scene->setMainCamera(camera);
 
 	//light
-	auto light1 = std::make_shared<PointLight>(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	auto light2 = std::make_shared<PointLight>(glm::vec3(1.0f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	auto light3 = std::make_shared<PointLight>(glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	auto spotLight1 = std::make_shared<SpotLight>(glm::vec3(2.0f, 5.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 15.f, 5.f);
-	auto spotLight2 = std::make_shared<SpotLight>(glm::vec3(-2.0f, 5.0f, 2.0f), glm::vec3(-0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), 1.0f, 0.09f, 0.032f, 15.f, 5.f);
-	scene->addLights({ light1 });
+	auto light1 = std::make_shared<PointLight>(glm::vec3(0.0f, 4.0f, 0.f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	auto light2 = std::make_shared<PointLight>(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	auto light3 = std::make_shared<PointLight>(glm::vec3(0.0f, 3.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	auto spotLight1 = std::make_shared<SpotLight>(glm::vec3(2.0f, 5.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 35.f, 5.f);
+	auto spotLight2 = std::make_shared<SpotLight>(glm::vec3(-2.0f, 5.0f, 2.0f), glm::vec3(-0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), 1.0f, 0.09f, 0.032f, 35.f, 5.f);
+	scene->addLights({ light1, spotLight1, spotLight2 });
 	
 	//pass
 	//PASS GROUP#1

@@ -25,5 +25,4 @@ private:
 private:
 	std::vector<std::shared_ptr<RenderObject>> mRenderObjectList;
 	std::string mTextureDirectory;
-	std::unordered_map<std::string, std::shared_ptr<Texture2D>> mTextures;
 };

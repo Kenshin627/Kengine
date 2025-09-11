@@ -8,12 +8,13 @@
 #include "material/phongMaterial.h"
 #include "model.h"
 #include "../renderObject.h"
+#include "graphic/texture/textureSystem.h"
 
 Model::Model(const std::string& path)
 {
 	Assimp::Importer importer;
 	const aiScene* scene =  importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals | aiProcess_CalcTangentSpace);
-	if (!scene || !(scene->mFlags | AI_SCENE_FLAGS_INCOMPLETE) || !scene->mRootNode)
+	if (!scene || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) || !scene->mRootNode)
 	{
 		KS_CORE_ERROR("parse model error");
 		return;
@@ -146,41 +147,52 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene)
 	geometry->setVAO(std::move(vao));
 
 	//material	
+	BlinnPhongMaterialSpecification spec;
 	aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
-	if (!mat)
+	if (mat)
 	{
-		KS_CORE_ERROR("material is Null");
-		return;
+		//texs
+		auto diffTex = processTexture(mat, aiTextureType_DIFFUSE);
+		auto specTex = processTexture(mat, aiTextureType_SPECULAR);
+		auto normalTex = processTexture(mat, aiTextureType_HEIGHT);
+		auto shinessTex = processTexture(mat, aiTextureType_SHININESS);
+
+		//colors
+		aiColor3D diffColor;
+		aiReturn diffRes = mat->Get(AI_MATKEY_COLOR_DIFFUSE, diffColor);
+		if (diffRes == aiReturn_SUCCESS)
+		{
+			spec.diffuseColor.r = diffColor.r;
+			spec.diffuseColor.g = diffColor.g;
+			spec.diffuseColor.b = diffColor.b;
+		}
+
+		aiColor3D specColor;
+		aiReturn specRes = mat->Get(AI_MATKEY_COLOR_SPECULAR, specColor);
+		if (specRes == aiReturn_SUCCESS)
+		{
+			spec.specularColor.r = specColor.r;
+			spec.specularColor.g = specColor.g;
+			spec.specularColor.b = specColor.b;
+		}
+
+		float shiness;
+		aiReturn shinessRes = mat->Get(AI_MATKEY_SHININESS, shiness);
+		if (shinessRes == aiReturn_SUCCESS)
+		{
+			spec.shiness = shiness;
+		}
 	}
-	//diffuse
-	auto diffTex = processTexture(mat, aiTextureType_DIFFUSE);
-
-	//specular
-	auto specTex = processTexture(mat, aiTextureType_SPECULAR);
-
-	//normal
-	auto normalTex = processTexture(mat, aiTextureType_HEIGHT);
-
-	std::shared_ptr<PhongMaterial> material = std::make_shared<PhongMaterial>(diffTex, specTex, 128, normalTex);
+	std::shared_ptr<PhongMaterial> material = std::make_shared<PhongMaterial>(spec);
 	mRenderObjectList.push_back(std::make_shared<RenderObject>(geometry, material));
 }
 
 std::shared_ptr<Texture2D> Model::processTexture(aiMaterial* mat, aiTextureType texType)
 {
+	TextureSystem& ts = TextureSystem::getInstance();;
 	aiString texFileName;
 	mat->GetTexture(texType, 0, &texFileName);
 	std::shared_ptr<Texture2D> texture;
 	std::string texFilePath = (mTextureDirectory + "/" + std::string(texFileName.C_Str())).c_str();
-	auto iter = mTextures.find(texFilePath);
-	if (iter != mTextures.cend())
-	{
-		texture = iter->second;
-	}
-	else
-	{
-		texture = std::make_shared<Texture2D>();
-		texture->loadFromFile(texFilePath.c_str());
-		mTextures.insert({ texFilePath, texture });
-	}
-	return texture;
+	return ts.getTexture(texFilePath);
 }

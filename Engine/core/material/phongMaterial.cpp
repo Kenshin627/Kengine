@@ -1,52 +1,59 @@
 #include "phongMaterial.h"
 #include "graphic/texture/texture2D/texture2D.h"
 
-PhongMaterial::PhongMaterial(const char* diffuseMap, const char* specularMap, float shiness, const char* normalMap, const char* roughnessMap)
-	:mDiffuseMap(std::make_shared<Texture2D>()),
-	 mSpecularMap(std::make_shared<Texture2D>()),
-	 mNormalMap(std::make_shared<Texture2D>()),
-	 mShinessMap(std::make_shared<Texture2D>())
+PhongMaterial::PhongMaterial(const BlinnPhongMaterialSpecification& spec)
+	:mDiffuseMap(spec.diffuseMap),
+	 mSpecularMap(spec.specularMap),
+	 mNormalMap(spec.normalMap),
+	 mShinessMap(spec.shinessMap),
+	 mDiffuseColor(spec.diffuseColor),
+	 mSpecularColor(spec.specularColor),
+	 mShiness(spec.shiness)
 {
+	mHasDiffuseTex  = mDiffuseMap  ? true : false;
+	mHasSpecularTex = mSpecularMap ? true : false;
+	mHasNormalTex   = mNormalMap   ? true : false;
+	mHasShinessTex  = mShinessMap  ? true : false;
 	initProgram();
-	mDiffuseMap->loadFromFile(diffuseMap);
-	mSpecularMap->loadFromFile(specularMap);
-	if (normalMap)
-	{
-		mNormalMap->loadFromFile(normalMap);
-	}
-	if (roughnessMap)
-	{
-		mShinessMap->loadFromFile(roughnessMap);
-	}
-}
-
-PhongMaterial::PhongMaterial(std::shared_ptr<Texture2D> diff, std::shared_ptr<Texture2D> specular, float shiness, std::shared_ptr<Texture2D> normal, std::shared_ptr<Texture2D> roughnessMap)
-{
-	mDiffuseMap = diff;
-	mSpecularMap = specular;
-	mShiness = shiness;
-	mNormalMap = normal;
-	mShinessMap = roughnessMap;
 }
 
 void PhongMaterial::setUniforms(Program* p) const
 {
-	mDiffuseMap->bind(0);
-	mSpecularMap->bind(1);
-	p->setUniform("diffuseMap", 0);
-	p->setUniform("specularMap", 1);
+	if (mHasDiffuseTex)
+	{
+		mDiffuseMap->bind(0);
+		p->setUniform("diffuseMap", 0);
+	}
 
-	if (mNormalMap)
+	if (mHasSpecularTex)
+	{
+		mSpecularMap->bind(1);
+		p->setUniform("specularMap", 1);
+	}
+
+
+	if (mHasNormalTex)
 	{
 		mNormalMap->bind(2);
 		p->setUniform("normalMap", 2);
 	}
 
-	if (mShinessMap)
+	if (mHasShinessTex)
 	{
 		mShinessMap->bind(3);
-		p->setUniform("roughnessMap", 2);
+		p->setUniform("shinessMap", 3);
 	}
+
+	//colors
+	p->setUniform("diffuseColor", mDiffuseColor);
+	p->setUniform("specularColor", mSpecularColor);
+	p->setUniform("shiness", mShiness);
+
+	//bool
+	p->setUniform("hasDiffTex", mHasDiffuseTex);
+	p->setUniform("hasSpecTex", mHasSpecularTex);
+	p->setUniform("hasNormalTex", mHasNormalTex);
+	p->setUniform("hasShinessTex", mHasShinessTex);
 }
 
 void PhongMaterial::initProgram()

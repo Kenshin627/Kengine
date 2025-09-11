@@ -132,6 +132,9 @@
     <ClCompile Include="core\scene\light\spotLight\spotLight.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\graphic\texture\textureSystem.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -255,6 +258,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="core\scene\light\spotLight\spotLight.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\graphic\texture\textureSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

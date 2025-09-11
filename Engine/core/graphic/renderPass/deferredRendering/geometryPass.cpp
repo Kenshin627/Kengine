@@ -26,7 +26,7 @@ GeometryPass::GeometryPass(const RenderState& state)
 		},
 		{
 			AttachmentType::Color,
-			TextureInternalFormat::RGB8,
+			TextureInternalFormat::RGB16F,
 			TextureDataFormat::RGB,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,

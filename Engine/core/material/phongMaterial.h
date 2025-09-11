@@ -2,11 +2,21 @@
 #include "material.h"
 
 class Texture2D;
+struct BlinnPhongMaterialSpecification
+{
+	std::shared_ptr<Texture2D> diffuseMap		{ nullptr		};
+	std::shared_ptr<Texture2D> specularMap		{ nullptr		};
+	std::shared_ptr<Texture2D> normalMap		{ nullptr		};
+	std::shared_ptr<Texture2D> shinessMap		{ nullptr		};
+	glm::vec3				   diffuseColor		{ 0.5, 0.5, 0.5 };
+	glm::vec3				   specularColor	{ 1.0, 1.0, 1.0 };
+	float					   shiness			{ 128.f		};
+};
 class PhongMaterial : public Material
 {
 public:
-	PhongMaterial(const char* diffuseMap, const char* specularMap, float shiness = 128.0f, const char* normalMap = nullptr, const char* roughnessMap = nullptr);
-	PhongMaterial(std::shared_ptr<Texture2D> diff, std::shared_ptr<Texture2D> specular, float shiness = 128.0, std::shared_ptr<Texture2D> normal = nullptr, std::shared_ptr<Texture2D> roughnessMap = nullptr);	virtual ~PhongMaterial() = default;
+	PhongMaterial(const BlinnPhongMaterialSpecification& spec);
+	virtual ~PhongMaterial() = default;
 	PhongMaterial(const PhongMaterial& obj) = delete;
 	PhongMaterial(PhongMaterial&& obj) = delete;
 	PhongMaterial& operator=(const PhongMaterial& obj) = delete;
@@ -17,5 +27,11 @@ private:
 	std::shared_ptr<Texture2D> mSpecularMap;
 	std::shared_ptr<Texture2D> mNormalMap;
 	std::shared_ptr<Texture2D> mShinessMap;
+	glm::vec3				   mDiffuseColor;
+	glm::vec3				   mSpecularColor;
 	float					   mShiness;
+	bool					   mHasDiffuseTex { false };
+	bool					   mHasSpecularTex{ false };
+	bool					   mHasNormalTex  { false };
+	bool					   mHasShinessTex { false };
 };
