@@ -19,6 +19,7 @@
 #include "graphic/renderPass/deferredRendering/lightingPass.h"
 #include "graphic/renderPass/ssaoPass/ssaoPass.h"
 #include "graphic/renderPass/blurPass/blurPass.h"
+#include "graphic/renderPass/toneMapping/toneMapping.h"
 #include "graphic/texture/textureSystem.h"
 
 Application::Application(uint width, uint height, const char* title)
@@ -222,12 +223,21 @@ Application::Application(uint width, uint height, const char* title)
 	lightingPassState.viewport.z = width;
 	lightingPassState.viewport.w = height;
 	lightingPassState.depthTest = false;
-	lightingPassState.target = RenderTarget::SCREEN;
+	lightingPassState.target = RenderTarget::FRAMEBUFFER;
 	std::shared_ptr<LightingPass> lightingPass = std::make_shared<LightingPass>(lightingPassState);
-
 	lightingPass->setLastPassFBOs({ gPass->getCurrentFrameBuffer(), blurPass->getCurrentFrameBuffer()});
 
-	renderer->setRenderPass({ gPass, ssaoPass, blurPass, lightingPass });
+	RenderState toneMappingState;
+	toneMappingState.width = width;
+	toneMappingState.height = height;
+	toneMappingState.viewport.z = width;
+	toneMappingState.viewport.w = height;
+	toneMappingState.depthTest = false;
+	toneMappingState.target = RenderTarget::SCREEN;
+	std::shared_ptr<ToneMapping> toneMappingPass = std::make_shared<ToneMapping>(1.0, toneMappingState);
+	toneMappingPass->setLastPassFBOs({ lightingPass->getCurrentFrameBuffer() });
+
+	renderer->setRenderPass({ gPass, ssaoPass, blurPass, lightingPass, toneMappingPass });
 }
 
 Application::~Application()

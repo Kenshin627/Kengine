@@ -180,6 +180,7 @@
     <ClCompile Include="core\graphic\program\shader.cpp" />
     <ClCompile Include="core\graphic\renderer\renderer.cpp" />
     <ClCompile Include="core\graphic\renderPass\ssaoPass\ssaoPass.cpp" />
+    <ClCompile Include="core\graphic\renderPass\toneMapping\toneMapping.cpp" />
     <ClCompile Include="core\graphic\texture\texture2D\texture2D.cpp" />
     <ClCompile Include="core\graphic\texture\textureSystem.cpp" />
     <ClCompile Include="core\material\material.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="core\graphic\program\shader.h" />
     <ClInclude Include="core\graphic\renderer\renderer.h" />
     <ClInclude Include="core\graphic\renderPass\ssaoPass\ssaoPass.h" />
+    <ClInclude Include="core\graphic\renderPass\toneMapping\toneMapping.h" />
     <ClInclude Include="core\graphic\texture\texture2D\texture2D.h" />
     <ClInclude Include="core\graphic\texture\textureSystem.h" />
     <ClInclude Include="core\material\material.h" />
@@ -253,6 +255,8 @@
     <None Include="core\graphic\shaderSrc\ssao\blur\vs.glsl" />
     <None Include="core\graphic\shaderSrc\ssao\occlusion\fs.glsl" />
     <None Include="core\graphic\shaderSrc\ssao\occlusion\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\toneMapping\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\toneMapping\vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

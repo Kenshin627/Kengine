@@ -83,6 +83,5 @@ void main()
 		specular  *= intensity;
 		ambient   *= ambientOcclusion;
 		FragColor += vec4(specular + ambient + diffuse, 1.0);
-	}
-	FragColor = pow(FragColor, vec4(0.4545));
+	}	
 }

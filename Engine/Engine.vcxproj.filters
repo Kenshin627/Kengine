@@ -135,6 +135,9 @@
     <ClCompile Include="core\graphic\texture\textureSystem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\graphic\renderPass\toneMapping\toneMapping.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -263,6 +266,9 @@
     <ClInclude Include="core\graphic\texture\textureSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\toneMapping\toneMapping.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="core\graphic\shaderSrc\blinnPhong\vs.glsl" />
@@ -277,5 +283,7 @@
     <None Include="core\graphic\shaderSrc\ssao\occlusion\fs.glsl" />
     <None Include="core\graphic\shaderSrc\ssao\blur\vs.glsl" />
     <None Include="core\graphic\shaderSrc\ssao\blur\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\toneMapping\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\toneMapping\fs.glsl" />
   </ItemGroup>
 </Project>
