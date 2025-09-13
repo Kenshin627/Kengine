@@ -1,24 +1,31 @@
 #include "lightingPass.h"
+#include "core.h"
 #include "graphic/program/program.h"
 #include "geometry/screenQuad.h"
 #include "graphic/gpuBuffer/frameBuffer.h"
+#include "scene/scene.h"
 
 LightingPass::LightingPass(const RenderState& state)
 	:RenderPass(state)
 {
-	//to screen no fbo
 	mProgram = std::make_unique<Program>();
 	mProgram->buildFromFiles({
 		{ "core/graphic/shaderSrc/deferredRendering/lightingPassShader/vs.glsl", ShaderType::Vertex },
 		{ "core/graphic/shaderSrc/deferredRendering/lightingPassShader/fs.glsl", ShaderType::Fragment }
 	});
-
-	mGeometry = std::make_shared<ScreenQuad>();
 }
 
 void LightingPass::runPass(Scene* scene)
 {	
-	mGeometry->draw();
+	ScreenQuad* quad = scene->getScreenQuad();
+	if (!quad)
+	{
+		KS_CORE_ERROR("pass screen quad is null");
+		return;
+	}
+	quad->beginDraw();
+	quad->draw();
+	quad->endDraw();
 }
 
 void LightingPass::beginPass()

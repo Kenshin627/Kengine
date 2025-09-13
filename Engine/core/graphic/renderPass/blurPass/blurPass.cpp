@@ -2,15 +2,13 @@
 #include "graphic/const.h"
 #include "graphic/gpuBuffer/frameBuffer.h"
 #include "graphic/program/program.h"
-#include "geometry/screenQuad.h"
+#include "scene/scene.h"
+#include "core.h"
 
 BlurPass::BlurPass(uint radius, const RenderState& state)
 	:RenderPass(state),
 	 mRadius(radius)
 {
-	//to framebuffer 
-	//screen quad
-	//blur Program
 	mProgram = std::make_shared<Program>();
 	std::initializer_list<ShaderFile> shaders =
 	{
@@ -18,9 +16,7 @@ BlurPass::BlurPass(uint radius, const RenderState& state)
 		{ "core/graphic/shaderSrc/ssao/blur/fs.glsl", ShaderType::Fragment }
 	};
 	mProgram->buildFromFiles(shaders);
-	//buildFrameBuffer
-	//SSAO BUFFER
-	//|		RGB8  | ssao		| 
+
 	std::initializer_list<FrameBufferSpecification> specs =
 	{
 		{
@@ -43,8 +39,6 @@ BlurPass::BlurPass(uint radius, const RenderState& state)
 		}
 	};
 	mFrameBuffer = std::make_unique<FrameBuffer>(state.width, state.height, specs);
-	//buildScreenQuad
-	mGeometry = std::make_shared<ScreenQuad>();
 }
 
 BlurPass::~BlurPass()
@@ -77,5 +71,13 @@ void BlurPass::beginPass()
 
 void BlurPass::runPass(Scene* scene)
 {
-	mGeometry->draw();
+	ScreenQuad* quad = scene->getScreenQuad();
+	if (!quad)
+	{
+		KS_CORE_ERROR("pass screen quad is null");
+		return;
+	}
+	quad->beginDraw();
+	quad->draw();
+	quad->endDraw();
 }

@@ -3,12 +3,11 @@
 #include "geometry/screenQuad.h"
 #include "graphic/program/program.h"
 #include "graphic/gpuBuffer/frameBuffer.h"
+#include "scene/scene.h"
 
 GrayScaleEffect::GrayScaleEffect(const RenderState& state)
 	:RenderPass(state)
 {
-	//post effect to screen 
-	mGeometry = std::make_shared<ScreenQuad>();
 	mProgram = std::make_shared<Program>();
 	mProgram->buildFromFiles({
 		{ "core/graphic/shaderSrc/postProcess/grayScale/vs.glsl", ShaderType::Vertex },
@@ -32,5 +31,13 @@ void GrayScaleEffect::runPass(Scene* scene)
 	}
 	//set screen map uniform
 	mProgram->setUniform("screenMap", 0);
-	mGeometry->draw();
+	ScreenQuad* quad = scene->getScreenQuad();
+	if (!quad)
+	{
+		KS_CORE_ERROR("pass screen quad is null");
+		return;
+	}
+	quad->beginDraw();
+	quad->draw();
+	quad->endDraw();
 }

@@ -66,6 +66,5 @@ protected:
 	std::shared_ptr<Program>					 mProgram;
 	std::shared_ptr<FrameBuffer>				 mFrameBuffer;
 	std::vector<std::shared_ptr<FrameBuffer>>    mlastPassFrameBuffer;
-	std::shared_ptr<Geometry>					 mGeometry;
 	RenderState									 mRenderState;
 };

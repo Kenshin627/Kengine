@@ -1,8 +1,10 @@
+#include <random>
+#include "core.h"
+#include "scene/scene.h"
 #include "ssaoPass.h"
 #include "graphic/program/program.h"
 #include "graphic/gpuBuffer/frameBuffer.h"
 #include "geometry/screenQuad.h"
-#include <random>
 
 SSAOPass::SSAOPass(uint kernelSize = 64, float radius = 0.5f, const RenderState& state = RenderState())
 	:RenderPass(state),
@@ -46,8 +48,6 @@ SSAOPass::SSAOPass(uint kernelSize = 64, float radius = 0.5f, const RenderState&
 		}
 	};
 	mFrameBuffer = std::make_unique<FrameBuffer>(state.width, state.height, specs);
-	//buildScreenQuad
-	mGeometry = std::make_shared<ScreenQuad>();
 }
 
 void SSAOPass::setKernelSize(uint kernelSize)
@@ -106,8 +106,15 @@ void SSAOPass::beginPass()
 
 void SSAOPass::runPass(Scene* scene)
 {
-	//run screenQuad calc occlusion
-	mGeometry->draw();
+	ScreenQuad* quad = scene->getScreenQuad();
+	if (!quad)
+	{
+		KS_CORE_ERROR("pass screen quad is null");
+		return;
+	}
+	quad->beginDraw();
+	quad->draw();
+	quad->endDraw();
 }
 
 void SSAOPass::buildSamplers()

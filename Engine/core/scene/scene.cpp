@@ -30,6 +30,7 @@ Scene::Scene()
 	// | TYPE float		+ INNERCUTOFF float + OUTTERCUTOFF float + padding          |
 	// | LIGHTCOUNT float + padding + 3										        |
 	mLightBuffer = std::make_unique<UniformBuffer>(MAX_LIGHTS * sizeof(GPULightBufferData), 1);
+	mScreenQuad = std::make_unique<ScreenQuad>();
 }
 
 void Scene::addRenderObject(std::shared_ptr<RenderObject> object)
@@ -207,5 +208,10 @@ void Scene::checkSceneReady() const
 uint Scene::getLightCount() const
 {
 	return mLightCount;
+}
+
+ScreenQuad* Scene::getScreenQuad() const
+{
+	return mScreenQuad.get();
 }
 

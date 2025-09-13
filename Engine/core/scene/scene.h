@@ -3,6 +3,7 @@
 #include <memory>
 #include "typedef.h"
 #include "graphic/gpuBuffer/uniformBuffer.h"
+#include "geometry/screenQuad.h"
 
 constexpr int MAX_LIGHTS = 16;
 
@@ -29,6 +30,7 @@ public:
 	void draw();
 	void checkSceneReady() const;
 	uint getLightCount() const;
+	ScreenQuad* getScreenQuad() const;
 private:
 	std::vector<std::shared_ptr<RenderObject>> mRenderList;
 	std::vector<std::shared_ptr<Light>>		   mLights;
@@ -36,4 +38,5 @@ private:
 	std::unique_ptr<UniformBuffer>			   mCameraBuffer;
 	std::unique_ptr<UniformBuffer>			   mLightBuffer;
 	uint									   mLightCount;
+	std::unique_ptr<ScreenQuad>				   mScreenQuad;
 };

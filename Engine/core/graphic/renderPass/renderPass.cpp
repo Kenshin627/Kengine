@@ -30,11 +30,7 @@ void RenderPass::beginPass()
 	if (mProgram)
 	{
 		mProgram->bind();
-	}
-	if (mGeometry)
-	{
-		mGeometry->beginDraw();
-	}
+	}	
 	updateRenderState();
 }
 
@@ -52,11 +48,7 @@ void RenderPass::endPass()
 	if (mProgram)
 	{
 		mProgram->unBind();
-	}
-	if(mGeometry)
-	{
-		mGeometry->endDraw();
-	}
+	}	
 }
 
 void RenderPass::resize(uint width, uint height)
