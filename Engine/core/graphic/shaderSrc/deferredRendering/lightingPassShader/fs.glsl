@@ -49,6 +49,7 @@ void main()
 	vec4 specShiness	   = texture(gSpecShiness, vTexcoord);
 	float spec			   = specShiness.r;
 	float shiness		   = specShiness.a;
+	shiness += 1000;
 	int lightCount = lightBuffer.lights[0].lightCount;
 	for(int i = 0; i < lightCount; i++)
 	{

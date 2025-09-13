@@ -1,10 +1,10 @@
 #include "rectangle.h"
 
 std::vector<Vertex> vertices = {
-   { {-0.5f, 0.0f,  0.5f }, { 0.0f, 1.0f, 0.0f }, {0.0f, 0.0f} },
-   { { 0.5f, 0.0f,  0.5f }, { 0.0f, 1.0f, 0.0f }, {1.0f, 0.0f} },
-   { { 0.5f, 0.0f, -0.5f }, { 0.0f, 1.0f, 0.0f }, {1.0f, 1.0f} },
-   { {-0.5f, 0.0f, -0.5f }, { 0.0f, 1.0f, 0.0f }, {0.0f, 1.0f} }
+   { {-0.5f, 0.0f,  0.5f }, { 0.0f, 1.0f, 0.0f }, {0.0f, 0.0f}, {1, 0, 0} },
+   { { 0.5f, 0.0f,  0.5f }, { 0.0f, 1.0f, 0.0f }, {1.0f, 0.0f}, {1, 0, 0} },
+   { { 0.5f, 0.0f, -0.5f }, { 0.0f, 1.0f, 0.0f }, {1.0f, 1.0f}, {1, 0, 0} },
+   { {-0.5f, 0.0f, -0.5f }, { 0.0f, 1.0f, 0.0f }, {0.0f, 1.0f}, {1, 0, 0} }
 };
 
 const std::vector<uint> indices = {
@@ -32,8 +32,8 @@ void Rectangle::buildGeometry()
 		vertex.Position.x = vertex.Position.x * mWidth;
 		vertex.Position.z = vertex.Position.z * mHeight;
 		//repeat texture
-		vertex.Texcoord.x = vertex.Texcoord.x * mWidth * 0.05;
-		vertex.Texcoord.y = vertex.Texcoord.y * mHeight * 0.05;
+		vertex.Texcoord.x = vertex.Texcoord.x * mWidth;
+		vertex.Texcoord.y = vertex.Texcoord.y * mHeight;
 	}
 	std::unique_ptr<VertexArray> vao = std::make_unique< VertexArray>(6, GL_TRIANGLES);
 	uint vboId = vao->buildVertexBuffer(sizeof(Vertex) * vertices.size(), (void*)vertices.data(), GL_DYNAMIC_STORAGE_BIT);
@@ -43,8 +43,7 @@ void Rectangle::buildGeometry()
 		{0, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, Position), 0},
 		{1, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, Normal), 0},
 		{2, vboId, 0, 0, stride, 2, GL_FLOAT, false, offsetof(Vertex, Texcoord), 0},
-		{3, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, tangent),0},
-		{4, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, bitangent), 0}
+		{3, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, tangent),0}
 	};
 	vao->addAttributes(layouts);
 	setVAO(std::move(vao));

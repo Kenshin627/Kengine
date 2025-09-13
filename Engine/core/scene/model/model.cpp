@@ -1,6 +1,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <stb_image.h>
 #include "core.h"
 #include "typedef.h"
 #include "geometry/geometry.h"
@@ -10,10 +11,55 @@
 #include "../renderObject.h"
 #include "graphic/texture/textureSystem.h"
 
+static std::vector<char> convertBGRAtoRGBA(const char* bgraData, int width, int height) {
+	// 检查输入合法性
+	if (!bgraData || width <= 0 || height <= 0) {
+		KS_CORE_ERROR("INPUT data ins error!");
+	}
+
+	// 计算总像素数和总字节数（每个像素4字节）
+	int pixelCount = width * height;
+	int byteCount = pixelCount * 4;
+
+	// 初始化输出RGBA数据容器
+	std::vector<char> rgbaData(byteCount);
+
+	// 遍历每个像素，交换B和R通道
+	for (int i = 0; i < pixelCount; ++i) {
+		// 当前像素在数组中的起始索引
+		int baseIndex = i * 4;
+
+		// BGRA输入通道
+		char B = bgraData[baseIndex + 0];  // 蓝色通道
+		char G = bgraData[baseIndex + 1];  // 绿色通道
+		char R = bgraData[baseIndex + 2];  // 红色通道
+		char A = bgraData[baseIndex + 3];  // Alpha通道
+
+		// 写入RGBA输出（交换B和R）
+		rgbaData[baseIndex + 0] = R;  // 红色通道在前
+		rgbaData[baseIndex + 1] = G;  // 绿色通道不变
+		rgbaData[baseIndex + 2] = B;  // 蓝色通道在后
+		rgbaData[baseIndex + 3] = A;  // Alpha通道不变
+	}
+
+	return rgbaData;
+}
+
 Model::Model(const std::string& path)
 {
 	Assimp::Importer importer;
-	const aiScene* scene =  importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals | aiProcess_CalcTangentSpace);
+	mFileType = path.substr(path.find_last_of("/"));
+	uint importFlags = aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace;
+	if (mFileType == "Glb")
+	{
+		
+	}
+	else if (mFileType == "obj")
+	{
+		importFlags |= aiProcess_FlipUVs;
+	}
+	
+	const aiScene* scene =  importer.ReadFile(path, importFlags);
 	if (!scene || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) || !scene->mRootNode)
 	{
 		KS_CORE_ERROR("parse model error");
@@ -107,10 +153,6 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		vertex.tangent.y = tangent.y;
 		vertex.tangent.z = tangent.z;
 
-		aiVector3D bitangent = mesh->mBitangents[i];
-		vertex.bitangent.x = bitangent.x;
-		vertex.bitangent.y = bitangent.y;
-		vertex.bitangent.z = bitangent.z;
 		vertices.push_back(vertex);
 	}
 
@@ -131,17 +173,11 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene)
 	uint vboId = vao->buildVertexBuffer(sizeof(Vertex) * vertices.size(), (void*)vertices.data(), 0);
 	vao->buildIndexBuffer(indices.data(), sizeof(uint) * indices.size(), GL_UNSIGNED_INT, 0);
 	uint stride = sizeof(Vertex);
-	//glm::vec3 Position;
-	//glm::vec3 Normal;
-	//glm::vec2 Texcoord;
-	//glm::vec3 tangent;
-	//glm::vec3 bitangent;
 	std::initializer_list<AttributeLayout> layouts = {
 		{0, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, Position), 0},
 		{1, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, Normal), 0},
 		{2, vboId, 0, 0, stride, 2, GL_FLOAT, false, offsetof(Vertex, Texcoord), 0},
-		{3, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, tangent),0},
-		{4, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, bitangent), 0}
+		{3, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, tangent),0}
 	};
 	vao->addAttributes(layouts);
 	geometry->setVAO(std::move(vao));
@@ -152,10 +188,10 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene)
 	if (mat)
 	{
 		//texs
-		spec.diffuseMap = processTexture(mat, aiTextureType_DIFFUSE);
-		spec.specularMap = processTexture(mat, aiTextureType_SPECULAR);
-		spec.normalMap = processTexture(mat, aiTextureType_NORMALS);
-		spec.shinessMap = processTexture(mat, aiTextureType_SHININESS);
+		spec.diffuseMap = processTexture(scene, mat, aiTextureType_DIFFUSE);
+		spec.specularMap = processTexture(scene, mat, aiTextureType_SPECULAR);
+		spec.normalMap = processTexture(scene, mat, aiTextureType_HEIGHT);
+		spec.shinessMap = processTexture(scene, mat, aiTextureType_SHININESS);
 
 		//colors
 		aiColor3D diffColor;
@@ -187,12 +223,37 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene)
 	mRenderObjectList.push_back(std::make_shared<RenderObject>(geometry, material));
 }
 
-std::shared_ptr<Texture2D> Model::processTexture(aiMaterial* mat, aiTextureType texType)
+std::shared_ptr<Texture2D> Model::processTexture(const aiScene* scene, aiMaterial* mat, aiTextureType texType)
 {
-	TextureSystem& ts = TextureSystem::getInstance();;
-	aiString texFileName;
-	mat->GetTexture(texType, 0, &texFileName);
-	std::shared_ptr<Texture2D> texture;
-	std::string texFilePath = (mTextureDirectory + "/" + std::string(texFileName.C_Str())).c_str();
-	return ts.getTexture(texFilePath);
+		
+		TextureSystem& ts = TextureSystem::getInstance();;
+		aiString texFileName;
+		mat->GetTexture(texType, 0, &texFileName);
+		if (texFileName.Empty())
+		{
+			return nullptr;
+		}
+		else if (texFileName.C_Str()[0] == '*')
+		{
+			uint tex = atoi(&texFileName.C_Str()[1]);
+			//row puxeL Data need convert using stb_image
+			aiTexture* texData = scene->mTextures[tex];
+			auto texBuffer = &(texData->pcData)[0].b;
+			auto texelLength = texData->mWidth;
+			int width;
+			int height;
+			int channel;
+			const unsigned char* rowData = stbi_load_from_memory(texBuffer, texelLength, &width, &height, &channel, 0);
+
+			std::shared_ptr<Texture2D> texture = std::make_shared<Texture2D>();
+			texture->loadFromData(width, height, rowData, 4, TextureInternalFormat::RGBA8, TextureDataFormat::RGBA, GL_UNSIGNED_BYTE);
+			return texture;
+		}
+		else 
+		{
+			
+			std::string texFilePath = (mTextureDirectory + "/" + std::string(texFileName.C_Str())).c_str();
+			return ts.getTexture(texFilePath);
+		}
+		
 }

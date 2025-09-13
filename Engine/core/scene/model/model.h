@@ -10,6 +10,7 @@ struct aiScene;
 struct aiMesh;
 struct aiMaterial;
 enum aiTextureType;
+class Texute2D;
 
 class Model
 {
@@ -21,8 +22,9 @@ public:
 private:
 	void processNode(aiNode* node, const aiScene* scene);
 	void processMesh(aiMesh* mesh, const aiScene* scene);
-	std::shared_ptr<Texture2D> processTexture(aiMaterial* mat, aiTextureType texType);
+	std::shared_ptr<Texture2D> processTexture(const aiScene* scene, aiMaterial* mat, aiTextureType texType);
 private:
 	std::vector<std::shared_ptr<RenderObject>> mRenderObjectList;
 	std::string mTextureDirectory;
+	std::string mFileType;
 };
