@@ -10,7 +10,7 @@ struct BlinnPhongMaterialSpecification
 	std::shared_ptr<Texture2D> shinessMap		{ nullptr		};
 	glm::vec3				   diffuseColor		{ 0.5, 0.5, 0.5 };
 	glm::vec3				   specularColor	{ 1.0, 1.0, 1.0 };
-	float					   shiness			{ 128.f		};
+	float					   shiness			{ 0.128f		};
 };
 class PhongMaterial : public Material
 {

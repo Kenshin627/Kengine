@@ -100,13 +100,13 @@ Application::Application(uint width, uint height, const char* title)
 	box2->setScale(0.5);
 	wall->setRotation(90, 0, 0);
 	wall->setPosition(0, 0, -5);
-	sphere->setPosition(2, 1.0, -3);
+	//sphere->setPosition(2, 1.0, -3);
 	
 	//model
 	Model model("models/backpack/backpack.obj");
 	for (auto& renderObject : model.getRenderList())
 	{
-		renderObject->setPosition(0, 1, -3);
+		renderObject->setPosition(2, 1, -3);
 		renderObject->setScale(0.3);
 	}
 
@@ -134,12 +134,21 @@ Application::Application(uint width, uint height, const char* title)
 		renderObject->setRotation(0, 60, 0);
 		renderObject->setScale(0.2);
 	}
+	//Oops.glb
+	Model model5("models/Oops.glb");
+	for (auto& renderObject : model5.getRenderList())
+	{
+		renderObject->setPosition(-1, 0.5, 0);
+		//renderObject->setRotation(0, 60, 0);
+		renderObject->setScale(0.08);
+	}
 
 	scene->addRenderObject({ ground, wall, box1, box2, sphere });
 	scene->addRenderObject(model.getRenderList());
 	scene->addRenderObject(model2.getRenderList());
 	scene->addRenderObject(model3.getRenderList());
 	scene->addRenderObject(model4.getRenderList());
+	scene->addRenderObject(model5.getRenderList());
 	
 	//camera
 	auto camera = std::make_shared<Camera>(glm::vec3(3, 2, 6), 45.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.1f, 100.0f);
@@ -149,9 +158,9 @@ Application::Application(uint width, uint height, const char* title)
 	auto light1 = std::make_shared<PointLight>(glm::vec3(-5.0f, 1.0f, -.5f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	auto light2 = std::make_shared<PointLight>(glm::vec3(0.0f, 1.0f, -.5f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	auto light3 = std::make_shared<PointLight>(glm::vec3(5.0f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	auto spotLight1 = std::make_shared<SpotLight>(glm::vec3(2.0f, 3.0f, 2.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 30.f, 5.f);
-	auto spotLight2 = std::make_shared<SpotLight>(glm::vec3(-2.0f, 5.0f, 2.0f), glm::vec3(-0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), 1.0f, 0.09f, 0.032f, 35.f, 5.f);
-	scene->addLights({ spotLight1 });
+	auto spotLight1 = std::make_shared<SpotLight>(glm::vec3(2.0f, 3.0f, 2.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 30.f, 20.f);
+	auto spotLight2 = std::make_shared<SpotLight>(glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f, 17.5f, 7.5f);
+	scene->addLights({ spotLight1, spotLight2 });
 	
 	//pass
 	//PASS GROUP#1
@@ -193,7 +202,7 @@ Application::Application(uint width, uint height, const char* title)
 	ssaoPassState.viewport.w = height;
 	ssaoPassState.depthTest = false;
 	ssaoPassState.target = RenderTarget::FRAMEBUFFER;
-	std::shared_ptr<SSAOPass> ssaoPass = std::make_shared<SSAOPass>(128, 2.0, ssaoPassState);
+	std::shared_ptr<SSAOPass> ssaoPass = std::make_shared<SSAOPass>(128, 1.0, ssaoPassState);
 	ssaoPass->setLastPassFBOs({ gPass->getCurrentFrameBuffer() });
 
 	//pass#3 blurPass
