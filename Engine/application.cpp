@@ -118,7 +118,7 @@ Application::Application(uint width, uint height, const char* title)
 		renderObject->setScale(0.005);
 	}
 	
-	//Large_troll.glb
+	
 	Model model3("models/Large_troll.glb");
 	for (auto& renderObject : model3.getRenderList())
 	{
@@ -127,10 +127,19 @@ Application::Application(uint width, uint height, const char* title)
 		renderObject->setScale(0.3);
 	}
 
+	Model model4("models/Labrador_retriever.glb");
+	for (auto& renderObject : model4.getRenderList())
+	{
+		renderObject->setPosition(1, 0, 3);
+		renderObject->setRotation(0, 60, 0);
+		renderObject->setScale(0.2);
+	}
+
 	scene->addRenderObject({ ground, wall, box1, box2, sphere });
 	scene->addRenderObject(model.getRenderList());
 	scene->addRenderObject(model2.getRenderList());
 	scene->addRenderObject(model3.getRenderList());
+	scene->addRenderObject(model4.getRenderList());
 	
 	//camera
 	auto camera = std::make_shared<Camera>(glm::vec3(3, 2, 6), 45.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.1f, 100.0f);
@@ -140,9 +149,9 @@ Application::Application(uint width, uint height, const char* title)
 	auto light1 = std::make_shared<PointLight>(glm::vec3(-5.0f, 1.0f, -.5f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	auto light2 = std::make_shared<PointLight>(glm::vec3(0.0f, 1.0f, -.5f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	auto light3 = std::make_shared<PointLight>(glm::vec3(5.0f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	auto spotLight1 = std::make_shared<SpotLight>(glm::vec3(2.0f, 5.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 35.f, 5.f);
+	auto spotLight1 = std::make_shared<SpotLight>(glm::vec3(2.0f, 3.0f, 2.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 30.f, 5.f);
 	auto spotLight2 = std::make_shared<SpotLight>(glm::vec3(-2.0f, 5.0f, 2.0f), glm::vec3(-0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), 1.0f, 0.09f, 0.032f, 35.f, 5.f);
-	scene->addLights({ light1, light2 });
+	scene->addLights({ spotLight1 });
 	
 	//pass
 	//PASS GROUP#1

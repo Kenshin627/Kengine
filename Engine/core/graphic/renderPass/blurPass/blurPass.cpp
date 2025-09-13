@@ -27,15 +27,6 @@ BlurPass::BlurPass(uint radius, const RenderState& state)
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureFilter::NEAREST,
 			TextureFilter::NEAREST
-		},
-		{
-			AttachmentType::Depth,
-			TextureInternalFormat::DEPTH32,
-			TextureDataFormat::DEPTH,
-			TextureWarpMode::CLAMP_TO_EDGE,
-			TextureWarpMode::CLAMP_TO_EDGE,
-			TextureFilter::NEAREST,
-			TextureFilter::NEAREST
 		}
 	};
 	mFrameBuffer = std::make_unique<FrameBuffer>(state.width, state.height, specs);

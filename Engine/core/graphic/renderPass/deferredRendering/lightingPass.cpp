@@ -13,6 +13,19 @@ LightingPass::LightingPass(const RenderState& state)
 		{ "core/graphic/shaderSrc/deferredRendering/lightingPassShader/vs.glsl", ShaderType::Vertex },
 		{ "core/graphic/shaderSrc/deferredRendering/lightingPassShader/fs.glsl", ShaderType::Fragment }
 	});
+	std::initializer_list<FrameBufferSpecification> specs =
+	{
+		{
+			AttachmentType::Color,
+			TextureInternalFormat::RGBA16F,
+			TextureDataFormat::RGBA,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureFilter::NEAREST,
+			TextureFilter::NEAREST
+		}
+	};
+	mFrameBuffer = std::make_shared<FrameBuffer>(state.width, state.height, specs);
 }
 
 void LightingPass::runPass(Scene* scene)

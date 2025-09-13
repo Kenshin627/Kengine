@@ -36,15 +36,6 @@ SSAOPass::SSAOPass(uint kernelSize = 64, float radius = 0.5f, const RenderState&
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureFilter::NEAREST,
 			TextureFilter::NEAREST
-		},
-		{
-			AttachmentType::Depth,
-			TextureInternalFormat::DEPTH32,
-			TextureDataFormat::DEPTH,
-			TextureWarpMode::CLAMP_TO_EDGE,
-			TextureWarpMode::CLAMP_TO_EDGE,
-			TextureFilter::NEAREST,
-			TextureFilter::NEAREST
 		}
 	};
 	mFrameBuffer = std::make_unique<FrameBuffer>(state.width, state.height, specs);
