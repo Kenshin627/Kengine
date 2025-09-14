@@ -89,7 +89,7 @@
     <LibraryPath>$(SolutionDir)Dependences\GLAD\lib;$(SolutionDir)Dependences\GLFW\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Dependences\GLAD\include;$(SolutionDir)Dependences\GLFW\include;$(ProjectDir)\common;$(SolutionDir)Dependences\glm;$(SolutionDir)Dependences\STB_IMAGE;$(SolutionDir)Dependences\spdlog\include;$(ProjectDir)\core;$(SolutionDir)Dependences\Assimp\include</IncludePath>
+    <IncludePath>$(SolutionDir)Dependences\GLAD\include;$(SolutionDir)Dependences\GLFW\include;$(ProjectDir)\common;$(SolutionDir)Dependences\glm;$(SolutionDir)Dependences\STB_IMAGE;$(SolutionDir)Dependences\spdlog\include;$(ProjectDir)\core;$(SolutionDir)Dependences\Assimp\include;$(ProjectDir)\imgui</IncludePath>
     <ReferencePath>
     </ReferencePath>
     <LibraryPath>$(SolutionDir)Dependences\GLAD\lib;$(SolutionDir)Dependences\GLFW\lib-vc2022;$(SolutionDir)Dependences\Assimp\lib\x64;$(LibraryPath)</LibraryPath>
@@ -170,10 +170,12 @@
     <ClCompile Include="core\graphic\gpuBuffer\uniformBuffer.cpp" />
     <ClCompile Include="core\graphic\gpuBuffer\vertexArray.cpp" />
     <ClCompile Include="core\graphic\gpuBuffer\vertexBuffer.cpp" />
+    <ClCompile Include="core\graphic\renderPass\bloomPass\bloomPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\blurPass\blurPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\defaultToScreen\defaultPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\deferredRendering\geometryPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\deferredRendering\lightingPass.cpp" />
+    <ClCompile Include="core\graphic\renderPass\gaussianBlur\gaussianBlur.cpp" />
     <ClCompile Include="core\graphic\renderPass\postProcess\grayScaleEffect\grayScaleEffect.cpp" />
     <ClCompile Include="core\graphic\renderPass\renderPass.cpp" />
     <ClCompile Include="core\graphic\program\program.cpp" />
@@ -195,6 +197,13 @@
     <ClCompile Include="core\scene\renderObject.cpp" />
     <ClCompile Include="core\scene\scene.cpp" />
     <ClCompile Include="entryPoint.cpp" />
+    <ClCompile Include="imgui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="imgui\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="imgui\imgui.cpp" />
+    <ClCompile Include="imgui\imgui_demo.cpp" />
+    <ClCompile Include="imgui\imgui_draw.cpp" />
+    <ClCompile Include="imgui\imgui_tables.cpp" />
+    <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="window\window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -216,10 +225,12 @@
     <ClInclude Include="core\graphic\gpuBuffer\uniformBuffer.h" />
     <ClInclude Include="core\graphic\gpuBuffer\vertexArray.h" />
     <ClInclude Include="core\graphic\gpuBuffer\vertexBuffer.h" />
+    <ClInclude Include="core\graphic\renderPass\bloomPass\bloomPass.h" />
     <ClInclude Include="core\graphic\renderPass\blurPass\blurPass.h" />
     <ClInclude Include="core\graphic\renderPass\defaultToScreen\defaultPass.h" />
     <ClInclude Include="core\graphic\renderPass\deferredRendering\geometryPass.h" />
     <ClInclude Include="core\graphic\renderPass\deferredRendering\lightingPass.h" />
+    <ClInclude Include="core\graphic\renderPass\gaussianBlur\gaussianBlur.h" />
     <ClInclude Include="core\graphic\renderPass\postProcess\grayScaleEffect\grayScaleEffect.h" />
     <ClInclude Include="core\graphic\renderPass\renderPass.h" />
     <ClInclude Include="core\graphic\program\program.h" />
@@ -240,15 +251,28 @@
     <ClInclude Include="core\scene\object3D\object3D.h" />
     <ClInclude Include="core\scene\renderObject.h" />
     <ClInclude Include="core\scene\scene.h" />
+    <ClInclude Include="imgui\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="imgui\backends\imgui_impl_opengl3.h" />
+    <ClInclude Include="imgui\backends\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="imgui\imconfig.h" />
+    <ClInclude Include="imgui\imgui.h" />
+    <ClInclude Include="imgui\imgui_internal.h" />
+    <ClInclude Include="imgui\imstb_rectpack.h" />
+    <ClInclude Include="imgui\imstb_textedit.h" />
+    <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="window\window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="core\graphic\shaderSrc\blinnPhong\fs.glsl" />
     <None Include="core\graphic\shaderSrc\blinnPhong\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\vs.glsl" />
     <None Include="core\graphic\shaderSrc\deferredRendering\geometryPassShader\fs.glsl" />
     <None Include="core\graphic\shaderSrc\deferredRendering\geometryPassShader\vs.glsl" />
     <None Include="core\graphic\shaderSrc\deferredRendering\lightingPassShader\fs.glsl" />
     <None Include="core\graphic\shaderSrc\deferredRendering\lightingPassShader\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\gaussianBlur\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\gaussianBlur\vs.glsl" />
     <None Include="core\graphic\shaderSrc\postProcess\grayScale\fs.glsl" />
     <None Include="core\graphic\shaderSrc\postProcess\grayScale\vs.glsl" />
     <None Include="core\graphic\shaderSrc\ssao\blur\fs.glsl" />

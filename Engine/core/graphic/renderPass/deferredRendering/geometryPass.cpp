@@ -9,10 +9,10 @@ GeometryPass::GeometryPass(const RenderState& state)
 	:RenderPass(state)
 {
 	//GBUFFER
-	//|		RGB8  | viewPosition	| 
-	//|		RGB8  | viewNormal		|
-	//|		RGB8  | diffuse      	|
-	//|     RGBA8 | spec + shiness  |
+	//|		RGB16F     | viewPosition				     | 
+	//|		RGB16F     | viewNormal					     |
+	//|		RGBA16F    | diffuse/emissive + isEmissive   |
+	//|     RGBA16F    | spec + shiness				     |
 	std::initializer_list<FrameBufferSpecification> specs =
 	{
 		{
@@ -35,7 +35,7 @@ GeometryPass::GeometryPass(const RenderState& state)
 		},
 		{
 			AttachmentType::Color,
-			TextureInternalFormat::RGB8,
+			TextureInternalFormat::RGBA16F,
 			TextureDataFormat::RGB,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,

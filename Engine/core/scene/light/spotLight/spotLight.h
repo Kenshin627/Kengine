@@ -8,9 +8,13 @@ public:
 	~SpotLight() = default;
 	void setInner(float theta);
 	float getInner() const;
+	float getCosInner() const;
 	void setOutter(float phi);
 	float getOutter() const;
+	float getCosOutter() const;
 private:
 	float mInnerCutoff;
 	float mOutterCutoff;
+	float mInnerTheta;
+	float mOutterPhi;
 };

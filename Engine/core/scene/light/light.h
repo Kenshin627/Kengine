@@ -1,6 +1,7 @@
 #pragma once
 #include<glm.hpp>
 #include<vector>
+#include"../renderObject.h"
 
 enum class LightType
 {
@@ -27,7 +28,7 @@ struct GPULightBufferDataWrapper
 	glm::vec4 lightCount;
 };
 
-class Light
+class Light:public RenderObject
 {
 public:
 	Light(const glm::vec3& pos, const glm::vec3& dir, const glm::vec3& col, float kc, float ks, float kq);
@@ -54,6 +55,7 @@ public:
 	float getLinear() const;
 	float getQuadratic() const;
 	LightType getType() const;
+	void updateLightBuffer();
 protected:
 	LightType  mType;
 private:

@@ -19,6 +19,8 @@
 #include "graphic/renderPass/deferredRendering/lightingPass.h"
 #include "graphic/renderPass/ssaoPass/ssaoPass.h"
 #include "graphic/renderPass/blurPass/blurPass.h"
+#include "graphic/renderPass/bloomPass/bloomPass.h"
+#include "graphic/renderPass/gaussianBlur/gaussianBlur.h"
 #include "graphic/renderPass/toneMapping/toneMapping.h"
 #include "graphic/texture/textureSystem.h"
 
@@ -140,11 +142,10 @@ Application::Application(uint width, uint height, const char* title)
 	for (auto& renderObject : model5.getRenderList())
 	{
 		renderObject->setPosition(-1, 0.5, 0);
-		//renderObject->setRotation(0, 60, 0);
 		renderObject->setScale(0.08);
 	}
 
-	scene->addRenderObject({ ground, wall, box1, box2, sphere });
+	scene->addRenderObject({box1, box2, wall, ground});
 	scene->addRenderObject(model.getRenderList());
 	scene->addRenderObject(model2.getRenderList());
 	scene->addRenderObject(model3.getRenderList());
@@ -159,9 +160,10 @@ Application::Application(uint width, uint height, const char* title)
 	auto light1 = std::make_shared<PointLight>(glm::vec3(-5.0f, 1.0f, -.5f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	auto light2 = std::make_shared<PointLight>(glm::vec3(0.0f, 1.0f, -.5f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	auto light3 = std::make_shared<PointLight>(glm::vec3(5.0f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	auto spotLight1 = std::make_shared<SpotLight>(glm::vec3(2.0f, 3.0f, 2.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 30.f, 20.f);
-	auto spotLight2 = std::make_shared<SpotLight>(glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f, 17.5f, 7.5f);
-	scene->addLights({ spotLight1, spotLight2 });
+	auto spotLight1 = std::make_shared<SpotLight>(glm::vec3(2.0f, 3.0f, 2.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 10.0f), 1.0f, 0.09f, 0.032f, 17.f, 7.5f);
+	auto spotLight2 = std::make_shared<SpotLight>(glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(10.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f, 17.5f, 7.5f);
+	auto spotLight3 = std::make_shared<SpotLight>(glm::vec3(0.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(5.0f, 5.0f, 5.0f), 1.0f, 0.09f, 0.032f, 17.5f, 7.5f);
+	scene->addLights({ spotLight1, spotLight2, spotLight3 });
 	
 	//pass
 	//PASS GROUP#1
@@ -205,7 +207,7 @@ Application::Application(uint width, uint height, const char* title)
 	ssaoPassState.target = RenderTarget::FRAMEBUFFER;
 	std::shared_ptr<SSAOPass> ssaoPass = std::make_shared<SSAOPass>(128, 1.0, ssaoPassState);
 	ssaoPass->setLastPassFBOs({ gPass->getCurrentFrameBuffer() });
-
+	
 	//pass#3 blurPass
 	RenderState blurPasState;
 	blurPasState.width = width;
@@ -227,17 +229,37 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<LightingPass> lightingPass = std::make_shared<LightingPass>(lightingPassState);
 	lightingPass->setLastPassFBOs({ gPass->getCurrentFrameBuffer(), blurPass->getCurrentFrameBuffer()});
 
+	RenderState bloomPassState;
+	bloomPassState.width = width;
+	bloomPassState.height = height;
+	bloomPassState.viewport.z = width;
+	bloomPassState.viewport.w = height;
+	bloomPassState.depthTest = false;
+	bloomPassState.target = RenderTarget::FRAMEBUFFER;
+	std::shared_ptr<BloomPass> bloomPass = std::make_shared<BloomPass>(bloomPassState);
+	bloomPass->setLastPassFBOs({ lightingPass->getCurrentFrameBuffer() });
+
+	RenderState gaussianPassState;
+	gaussianPassState.width = width;
+	gaussianPassState.height = height;
+	gaussianPassState.viewport.z = width;
+	gaussianPassState.viewport.w = height;
+	gaussianPassState.depthTest = false;
+	gaussianPassState.target = RenderTarget::FRAMEBUFFER;
+	std::shared_ptr<GaussianBlur> gaussianBlur = std::make_shared<GaussianBlur>(gaussianPassState);
+	gaussianBlur->setLastPassFBOs({ bloomPass->getCurrentFrameBuffer() });
+
 	RenderState toneMappingState;
 	toneMappingState.width = width;
 	toneMappingState.height = height;
 	toneMappingState.viewport.z = width;
 	toneMappingState.viewport.w = height;
 	toneMappingState.depthTest = false;
-	toneMappingState.target = RenderTarget::SCREEN;
+	toneMappingState.target = RenderTarget::FRAMEBUFFER;
 	std::shared_ptr<ToneMapping> toneMappingPass = std::make_shared<ToneMapping>(1.0, toneMappingState);
-	toneMappingPass->setLastPassFBOs({ lightingPass->getCurrentFrameBuffer() });
+	toneMappingPass->setLastPassFBOs({ gaussianBlur->getOutputFrameBuffer(), bloomPass->getCurrentFrameBuffer() });
 
-	renderer->setRenderPass({ gPass, ssaoPass, blurPass, lightingPass, toneMappingPass });
+	renderer->setRenderPass({ gPass, ssaoPass, blurPass, lightingPass, bloomPass, gaussianBlur, toneMappingPass });
 }
 
 Application::~Application()

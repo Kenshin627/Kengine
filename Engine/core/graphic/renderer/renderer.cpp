@@ -4,6 +4,7 @@
 #include "scene/camera/camera.h"
 #include "graphic/renderPass/renderPass.h"
 #include "graphic/renderPass/defaultToScreen/defaultPass.h"
+#include "graphic/gpuBuffer/frameBuffer.h"
 
 Renderer::Renderer(uint width, uint height)
 	:mWidth(width),
@@ -31,6 +32,11 @@ void Renderer::render()
 	}
 	
 	mCurrentScene->endScene();
+}
+
+Scene* Renderer::getCurrentScene()
+{
+	return mCurrentScene.get();
 }
 
 void Renderer::onWindowSizeChanged(uint width, uint height)
@@ -65,6 +71,11 @@ void Renderer::setRenderPass(const std::initializer_list<std::shared_ptr<RenderP
 	{
 		mRenderPasses.push_back(pass);
 	}
+}
+
+uint Renderer::getLastFrameBufferTexture() const
+{
+	return mRenderPasses.back()->getCurrentFrameBuffer()->getColorAttachment(0)->id();
 }
 
 void Renderer::setDefaultRenderPass()

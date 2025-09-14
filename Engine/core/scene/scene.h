@@ -21,6 +21,7 @@ public:
 	void addRenderObject(const std::vector<std::shared_ptr<RenderObject>>& objects);
 	void addLight(std::shared_ptr<Light> light);
 	void addLights(const std::initializer_list<std::shared_ptr<Light>>& lights);
+	std::vector<std::shared_ptr<Light>> getLights();
 	void setMainCamera(std::shared_ptr<Camera> camera);
 	std::shared_ptr<Camera> getCurrentCamera() const;
 	const std::vector<std::shared_ptr<RenderObject>>& getRenderList() const;
@@ -31,6 +32,8 @@ public:
 	void checkSceneReady() const;
 	uint getLightCount() const;
 	ScreenQuad* getScreenQuad() const;
+	void updateLightBuffer();
+	void updateSceneUI();
 private:
 	std::vector<std::shared_ptr<RenderObject>> mRenderList;
 	std::vector<std::shared_ptr<Light>>		   mLights;

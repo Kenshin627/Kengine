@@ -45,43 +45,52 @@ void main()
 	vec3 n				   =  normalize(texture(gNormal, vTexcoord).xyz);
 	vec3 v				   = normalize(-fragmentPos);
 	float ambientOcclusion = texture(ssaoMap, vTexcoord).r;
-	vec3 diff			   = texture(gDiffuse, vTexcoord).rgb;
-	vec4 specShiness	   = texture(gSpecShiness, vTexcoord);
-	float spec			   = specShiness.r;
-	float shiness		   = specShiness.a;
-	shiness *= 100;
-	int lightCount = lightBuffer.lights[0].lightCount;
-	for(int i = 0; i < lightCount; i++)
+	vec4 diffEmissive	   = texture(gDiffuse, vTexcoord);
+	vec3 diff			   = diffEmissive.rgb;
+	float emmisive		   = diffEmissive.a;
+	//check if si emissiveLighting return it's emissiveColor, no calc lghting
+	if(emmisive == 1.0)
 	{
-		vec4 viewLightPos = cameraBuffer.viewMatrix * vec4(lightBuffer.lights[i].position.xyz, 1.0);
-		vec3 lightPos = vec3(viewLightPos);
-		vec3 l = lightPos - fragmentPos;
-		float d = length(l);
-		l = normalize(l);
-		vec3 h = normalize(l + v);
-		vec3 lightColor = lightBuffer.lights[i].color.rgb;
-		float constant = lightBuffer.lights[i].attentionFactor.r;
-		float linear = lightBuffer.lights[i].attentionFactor.g;
-		float quadratic = lightBuffer.lights[i].attentionFactor.b;
-		vec3 ambient = 0.01 * lightColor * diff;
-		vec3 diffuse = max(dot(n, l), 0.0) * lightColor * diff;
-		vec3 specular = pow(max(dot(n, h), 0.0), shiness) * lightColor * spec;
-		float attenuation = 1.0 / (constant + linear * d +quadratic * (d * d));
-
-		//check if spotLight
-		float intensity = 1.0;
-		if(lightBuffer.lights[i].type == 1)
+		FragColor = vec4(diff, 1.0);
+	}
+	else
+	{
+		vec4 specShiness	   = texture(gSpecShiness, vTexcoord);
+		float spec			   = specShiness.r;
+		float shiness		   = specShiness.a;
+		int lightCount = lightBuffer.lights[0].lightCount;
+		for(int i = 0; i < lightCount; i++)
 		{
-			vec3  lightDirection = normalize(vec3(cameraBuffer.viewMatrix * -lightBuffer.lights[i].direction));
-			float costheta = dot(l, lightDirection);
-			float epsilon = lightBuffer.lights[i].innerCutoff - lightBuffer.lights[i].outterCutoff;
-			intensity = clamp((costheta - lightBuffer.lights[i].outterCutoff), 0.0, 1.0) / epsilon;
-		}
-		diffuse   *= attenuation;
-		diffuse   *= intensity;
-		specular  *= attenuation;
-		specular  *= intensity;
-		ambient   *= ambientOcclusion;
-		FragColor += vec4(specular + ambient + diffuse, 1.0);
+			vec4 viewLightPos = cameraBuffer.viewMatrix * vec4(lightBuffer.lights[i].position.xyz, 1.0);
+			vec3 lightPos = vec3(viewLightPos);
+			vec3 l = lightPos - fragmentPos;
+			float d = length(l);
+			l = normalize(l);
+			vec3 h = normalize(l + v);
+			vec3 lightColor = lightBuffer.lights[i].color.rgb;
+			float constant = lightBuffer.lights[i].attentionFactor.r;
+			float linear = lightBuffer.lights[i].attentionFactor.g;
+			float quadratic = lightBuffer.lights[i].attentionFactor.b;
+			vec3 ambient = 0.01 * lightColor * diff;
+			vec3 diffuse = max(dot(n, l), 0.0) * lightColor * diff;
+			vec3 specular = pow(max(dot(n, h), 0.0), shiness) * lightColor * spec;
+			float attenuation = 1.0 / (constant + linear * d +quadratic * (d * d));
+
+			//check if spotLight
+			float intensity = 1.0;
+			if(lightBuffer.lights[i].type == 1)
+			{
+				vec3  lightDirection = normalize(vec3(cameraBuffer.viewMatrix * -lightBuffer.lights[i].direction));
+				float costheta = dot(l, lightDirection);
+				float epsilon = lightBuffer.lights[i].innerCutoff - lightBuffer.lights[i].outterCutoff;
+				intensity = clamp((costheta - lightBuffer.lights[i].outterCutoff), 0.0, 1.0) / epsilon;
+			}
+			diffuse   *= attenuation;
+			diffuse   *= intensity;
+			specular  *= attenuation;
+			specular  *= intensity;
+			ambient   *= ambientOcclusion;
+			FragColor += vec4(specular + ambient + diffuse, 1.0);
+		}	
 	}	
 }

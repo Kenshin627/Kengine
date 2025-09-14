@@ -18,6 +18,20 @@ ToneMapping::ToneMapping(float exposure, const RenderState& state)
 		{ "core/graphic/shaderSrc/toneMapping/fs.glsl", ShaderType::Fragment }
 	};
 	mProgram->buildFromFiles(shaders);
+
+	std::initializer_list<FrameBufferSpecification> spec =
+	{
+		{
+			AttachmentType::Color,
+			TextureInternalFormat::RGB8,
+			TextureDataFormat::RGB,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureFilter::LINEAR,
+			TextureFilter::LINEAR
+		}
+	};
+	mFrameBuffer = std::make_shared<FrameBuffer>(state.width, state.height, spec);
 }
 
 ToneMapping::~ToneMapping()
@@ -28,9 +42,13 @@ void ToneMapping::beginPass()
 {
 	RenderPass::beginPass();
 	mProgram->setUniform("exposure", mExposure);
-	Texture2D* tex = mlastPassFrameBuffer[0]->getColorAttachment(0);
-	tex->bind(0);
-	mProgram->setUniform("screenMap", 0);
+	Texture2D* gaussianBlurMap = mlastPassFrameBuffer[0]->getColorAttachment(0);
+	gaussianBlurMap->bind(0);
+	mProgram->setUniform("gaussian", 0);
+
+	Texture2D* ldrMap = mlastPassFrameBuffer[1]->getColorAttachment(0);
+	ldrMap->bind(1);
+	mProgram->setUniform("ldrMap", 1);
 }
 
 void ToneMapping::runPass(Scene* scene)

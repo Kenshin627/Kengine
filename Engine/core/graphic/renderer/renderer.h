@@ -14,8 +14,10 @@ public:
 	~Renderer();	
 	void render();
 	void setCurrentScene(std::shared_ptr<Scene> scene) { mCurrentScene = scene; }
+	Scene* getCurrentScene();
 	void onWindowSizeChanged(uint width, uint height);
 	void setRenderPass(const std::initializer_list<std::shared_ptr<RenderPass>>& passes);
+	uint getLastFrameBufferTexture() const;
 private:
 	void setDefaultRenderPass();
 private:	

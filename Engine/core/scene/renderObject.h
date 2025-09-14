@@ -29,8 +29,10 @@ public:
 	void setScale(const glm::vec3& scale);
 	void setScale(float x, float y, float z);
 	void setScale(float val);
+	void setGeometry(std::shared_ptr<Geometry> geometry);
 	void updateModelMatrix();
 	void setOwner(Scene* s);
+	Scene* getOwner();
 	std::shared_ptr<Material> getMaterial() const;
 private:
 	std::shared_ptr<Geometry> mMesh;

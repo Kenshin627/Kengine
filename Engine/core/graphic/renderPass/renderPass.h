@@ -32,7 +32,7 @@ struct RenderState
 	int		     clearBits       { GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT };
 	float		 clearDepth      { 1.0f                                      };
 	float		 clearStencil    { 0.0f                                      };
-	glm::vec4	 clearColor      { 0.2f, 0.2f, 0.2f, 1.0f                    };
+	glm::vec4	 clearColor      { 0.1f, 0.1f, 0.1f, 1.0f                    };
 	glm::vec4	 viewport        { 0, 0, 800, 600                            };
 	RenderTarget target			 { RenderTarget::SCREEN						 };
 	uint		 width			 { 800										 };
@@ -55,7 +55,7 @@ public:
 	virtual void beginPass();
 	virtual void runPass(Scene* scene) = 0;
 	virtual void endPass();
-	void resize(uint width, uint height);
+	virtual void resize(uint width, uint height);
 	//update per pass per frame
 	void updateRenderState() const;
 	void setRenderState(const RenderState& state);

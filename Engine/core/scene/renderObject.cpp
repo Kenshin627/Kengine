@@ -98,6 +98,11 @@ void RenderObject::setScale(float val)
 	setScale(val, val, val);
 }
 
+void RenderObject::setGeometry(std::shared_ptr<Geometry> geometry)
+{
+	mMesh = geometry;
+}
+
 void RenderObject::updateModelMatrix()
 {
 	glm::mat4 translation = glm::translate(glm::identity<glm::mat4>(), mPosition);
@@ -111,6 +116,11 @@ void RenderObject::updateModelMatrix()
 void RenderObject::setOwner(Scene* s)
 {
 	mOnwningScene = s;
+}
+
+Scene* RenderObject::getOwner()
+{
+	return mOnwningScene;
 }
 
 

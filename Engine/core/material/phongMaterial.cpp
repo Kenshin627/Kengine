@@ -8,12 +8,17 @@ PhongMaterial::PhongMaterial(const BlinnPhongMaterialSpecification& spec)
 	 mShinessMap(spec.shinessMap),
 	 mDiffuseColor(spec.diffuseColor),
 	 mSpecularColor(spec.specularColor),
+	 mEmissiveColor(spec.emissiveColor),
 	 mShiness(spec.shiness)
 {
 	mHasDiffuseTex  = mDiffuseMap  ? true : false;
 	mHasSpecularTex = mSpecularMap ? true : false;
 	mHasNormalTex   = mNormalMap   ? true : false;
 	mHasShinessTex  = mShinessMap  ? true : false;
+	if (mEmissiveColor.r != 0 || mEmissiveColor.g != 0 || mEmissiveColor.b != 0)
+	{
+		mIsEmissive = true;
+	}
 	initProgram();
 }
 
@@ -47,6 +52,7 @@ void PhongMaterial::setUniforms(Program* p) const
 	//colors
 	p->setUniform("diffuseColor", mDiffuseColor);
 	p->setUniform("specularColor", mSpecularColor);
+	p->setUniform("emissiveColor", mEmissiveColor);
 	p->setUniform("shiness", mShiness);
 
 	//bool
@@ -54,6 +60,7 @@ void PhongMaterial::setUniforms(Program* p) const
 	p->setUniform("hasSpecTex", mHasSpecularTex);
 	p->setUniform("hasNormalTex", mHasNormalTex);
 	p->setUniform("hasShinessTex", mHasShinessTex);
+	p->setUniform("isEmissive", mIsEmissive);
 }
 
 void PhongMaterial::initProgram()
@@ -64,3 +71,14 @@ void PhongMaterial::initProgram()
 	};
 	mProgram->buildFromFiles(files);
 }
+
+void PhongMaterial::setDiffuseColor(const glm::vec3& col)
+{
+	mDiffuseColor = col;
+}
+
+void PhongMaterial::setEmissiveColor(const glm::vec3& col)
+{
+	mEmissiveColor = col;
+}
+

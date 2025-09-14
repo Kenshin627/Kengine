@@ -5,6 +5,11 @@
 #include "scene.h"
 #include "core.h"
 
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+#include "scene/light/spotLight/spotLight.h"
+
 Scene::Scene()
 	  :mLightCount(0)
 {
@@ -36,6 +41,7 @@ Scene::Scene()
 void Scene::addRenderObject(std::shared_ptr<RenderObject> object)
 {
 	mRenderList.push_back(object);
+	object->setOwner(this);
 }
 
 void Scene::addRenderObject(const std::initializer_list<std::shared_ptr<RenderObject>>& objects)
@@ -45,6 +51,10 @@ void Scene::addRenderObject(const std::initializer_list<std::shared_ptr<RenderOb
 		return;
 	}
 	mRenderList.insert(mRenderList.end(), objects.begin(), objects.end());
+	for (auto& renderOject : objects)
+	{
+		renderOject->setOwner(this);
+	}
 }
 
 void Scene::addRenderObject(const std::vector<std::shared_ptr<RenderObject>>& objects)
@@ -54,6 +64,10 @@ void Scene::addRenderObject(const std::vector<std::shared_ptr<RenderObject>>& ob
 		return;
 	}
 	mRenderList.insert(mRenderList.end(), objects.begin(), objects.end());
+	for (auto& renderOject : objects)
+	{
+		renderOject->setOwner(this);
+	}
 }
 
 void Scene::addLight(std::shared_ptr<Light> light)
@@ -70,49 +84,18 @@ void Scene::addLights(const std::initializer_list<std::shared_ptr<Light>>& light
 	}
 
 	mLights.insert(mLights.begin(), lights.begin(), lights.end());
-	mLightCount = mLights.size();
-	//update light buffer
-	std::vector<GPULightBufferData> gpuLightBufferData;
-	gpuLightBufferData.reserve(mLightCount);
+	mLightCount = mLights.size();	
 
-	for (auto& light : mLights)
+	for (auto& light : lights)
 	{
-		GPULightBufferData lightData;
-		lightData.position = glm::vec4(light->getPosition(), 0.0);
-		lightData.direction = glm::vec4(glm::normalize(light->getDirection()), 0.0);
-		lightData.color = glm::vec4(light->getColor(), 0.0);
-		lightData.attentionFactor.x = light->getConstant();
-		lightData.attentionFactor.y = light->getLinear();
-		lightData.attentionFactor.z = light->getQuadratic();
-		LightType type = light->getType();
-		
-		switch (type)
-		{
-		case LightType::PointLight:
-		{
-			lightData.type = LightType::PointLight;
-			break;
-		}
-		case LightType::SpotLight:
-		{
-			auto spotLight = std::static_pointer_cast<SpotLight>(light);
-			lightData.type = LightType::SpotLight;
-			lightData.innerCutoff = spotLight->getInner();
-			lightData.outterCutoff = spotLight->getOutter();
-			break;
-		}
-
-		default:
-		{
-			KS_CORE_ERROR("unknown light type");
-			break;
-		}
-		}
-		lightData.lightCount = mLightCount;
-		gpuLightBufferData.push_back(lightData);
+		addRenderObject(light);
 	}
+	updateLightBuffer();
+}
 
-	mLightBuffer->setData(mLightCount * sizeof(GPULightBufferData), gpuLightBufferData.data());
+std::vector<std::shared_ptr<Light>> Scene::getLights()
+{
+	return mLights;
 }
 
 void Scene::setMainCamera(std::shared_ptr<Camera> camera)
@@ -213,5 +196,119 @@ uint Scene::getLightCount() const
 ScreenQuad* Scene::getScreenQuad() const
 {
 	return mScreenQuad.get();
+}
+
+void Scene::updateLightBuffer()
+{
+	//update light buffer
+	std::vector<GPULightBufferData> gpuLightBufferData;
+	gpuLightBufferData.reserve(mLightCount);
+	for (auto& light : mLights)
+	{
+		GPULightBufferData lightData;
+		lightData.position = glm::vec4(light->getPosition(), 0.0);
+		lightData.direction = glm::vec4(glm::normalize(light->getDirection()), 0.0);
+		lightData.color = glm::vec4(light->getColor(), 0.0);
+		lightData.attentionFactor.x = light->getConstant();
+		lightData.attentionFactor.y = light->getLinear();
+		lightData.attentionFactor.z = light->getQuadratic();
+		LightType type = light->getType();
+
+		switch (type)
+		{
+		case LightType::PointLight:
+		{
+			lightData.type = LightType::PointLight;
+			break;
+		}
+		case LightType::SpotLight:
+		{
+			auto spotLight = std::static_pointer_cast<SpotLight>(light);
+			lightData.type = LightType::SpotLight;
+			lightData.innerCutoff = spotLight->getCosInner();
+			lightData.outterCutoff = spotLight->getCosOutter();
+			break;
+		}
+
+		default:
+		{
+			KS_CORE_ERROR("unknown light type");
+			break;
+		}
+		}
+		lightData.lightCount = mLightCount;
+		gpuLightBufferData.push_back(lightData);
+
+	}
+
+	mLightBuffer->setData(mLightCount * sizeof(GPULightBufferData), gpuLightBufferData.data());
+}
+
+void Scene::updateSceneUI()
+{
+	ImGui::Begin("Control pannel");
+	auto lights = mLights;
+	for (int i = 0; i < lights.size(); i++)
+	{
+		ImGui::PushID(i);
+		auto light = lights[i];
+		std::string lightName = light->getType() == LightType::PointLight ? "PointLight" : "SpotLight";
+		ImGui::Text(lightName.c_str());
+		glm::vec3 pos = light->getPosition();
+		if (ImGui::DragFloat3("position", &(pos.r), 0.1f))
+		{
+			light->setPosition(pos);
+		}
+		glm::vec3 col = light->getColor();
+		if (ImGui::ColorEdit3("color", &(col.r)))
+		{
+			light->setColor(col);
+		}
+		float constant = light->getConstant();
+		if (ImGui::DragFloat("attention constant", &constant, 0.01, 0.0, 1.0))
+		{
+			light->setConstant(constant);
+		}
+
+		float linear = light->getLinear();
+		if (ImGui::DragFloat("attention linear", &linear, 0.01, 0.0, 1.0))
+		{
+			light->setLinear(linear);
+		}
+
+		float quadratic = light->getQuadratic();
+		if (ImGui::DragFloat("attention quadratic", &quadratic, 0.01, 0.0, 1.0))
+		{
+			light->setQuadratic(quadratic);
+		}
+
+		if (light->getType() == LightType::SpotLight)
+		{
+			glm::vec3 dir = light->getDirection();
+			if (ImGui::DragFloat3("direction", &(dir.r), 0.1f))
+			{
+				light->setDirection(dir);
+			}
+
+			std::shared_ptr<SpotLight> spot = std::static_pointer_cast<SpotLight>(light);
+			float inner = spot->getInner();
+			if (ImGui::DragFloat("spot Inner cutoff", &inner, 0.1, 0.0))
+			{
+				spot->setInner(inner);
+			}
+			float outter = spot->getOutter();
+			if (ImGui::DragFloat("spot Outter cutoff", &outter, 0.1, 0.0))
+			{
+				spot->setOutter(outter);
+			}
+		}
+
+
+		ImGui::PopID();
+	}
+
+	bool show = true;
+	ImGui::ShowDemoWindow(&show);
+	ImGui::End();
 }
 

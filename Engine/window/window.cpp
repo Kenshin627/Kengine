@@ -3,6 +3,12 @@
 #include "window.h"
 #include "logger.h"
 #include "graphic/renderer/renderer.h"
+#include "scene/light/light.h"
+#include "scene/scene.h"
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+#include "scene/light/spotLight/spotLight.h"
 
 static void windowSizeChanged(GLFWwindow* window, int width, int height)
 {
@@ -46,6 +52,23 @@ Window::Window(uint width, uint height, const char* title)
 		KS_CORE_ERROR("Failed to initialize GLAD");
 		return;
 	}
+	//IMGUI////////////////////
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	// 启用键盘导航
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // 核心：启用docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // 可选：支持多窗口系统
+	io.ConfigDockingWithShift = false;                          // 无需Shift键即可停靠
+
+	// 5. 配置样式（可选）
+	ImGui::StyleColorsDark(); // 暗色主题
+	// ImGui::StyleColorsLight(); // 亮色主题
+
+	// 6. 初始化平台和渲染后端
+	ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
+	ImGui_ImplOpenGL3_Init("#version 460 core");
 
 	//event callbacks
 	glfwSetWindowUserPointer(mWindow, this);
@@ -61,11 +84,69 @@ void Window::RunLoop()
 {
 	while (!glfwWindowShouldClose(mWindow))
 	{
+		glfwPollEvents();
+		//IMGUI//////////////////////
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+		
+		//docking//////
+		// 5. 创建Dock Space（关键步骤）
+		// 覆盖整个窗口的dock空间
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(viewport->WorkPos);
+		ImGui::SetNextWindowSize(viewport->WorkSize);
+		ImGui::SetNextWindowViewport(viewport->ID);
+
+		// 窗口标志：无边框、无标题栏，作为dock空间容器
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+		// 创建dock空间容器窗口
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::Begin("DockSpace Container", nullptr, window_flags);
+		ImGui::PopStyleVar(2);
+
+		// 生成dock空间
+		ImGuiIO& io = ImGui::GetIO();
+		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+		}
+		ImGui::End();
+
 		if (mRenderer)
 		{
 			mRenderer->render();
 		}
-		glfwPollEvents();
+
+		ImGui::Begin("Viewport");
+		ImGui::Image(
+			(void*)(intptr_t)mRenderer->getLastFrameBufferTexture(),
+			ImVec2(mWidth, mHeight), // 缩小显示
+			ImVec2(0, 1), ImVec2(1, 0) // 翻转V轴
+		);
+		ImGui::End();
+
+		auto scene = mRenderer->getCurrentScene();
+		scene->updateSceneUI();
+
+		ImGui::Render();
+		glClearColor(0.1, 0.1, 0.1, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// 渲染ImGui绘制数据
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		// 多视口支持（如果启用）
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+			GLFWwindow* backup_current_context = glfwGetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			glfwMakeContextCurrent(backup_current_context);
+		}
 		glfwSwapBuffers(mWindow);
 	}
 	glfwDestroyWindow(mWindow);
@@ -114,8 +195,5 @@ void Window::onWindowSizeChanged(GLFWwindow* window, int width, int height)
 	}
 	mWidth = width;
 	mHeight = height;
-	
-	//TODO: pass framebuffer
-	//TODO: framebuffer resize 
 	mRenderer->onWindowSizeChanged(mWidth, mHeight);
 }
