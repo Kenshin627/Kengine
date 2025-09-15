@@ -61,10 +61,9 @@ Window::Window(uint width, uint height, const char* title)
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // 核心：启用docking
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // 可选：支持多窗口系统
 	io.ConfigDockingWithShift = false;                          // 无需Shift键即可停靠
-
+	io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/Candara.ttf", 22.0f);
 	// 5. 配置样式（可选）
 	ImGui::StyleColorsDark(); // 暗色主题
-	// ImGui::StyleColorsLight(); // 亮色主题
 
 	// 6. 初始化平台和渲染后端
 	ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
@@ -128,6 +127,9 @@ void Window::RunLoop()
 			ImVec2(mWidth, mHeight), // 缩小显示
 			ImVec2(0, 1), ImVec2(1, 0) // 翻转V轴
 		);
+		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+		onViewportSizeChanged(viewportSize.x, viewportSize.y);
+	
 		ImGui::End();
 
 		auto scene = mRenderer->getCurrentScene();
@@ -196,4 +198,18 @@ void Window::onWindowSizeChanged(GLFWwindow* window, int width, int height)
 	mWidth = width;
 	mHeight = height;
 	mRenderer->onWindowSizeChanged(mWidth, mHeight);
+}
+
+void Window::onViewportSizeChanged(int width, int height)
+{
+	if (width > 0 && height > 0)
+	{
+		if (mImGuiViewportSize.x == width && mImGuiViewportSize.y == height)
+		{
+			return;
+		}
+		mImGuiViewportSize.x = width;
+		mImGuiViewportSize.y = height;
+		mRenderer->onWindowSizeChanged(width, height);
+	}
 }

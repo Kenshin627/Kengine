@@ -1,4 +1,5 @@
 #pragma once
+#include <glm.hpp>
 #include "typedef.h"
 
 class Renderer;
@@ -17,10 +18,12 @@ public:
 	void setWindSize(uint width, uint height);
 private:
 	void onWindowSizeChanged(GLFWwindow* window, int width, int height);
+	void onViewportSizeChanged(int width, int height);
 private:
 	uint					  mWidth;
 	uint					  mHeight;
 	const char*				  mTitle;
 	GLFWwindow*				  mWindow  { nullptr };
 	std::shared_ptr<Renderer> mRenderer;
+	glm::vec2			      mImGuiViewportSize;
 };
