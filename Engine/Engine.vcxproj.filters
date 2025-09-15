@@ -165,6 +165,9 @@
     <ClCompile Include="imgui\backends\imgui_impl_glfw.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\material\pbrMaterial.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -327,6 +330,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="imgui\backends\imgui_impl_glfw.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\material\pbrMaterial.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

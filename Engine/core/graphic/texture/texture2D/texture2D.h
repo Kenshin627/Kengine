@@ -50,10 +50,10 @@ struct TextureSpecification
 	TextureDataFormat      dataFormat     = TextureDataFormat::RGB;
 	TextureWarpMode		   warpS		  = TextureWarpMode::REPEAT;
 	TextureWarpMode		   warpT		  = TextureWarpMode::REPEAT;
-	TextureFilter		   minFilter	  = TextureFilter::LINEAR_MIPMAP_LINEAR;
+	TextureFilter		   minFilter	  = TextureFilter::LINEAR;
 	TextureFilter		   magFilter	  = TextureFilter::LINEAR;
-	uint				   chanel		  = 3;
-	uint				   mipmapLevel	  = 5;
+	uint				   chanel		  = 4;
+	uint				   mipmapLevel	  = 1;
 };
 
 /// <summary>

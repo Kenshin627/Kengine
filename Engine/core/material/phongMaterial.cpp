@@ -49,6 +49,8 @@ void PhongMaterial::setUniforms(Program* p) const
 		p->setUniform("shinessMap", 3);
 	}
 
+	p->setUniform("materialType", 0);
+
 	//colors
 	p->setUniform("diffuseColor", mDiffuseColor);
 	p->setUniform("specularColor", mSpecularColor);

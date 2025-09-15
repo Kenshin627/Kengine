@@ -6,6 +6,7 @@
 #include "scene/light/pointLight/pointLight.h"
 #include "scene/light/spotLight/spotLight.h"
 #include "material/phongMaterial.h"
+#include "material/pbrMaterial.h"
 #include "scene/renderObject.h"
 #include "scene/model/model.h"
 #include "geometry/cube.h"
@@ -36,134 +37,145 @@ Application::Application(uint width, uint height, const char* title)
 	//GEOMETRY
 	std::shared_ptr<Scene> scene = std::make_shared<Scene>();
 	renderer->setCurrentScene(scene);
-	std::shared_ptr<Rectangle> groundGeom = std::make_shared<Rectangle>(100.0f, 100.0f);
-	std::shared_ptr<Rectangle> wallGeom = std::make_shared<Rectangle>(100.0f, 100.0f);
+	std::shared_ptr<Rectangle> groundGeom = std::make_shared<Rectangle>(100.0f, 100.0f, glm::vec2(0.1, 0.1));
+	std::shared_ptr<Rectangle> wallGeom = std::make_shared<Rectangle>(100.0f, 100.0f, glm::vec2{0.5, 0.5});
 	std::shared_ptr<Cube> cube = std::make_shared<Cube>(1.0f, 1.0f, 1.0f);
-	std::shared_ptr<Sphere> sphereGeometry = std::make_shared<Sphere>(0.5f, 32.0f, 32.0f);
+	std::shared_ptr<Sphere> sphereGeometry = std::make_shared<Sphere>(1.0f, 128.0f, 128.0f);
 
-	//TEXTURE
-	TextureSystem& ts = TextureSystem::getInstance();
-	auto groundDiffuse = ts.getTexture("images/brick_crosswalk_4k.blend/textures/brick_crosswalk_diff_4k.jpg");
-	auto groundSpecular = ts.getTexture("images/brick_crosswalk_4k.blend/textures/brick_crosswalk_disp_4k.png");
-	auto groundNormal = ts.getTexture("images/brick_crosswalk_4k.blend/textures/brick_crosswalk_nor_gl_4k.png");
-	auto groundShiness = ts.getTexture("images/brick_crosswalk_4k.blend/textures/brick_crosswalk_rough_4k.png");
-
-	auto sphereDifuse = ts.getTexture("images/green_metal_rust_4k.blend/textures/green_metal_rust_diff_4k.jpg");
-	auto sphereSpecular = ts.getTexture("images/green_metal_rust_4k.blend/textures/green_metal_rust_disp_4k.png");
-	auto sphereNormal = ts.getTexture("images/green_metal_rust_4k.blend/textures/green_metal_rust_nor_gl_4k.jpg");
-	auto sphereShiness = ts.getTexture("images/green_metal_rust_4k.blend/textures/green_metal_rust_rough_4k.jpg");
-	
-	auto wallDiffuse = ts.getTexture("images/patterned_brick_wall_03_4k.blend/textures/patterned_brick_wall_03_diff_4k.jpg");
-	auto wallSpecular = ts.getTexture("images/patterned_brick_wall_03_4k.blend/textures/patterned_brick_wall_03_disp_4k.png");
-	auto wallNormal = ts.getTexture("images/patterned_brick_wall_03_4k.blend/textures/patterned_brick_wall_03_nor_gl_4k.jpg");
-	auto wallShiness = ts.getTexture("images/patterned_brick_wall_03_4k.blend/textures/patterned_brick_wall_03_rough_4k.jpg");
-
-	auto boxDiffuse = ts.getTexture("images/wooden_garage_door_4k.blend/textures/wooden_garage_door_diff_4k.jpg");
-	auto boxSpecular = ts.getTexture("images/wooden_garage_door_4k.blend/textures/wooden_garage_door_disp_4k.png");
-	auto boxNormal = ts.getTexture("images/wooden_garage_door_4k.blend/textures/wooden_garage_door_nor_gl_4k.jpg");
-	auto boxShiness = ts.getTexture("images/wooden_garage_door_4k.blend/textures/wooden_garage_door_rough_4k.jpg");
 	//MATERIAL
-	BlinnPhongMaterialSpecification groundSpec;
-	groundSpec.diffuseMap = groundDiffuse;
-	//groundSpec.specularMap = groundSpecular;
-	groundSpec.normalMap = groundNormal;
-	groundSpec.shinessMap = groundShiness;
-	std::shared_ptr<PhongMaterial> groundMat = std::make_shared<PhongMaterial>(groundSpec);
+	PBRMaterialSpecification groundSpec;
+	groundSpec.albedoMapPath    = "images/black-white-tile-bl/black-white-tile_albedo.png";
+	groundSpec.metallicMapPath  = "images/black-white-tile-bl/black-white-tile_metallic.png";
+	groundSpec.roughnessMapPath = "images/black-white-tile-bl/black-white-tile_roughness.png";
+	groundSpec.normalMapPath    = "images/black-white-tile-bl/black-white-tile_normal-ogl.png";
+	std::shared_ptr<PBRMaterial> groundMat = std::make_shared<PBRMaterial>(groundSpec);
 
-	BlinnPhongMaterialSpecification sphereSpec;
-	sphereSpec.diffuseMap = sphereDifuse;
-	//sphereSpec.specularMap = sphereSpecular;
-	sphereSpec.normalMap = sphereNormal;
-	sphereSpec.shinessMap = sphereShiness;
-	std::shared_ptr<PhongMaterial> sphereMat = std::make_shared<PhongMaterial>(sphereSpec);
+	PBRMaterialSpecification ground2Spec;
+	ground2Spec.albedoMapPath = "images/laminate-flooring-brown-bl/laminate-flooring-brown_albedo.png";
+	ground2Spec.metallicMapPath = "images/laminate-flooring-brown-bl/laminate-flooring-brown_metallic.png";
+	ground2Spec.roughnessMapPath = "images/laminate-flooring-brown-bl/laminate-flooring-brown_roughness.png";
+	ground2Spec.normalMapPath = "images/laminate-flooring-brown-bl/laminate-flooring-brown_normal-ogl.png";
+	std::shared_ptr<PBRMaterial> ground2Mat = std::make_shared<PBRMaterial>(ground2Spec);
 
-	BlinnPhongMaterialSpecification boxSpec;
-	boxSpec.diffuseMap = boxDiffuse;
-	//boxSpec.specularMap = boxSpecular;
-	boxSpec.normalMap = boxNormal;
-	boxSpec.shinessMap = boxShiness;
-	std::shared_ptr<PhongMaterial> boxMat = std::make_shared<PhongMaterial>(boxSpec);
+	PBRMaterialSpecification ground3Spec;
+	ground3Spec.albedoMapPath = "images/oakfloor/albedo.png";
+	ground3Spec.roughnessMapPath = "images/oakfloor/roughness.png";
+	ground3Spec.normalMapPath = "images/oakfloor/normal.png";
+	std::shared_ptr<PBRMaterial> ground3Mat = std::make_shared<PBRMaterial>(ground3Spec);
+
+	PBRMaterialSpecification wallSpec;
+	wallSpec.albedoMapPath = "images/rectangle-polish/albedo.png";
+	wallSpec.roughnessMapPath = "images/rectangle-polish/roughness.png";
+	wallSpec.metallicMapPath = "images/rectangle-polish/metallic.png";
+	wallSpec.normalMapPath = "images/rectangle-polish/normal.png";
+	std::shared_ptr<PBRMaterial> wallMat = std::make_shared<PBRMaterial>(wallSpec);
+
+	PBRMaterialSpecification wall2Spec;
+	wall2Spec.albedoMapPath = "images/stonewall-bl/albedo.png";
+	wall2Spec.roughnessMapPath = "images/stonewall-bl/roughness.png";
+	wall2Spec.metallicMapPath = "images/stonewall-bl/metallic.png";
+	wall2Spec.normalMapPath = "images/stonewall-bl/normal.png";
+	std::shared_ptr<PBRMaterial> wall2Mat = std::make_shared<PBRMaterial>(wall2Spec);
+
+	PBRMaterialSpecification metallicSpec;
+	metallicSpec.albedoMapPath = "images/worn-metal4-bl/worn_metal4_albedo.png";
+	metallicSpec.metallicMapPath = "images/worn-metal4-bl/worn_metal4_Metallic.png";
+	metallicSpec.roughnessMapPath = "images/worn-metal4-bl/worn_metal4_Roughness.png";
+	metallicSpec.normalMapPath = "images/worn-metal4-bl/worn_metal4_Normal-ogl.png";
+	std::shared_ptr<PBRMaterial> metallicMat = std::make_shared<PBRMaterial>(metallicSpec);
+
+	PBRMaterialSpecification pbrSpec2;
+	//light-gold-bl
+	pbrSpec2.albedoMapPath = "images/light-gold-bl/albedo.png";
+	pbrSpec2.metallicMapPath = "images/light-gold-bl/metallic.png";
+	pbrSpec2.roughnessMapPath = "images/light-gold-bl/roughness.png";
+	pbrSpec2.normalMapPath = "images/light-gold-bl/normal.png";
 	
-	BlinnPhongMaterialSpecification wallSpec;
-	wallSpec.diffuseMap = wallDiffuse;
-	//wallSpec.specularMap = wallSpecular;
-	wallSpec.normalMap = wallNormal;
-	wallSpec.shinessMap = wallShiness;
-	std::shared_ptr<PhongMaterial> wallMat = std::make_shared<PhongMaterial>(wallSpec);
+	
+	std::shared_ptr<PBRMaterial> pbrMat2 = std::make_shared<PBRMaterial>(pbrSpec2);
 
+	PBRMaterialSpecification pbrSpec3;
+	pbrSpec3.roughness = 1.0;
+	pbrSpec3.metallic = 0.1;
+	pbrSpec3.albedoColor = { 1.0, 1.0, 1.0 };
+	std::shared_ptr<PBRMaterial> pbrMat3 = std::make_shared<PBRMaterial>(pbrSpec3);
 	//RENDER OBJECT
-	std::shared_ptr<RenderObject> ground = std::make_shared<RenderObject>(groundGeom, groundMat);	
-	std::shared_ptr<RenderObject> wall = std::make_shared<RenderObject>(wallGeom, wallMat);
-	std::shared_ptr<RenderObject> box1 = std::make_shared<RenderObject>(cube, boxMat);
-	std::shared_ptr<RenderObject> box2 = std::make_shared<RenderObject>(cube, boxMat);
-	std::shared_ptr<RenderObject> sphere = std::make_shared<RenderObject>(sphereGeometry, sphereMat);
-	box1->setPosition(-3, 0.5, -4);
-	box2->setPosition(5, 0.5, -4);
-	box2->setRotation(0, 25, 0);
-	box2->setScale(0.5);
+	std::shared_ptr<RenderObject> ground = std::make_shared<RenderObject>(groundGeom, ground3Mat);
+	std::shared_ptr<RenderObject> sphere1 = std::make_shared<RenderObject>(sphereGeometry, wall2Mat);
+	sphere1->setPosition(0.0, 1.0, 0.0);
+	std::shared_ptr<RenderObject> sphere2 = std::make_shared<RenderObject>(sphereGeometry, pbrMat2);
+	sphere2->setPosition(-2.0, 1.0, 0.0);
+	std::shared_ptr<RenderObject> sphere3 = std::make_shared<RenderObject>(sphereGeometry, pbrMat3);
+	sphere3->setPosition(2.0, 1.0, 0.0);
+	std::shared_ptr<RenderObject> wall = std::make_shared<RenderObject>(wallGeom, wall2Mat);
 	wall->setRotation(90, 0, 0);
-	wall->setPosition(0, 0, -5);
-	//sphere->setPosition(2, 1.0, -3);
+	wall->setPosition(0, 0, -20);
+	//std::shared_ptr<RenderObject> box1 = std::make_shared<RenderObject>(cube, boxMat);
+	//std::shared_ptr<RenderObject> box2 = std::make_shared<RenderObject>(cube, boxMat);
+	//box1->setPosition(-3, 0.5, -4);
+	//box2->setPosition(5, 0.5, -4);
+	//box2->setRotation(0, 25, 0);
+	//box2->setScale(0.5);
 	
 	//model
-	Model model("models/backpack/backpack.obj");
-	for (auto& renderObject : model.getRenderList())
-	{
-		renderObject->setPosition(2, 1, -3);
-		renderObject->setScale(0.3);
-	}
+	//Model model("models/backpack/backpack.obj");
+	//for (auto& renderObject : model.getRenderList())
+	//{
+	//	renderObject->setPosition(2, 1, -3);
+	//	renderObject->setScale(0.3);
+	//}
+	//
+	//Model model2("models/Cow.glb");
+	//for (auto& renderObject : model2.getRenderList())
+	//{
+	//	renderObject->setPosition(2, 0, 2);
+	//	renderObject->setRotation(0, 100, 0);
+	//	renderObject->setScale(0.005);
+	//}
+	//
+	//
+	//Model model3("models/Large_troll.glb");
+	//for (auto& renderObject : model3.getRenderList())
+	//{
+	//	renderObject->setPosition(-1, 0, 2);
+	//	renderObject->setRotation(0, 20, 0);
+	//	renderObject->setScale(0.3);
+	//}
+	//
+	//Model model4("models/Labrador_retriever.glb");
+	//for (auto& renderObject : model4.getRenderList())
+	//{
+	//	renderObject->setPosition(1, 0, 3);
+	//	renderObject->setRotation(0, 60, 0);
+	//	renderObject->setScale(0.2);
+	//}
+	////Oops.glb
+	//Model model5("models/Oops.glb");
+	//for (auto& renderObject : model5.getRenderList())
+	//{
+	//	renderObject->setPosition(-1, 0.5, 0);
+	//	renderObject->setScale(0.08);
+	//}
 
-	Model model2("models/Cow.glb");
-	for (auto& renderObject : model2.getRenderList())
-	{
-		renderObject->setPosition(2, 0, 2);
-		renderObject->setRotation(0, 100, 0);
-		renderObject->setScale(0.005);
-	}
-	
-	
-	Model model3("models/Large_troll.glb");
-	for (auto& renderObject : model3.getRenderList())
-	{
-		renderObject->setPosition(-1, 0, 2);
-		renderObject->setRotation(0, 20, 0);
-		renderObject->setScale(0.3);
-	}
-
-	Model model4("models/Labrador_retriever.glb");
-	for (auto& renderObject : model4.getRenderList())
-	{
-		renderObject->setPosition(1, 0, 3);
-		renderObject->setRotation(0, 60, 0);
-		renderObject->setScale(0.2);
-	}
-	//Oops.glb
-	Model model5("models/Oops.glb");
-	for (auto& renderObject : model5.getRenderList())
-	{
-		renderObject->setPosition(-1, 0.5, 0);
-		renderObject->setScale(0.08);
-	}
-
-	scene->addRenderObject({box1, box2, wall, ground});
-	scene->addRenderObject(model.getRenderList());
-	scene->addRenderObject(model2.getRenderList());
-	scene->addRenderObject(model3.getRenderList());
-	scene->addRenderObject(model4.getRenderList());
-	scene->addRenderObject(model5.getRenderList());
+	scene->addRenderObject({ ground, wall, sphere1, sphere2, sphere3/*, wall, sphere1, sphere2, sphere3*/ });
+	//scene->addRenderObject(model.getRenderList());
+	//scene->addRenderObject(model2.getRenderList());
+	//scene->addRenderObject(model3.getRenderList());
+	//scene->addRenderObject(model4.getRenderList());
+	//scene->addRenderObject(model5.getRenderList());
 	
 	//camera
-	auto camera = std::make_shared<Camera>(glm::vec3(3, 2, 6), 45.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.1f, 100.0f);
+	auto camera = std::make_shared<Camera>(glm::vec3(3, 3, 5), 60.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.01f, 1000.0f);
 	scene->setMainCamera(camera);
 
 	//light
-	auto light1 = std::make_shared<PointLight>(glm::vec3(-5.0f, 1.0f, -.5f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	auto light1 = std::make_shared<PointLight>(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	auto light2 = std::make_shared<PointLight>(glm::vec3(0.0f, 1.0f, -.5f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	auto light3 = std::make_shared<PointLight>(glm::vec3(5.0f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	auto spotLight1 = std::make_shared<SpotLight>(glm::vec3(2.0f, 3.0f, 2.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 10.0f), 1.0f, 0.09f, 0.032f, 17.f, 7.5f);
-	auto spotLight2 = std::make_shared<SpotLight>(glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(10.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f, 17.5f, 7.5f);
-	auto spotLight3 = std::make_shared<SpotLight>(glm::vec3(0.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(5.0f, 5.0f, 5.0f), 1.0f, 0.09f, 0.032f, 17.5f, 7.5f);
-	scene->addLights({ spotLight1, spotLight2, spotLight3, light1 });
+	auto spotLight1 = std::make_shared<SpotLight>(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 17.f, 15.5f);
+	auto spotLight2 = std::make_shared<SpotLight>(glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(10.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f, 17.5f, 15.5f);
+	auto spotLight3 = std::make_shared<SpotLight>(glm::vec3(0.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(5.0f, 5.0f, 5.0f), 1.0f, 0.09f, 0.032f, 17.5f, 15.5f);
+	scene->addLights({ light1,spotLight1 });
 	
 	//pass
 	//PASS GROUP#1

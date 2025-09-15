@@ -52,18 +52,21 @@ void LightingPass::beginPass()
 	auto gNormal = geometryBuffer->getColorAttachment(1);
 	auto gDiff = geometryBuffer->getColorAttachment(2);
 	auto gSpecShiness = geometryBuffer->getColorAttachment(3);
+	auto gMaterialType = geometryBuffer->getColorAttachment(4);
 	gPos->bind(0);
 	gNormal->bind(1);
 	gDiff->bind(2);
 	gSpecShiness->bind(3);
+	gMaterialType->bind(4);
 
 	mProgram->setUniform("gPosition", 0);
 	mProgram->setUniform("gNormal", 1);
 	mProgram->setUniform("gDiffuse", 2);
 	mProgram->setUniform("gSpecShiness", 3);
+	mProgram->setUniform("gMaterialType", 4);
 
 	std::shared_ptr<FrameBuffer> blurSsaoBuffer = mlastPassFrameBuffer[1];
 	auto blurSsao = blurSsaoBuffer->getColorAttachment(0);
-	blurSsao->bind(4);
-	mProgram->setUniform("ssaoMap", 4);
+	blurSsao->bind(5);
+	mProgram->setUniform("ssaoMap", 5);
 }

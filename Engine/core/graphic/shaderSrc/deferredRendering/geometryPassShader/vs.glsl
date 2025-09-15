@@ -26,18 +26,19 @@ out mat3 vTBN;
 void main()
 {	
 	mat4 modelViewMatrix = cameraBuffer.viewMatrix* modelMatrix;
+	mat4 modelViewMatrixInverseTranspose = transpose(inverse(modelViewMatrix));
 	if(hasNormalTex)
 	{
-		mat3 modelMat3 = mat3(modelMatrix);
-		vec3 t = mat3(modelMatrix) * aTangent;
-		vec3 n = normalize(mat3(modelMatrix) * aNormal);
+		//mat3 modelMat3 = mat3(modelMatrix);
+		vec3 t = mat3(modelViewMatrixInverseTranspose) * aTangent;
+		vec3 n = normalize(mat3(modelViewMatrixInverseTranspose) * aNormal);
 		t = normalize(t - n * dot(t, n));
 		vec3 b = cross(n, t);
 		vTBN = mat3(t, b, n);
 	}
 	else
 	{
-		mat4 modelViewMatrixInverseTranspose = transpose(inverse(modelViewMatrix));
+		
 		vNormal = normalize((vec3(modelViewMatrixInverseTranspose * vec4(aNormal, 0.0))));
 	}
 	vec4 viewPos = modelViewMatrix * vec4(aPos, 1.0);

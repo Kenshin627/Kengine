@@ -186,6 +186,7 @@
     <ClCompile Include="core\graphic\texture\texture2D\texture2D.cpp" />
     <ClCompile Include="core\graphic\texture\textureSystem.cpp" />
     <ClCompile Include="core\material\material.cpp" />
+    <ClCompile Include="core\material\pbrMaterial.cpp" />
     <ClCompile Include="core\material\phongMaterial.cpp" />
     <ClCompile Include="core\scene\light\light.cpp" />
     <ClCompile Include="core\scene\light\spotLight\spotLight.cpp" />
@@ -241,6 +242,7 @@
     <ClInclude Include="core\graphic\texture\texture2D\texture2D.h" />
     <ClInclude Include="core\graphic\texture\textureSystem.h" />
     <ClInclude Include="core\material\material.h" />
+    <ClInclude Include="core\material\pbrMaterial.h" />
     <ClInclude Include="core\material\phongMaterial.h" />
     <ClInclude Include="core\scene\light\light.h" />
     <ClInclude Include="core\scene\light\spotLight\spotLight.h" />

@@ -1,25 +1,25 @@
 #include "spotLight.h"
 
-SpotLight::SpotLight(const glm::vec3& pos, const glm::vec3& dir, const glm::vec3& color, float kc, float ks, float kq, float theta, float phi)
+SpotLight::SpotLight(const glm::vec3& pos, const glm::vec3& dir, const glm::vec3& color, float kc, float ks, float kq, float outter, float inner)
 	:Light(pos, dir, color, kc, ks, kq),
-	mInnerCutoff(glm::cos(glm::radians(phi))),
-	mOutterCutoff(glm::cos(glm::radians(theta))),
-	mInnerTheta(phi),
-	mOutterPhi(theta)
+	mOutterCutoff(glm::cos(glm::radians(outter))),
+	mInnerCutoff(glm::cos(glm::radians(inner))),
+	mOutter(outter),
+	mInner(inner)
 {
 	mType = LightType::SpotLight;
 }
 
-void SpotLight::setInner(float theta)
+void SpotLight::setInner(float inner)
 {
-	mInnerCutoff = glm::cos(glm::radians(theta));
-	mInnerTheta = theta;
+	mInnerCutoff = glm::cos(glm::radians(inner));
+	mInner = inner;
 	updateLightBuffer();
 }
 
-float SpotLight::getInner() const
+float SpotLight::getOutter() const
 {
-	return mInnerTheta;
+	return mOutter;
 }
 
 float SpotLight::getCosInner() const
@@ -27,16 +27,16 @@ float SpotLight::getCosInner() const
 	return mInnerCutoff;
 }
 
-void SpotLight::setOutter(float phi)
+void SpotLight::setOutter(float outter)
 {
-	mOutterCutoff = glm::cos(glm::radians(phi));
-	mOutterPhi = phi;
+	mOutterCutoff = glm::cos(glm::radians(outter));
+	mOutter = outter;
 	updateLightBuffer();
 }
 
-float SpotLight::getOutter() const
+float SpotLight::getInner() const
 {
-	return mOutterPhi;
+	return mInner;
 }
 
 float SpotLight::getCosOutter() const

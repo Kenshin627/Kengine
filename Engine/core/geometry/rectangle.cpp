@@ -12,9 +12,10 @@ const std::vector<uint> indices = {
     2, 3, 0  
 };
 
-Rectangle::Rectangle(float width, float height)
+Rectangle::Rectangle(float width, float height, const glm::vec2& uvScale)
 	:mWidth(width),
-	 mHeight(height)
+	 mHeight(height),
+	 mUVscale(uvScale)
 {
 	buildGeometry();
 }
@@ -32,8 +33,8 @@ void Rectangle::buildGeometry()
 		vertex.Position.x = vertex.Position.x * mWidth;
 		vertex.Position.z = vertex.Position.z * mHeight;
 		//repeat texture
-		vertex.Texcoord.x = vertex.Texcoord.x * mWidth;
-		vertex.Texcoord.y = vertex.Texcoord.y * mHeight;
+		vertex.Texcoord.x = vertex.Texcoord.x * mWidth *  mUVscale.x;
+		vertex.Texcoord.y = vertex.Texcoord.y * mHeight * mUVscale.y;
 	}
 	std::unique_ptr<VertexArray> vao = std::make_unique< VertexArray>(6, GL_TRIANGLES);
 	uint vboId = vao->buildVertexBuffer(sizeof(Vertex) * vertices.size(), (void*)vertices.data(), GL_DYNAMIC_STORAGE_BIT);
