@@ -10,7 +10,10 @@ std::shared_ptr<Texture2D> TextureSystem::getTexture(const std::string& path)
 	{
 		return iter->second;
 	}
-	std::shared_ptr<Texture2D> tex = std::make_shared<Texture2D>();
+	TextureSpecification spec;
+	spec.mipmapLevel = 5;
+	spec.minFilter = TextureFilter::LINEAR_MIPMAP_LINEAR;
+	std::shared_ptr<Texture2D> tex = std::make_shared<Texture2D>(spec);
 	tex->loadFromFile(path.c_str());
 	mTextures.insert({ path, tex });
 	return tex;
