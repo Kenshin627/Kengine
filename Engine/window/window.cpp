@@ -115,21 +115,16 @@ void Window::RunLoop()
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 		}
 		ImGui::End();
-
+		
+		//check imgui dock viewport windowsize change, then resize fbo and camera aspect ratio, then draw to fbo, blit to imgui image
+		ImGui::Begin("Viewport");
+		ImVec2 viewportSize = ImGui::GetWindowSize();
+		onViewportSizeChanged(viewportSize.x, viewportSize.y);
 		if (mRenderer)
 		{
 			mRenderer->render();
 		}
-
-		ImGui::Begin("Viewport");
-		ImGui::Image(
-			(void*)(intptr_t)mRenderer->getLastFrameBufferTexture(),
-			ImVec2(mWidth, mHeight), // ËõĞ¡ÏÔÊ¾
-			ImVec2(0, 1), ImVec2(1, 0) // ·­×ªVÖá
-		);
-		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-		onViewportSizeChanged(viewportSize.x, viewportSize.y);
-	
+		ImGui::Image((void*)(intptr_t)mRenderer->getLastFrameBufferTexture(), ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::End();
 
 		auto scene = mRenderer->getCurrentScene();
