@@ -1,7 +1,7 @@
 #include "spotLight.h"
 
-SpotLight::SpotLight(const glm::vec3& pos, const glm::vec3& dir, const glm::vec3& color, float kc, float ks, float kq, float outter, float inner)
-	:Light(pos, dir, color, kc, ks, kq),
+SpotLight::SpotLight(const std::string& name, const glm::vec3& pos, const glm::vec3& dir, const glm::vec3& color, float kc, float ks, float kq, float outter, float inner)
+	:Light(name, pos, dir, color, kc, ks, kq),
 	mOutterCutoff(glm::cos(glm::radians(outter))),
 	mInnerCutoff(glm::cos(glm::radians(inner))),
 	mOutter(outter),

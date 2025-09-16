@@ -2,6 +2,7 @@
 #include <memory>
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
+#include <string>
 
 class Geometry;
 class Material;
@@ -11,8 +12,8 @@ class Program;
 class RenderObject
 {
 public:
-	RenderObject() = default;
-	RenderObject(std::shared_ptr<Geometry> mesh, std::shared_ptr<Material> material);
+	RenderObject(const std::string& name);
+	RenderObject(const std::string& name, std::shared_ptr<Geometry> mesh, std::shared_ptr<Material> material);
 	virtual ~RenderObject() = default;
 	RenderObject(const RenderObject& obj) = delete;
 	RenderObject(RenderObject&& obj) = delete;
@@ -23,6 +24,7 @@ public:
 	void endDraw(Program* p = nullptr);
 	void setPosition(const glm::vec3& pos);
 	void setPosition(float x, float y, float z);
+	const glm::vec3 getPosition() const { return mPosition; }
 	void setRotation(const glm::vec3& rotation);
 	void setRotation(float val);
 	void setRotation(float x, float y, float z);
@@ -34,7 +36,9 @@ public:
 	void setOwner(Scene* s);
 	Scene* getOwner();
 	std::shared_ptr<Material> getMaterial() const;
+	const std::string& getName() const { return mName; };
 private:
+	std::string				  mName;
 	std::shared_ptr<Geometry> mMesh;
 	std::shared_ptr<Material> mMaterial;
 	glm::vec3				  mPosition                     { 0,0,0 };

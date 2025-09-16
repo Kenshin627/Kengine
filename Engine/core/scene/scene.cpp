@@ -253,7 +253,7 @@ void Scene::updateSceneUI()
 		ImGui::PushID(i);
 		auto light = lights[i];
 		std::string lightName = light->getType() == LightType::PointLight ? "PointLight" : "SpotLight";
-		ImGui::Text(lightName.c_str());
+		ImGui::Text(light->getName().c_str());
 		glm::vec3 pos = light->getPosition();
 		if (ImGui::DragFloat3("position", &(pos.r), 0.1f))
 		{
@@ -335,6 +335,22 @@ void Scene::updateSceneUI()
 	if (ImGui::DragFloat("fov", &fovAngle, 1.0, 0.0, 360.0))
 	{
 		mMainCamera->setFovAngle(fovAngle);
+	}
+	ImGui::End();
+
+	ImGui::Begin("Scene Graph");
+
+	for(int i = 0;i < mRenderList.size(); i++)
+	{
+		auto ro = mRenderList[i];
+		ImGui::PushID(i);
+		ImGui::Text(ro->getName().c_str());
+		auto pos = ro->getPosition();
+		if (ImGui::DragFloat3("position", &pos.x, 0.2))
+		{
+			ro->setPosition(pos);
+		}
+		ImGui::PopID();
 	}
 	ImGui::End();
 }

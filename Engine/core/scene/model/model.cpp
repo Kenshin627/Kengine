@@ -220,7 +220,7 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		}
 	}
 	std::shared_ptr<PhongMaterial> material = std::make_shared<PhongMaterial>(spec);
-	mRenderObjectList.push_back(std::make_shared<RenderObject>(geometry, material));
+	mRenderObjectList.push_back(std::make_shared<RenderObject>("", geometry, material));
 }
 
 std::shared_ptr<Texture2D> Model::processTexture(const aiScene* scene, aiMaterial* mat, aiTextureType texType)

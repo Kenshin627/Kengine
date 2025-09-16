@@ -31,7 +31,7 @@ struct GPULightBufferDataWrapper
 class Light:public RenderObject
 {
 public:
-	Light(const glm::vec3& pos, const glm::vec3& dir, const glm::vec3& col, float kc, float ks, float kq);
+	Light(const std::string& name, const glm::vec3& pos, const glm::vec3& dir, const glm::vec3& col, float kc, float ks, float kq);
 	virtual ~Light() = default;
 	void setPosition(const glm::vec3& pos);
 	void setPosition(float pos[3]);

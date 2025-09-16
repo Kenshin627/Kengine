@@ -3,11 +3,18 @@
 #include "geometry/geometry.h"
 #include <gtc/quaternion.hpp>
 
-RenderObject::RenderObject(std::shared_ptr<Geometry> mesh, std::shared_ptr<Material> material)
-	:mMesh(std::move(mesh)),
+
+RenderObject::RenderObject(const std::string& name, std::shared_ptr<Geometry> mesh, std::shared_ptr<Material> material)
+	:mName(name),
+	 mMesh(std::move(mesh)),
 	 mMaterial(material)
 {
 
+}
+
+RenderObject::RenderObject(const std::string& name)
+	:mName(name)
+{
 }
 
 void RenderObject::setMaterial(std::shared_ptr<Material> material)

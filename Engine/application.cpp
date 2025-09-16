@@ -50,13 +50,6 @@ Application::Application(uint width, uint height, const char* title)
 	groundSpec.normalMapPath    = "images/black-white-tile-bl/black-white-tile_normal-ogl.png";
 	std::shared_ptr<PBRMaterial> groundMat = std::make_shared<PBRMaterial>(groundSpec);
 
-	PBRMaterialSpecification ground2Spec;
-	ground2Spec.albedoMapPath = "images/laminate-flooring-brown-bl/laminate-flooring-brown_albedo.png";
-	ground2Spec.metallicMapPath = "images/laminate-flooring-brown-bl/laminate-flooring-brown_metallic.png";
-	ground2Spec.roughnessMapPath = "images/laminate-flooring-brown-bl/laminate-flooring-brown_roughness.png";
-	ground2Spec.normalMapPath = "images/laminate-flooring-brown-bl/laminate-flooring-brown_normal-ogl.png";
-	std::shared_ptr<PBRMaterial> ground2Mat = std::make_shared<PBRMaterial>(ground2Spec);
-
 	PBRMaterialSpecification ground3Spec;
 	ground3Spec.albedoMapPath = "images/oakfloor/albedo.png";
 	ground3Spec.roughnessMapPath = "images/oakfloor/roughness.png";
@@ -85,37 +78,65 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<PBRMaterial> metallicMat = std::make_shared<PBRMaterial>(metallicSpec);
 
 	PBRMaterialSpecification pbrSpec2;
-	//light-gold-bl
 	pbrSpec2.albedoMapPath = "images/light-gold-bl/albedo.png";
 	pbrSpec2.metallicMapPath = "images/light-gold-bl/metallic.png";
 	pbrSpec2.roughnessMapPath = "images/light-gold-bl/roughness.png";
-	pbrSpec2.normalMapPath = "images/light-gold-bl/normal.png";
-	
-	
+	pbrSpec2.normalMapPath = "images/light-gold-bl/normal.png";		
 	std::shared_ptr<PBRMaterial> pbrMat2 = std::make_shared<PBRMaterial>(pbrSpec2);
 
 	PBRMaterialSpecification pbrSpec3;
-	pbrSpec3.roughness = 1.0;
-	pbrSpec3.metallic = 0.1;
-	pbrSpec3.albedoColor = { 1.0, 1.0, 1.0 };
+	pbrSpec3.roughness = 0.3;
+	pbrSpec3.metallic = 0.8;
+	pbrSpec3.albedoColor = { 0.3, 0.3, 0.3 };
 	std::shared_ptr<PBRMaterial> pbrMat3 = std::make_shared<PBRMaterial>(pbrSpec3);
+
+	PBRMaterialSpecification pbrSpec4;
+	pbrSpec4.albedoMapPath = "images/patterned-bw-vinyl-bl/albedo.png";
+	pbrSpec4.metallicMapPath = "images/patterned-bw-vinyl-bl/metallic.png";
+	pbrSpec4.roughnessMapPath = "images/patterned-bw-vinyl-bl/roughness.png";
+	pbrSpec4.normalMapPath = "images/patterned-bw-vinyl-bl/normal.png";
+	std::shared_ptr<PBRMaterial> pbrMat4 = std::make_shared<PBRMaterial>(pbrSpec4);
+
+	PBRMaterialSpecification pbrSpec5;
+	pbrSpec5.albedoMapPath = "images/rounded-metal-cubes-bl/albedo.png";
+	pbrSpec5.metallicMapPath = "images/rounded-metal-cubes-bl/metallic.png";
+	pbrSpec5.roughnessMapPath = "images/rounded-metal-cubes-bl/roughness.png";
+	pbrSpec5.normalMapPath = "images/rounded-metal-cubes-bl/normal.png";
+	std::shared_ptr<PBRMaterial> pbrMat5 = std::make_shared<PBRMaterial>(pbrSpec5);
+
+	PBRMaterialSpecification pbrSpec6;
+	pbrSpec6.albedoMapPath = "images/peeling-painted-metal-bl/albedo.png";
+	pbrSpec6.metallicMapPath = "images/peeling-painted-metal-bl/metallic.png";
+	pbrSpec6.roughnessMapPath = "images/peeling-painted-metal-bl/roughness.png";
+	pbrSpec6.normalMapPath = "images/peeling-painted-metal-bl/normal.png";
+	std::shared_ptr<PBRMaterial> pbrMat6 = std::make_shared<PBRMaterial>(pbrSpec6);
+
 	//RENDER OBJECT
-	std::shared_ptr<RenderObject> ground = std::make_shared<RenderObject>(groundGeom, ground3Mat);
-	std::shared_ptr<RenderObject> sphere1 = std::make_shared<RenderObject>(sphereGeometry, wall2Mat);
-	sphere1->setPosition(0.0, 1.0, 0.0);
-	std::shared_ptr<RenderObject> sphere2 = std::make_shared<RenderObject>(sphereGeometry, pbrMat2);
-	sphere2->setPosition(-2.0, 1.0, 0.0);
-	std::shared_ptr<RenderObject> sphere3 = std::make_shared<RenderObject>(sphereGeometry, pbrMat3);
-	sphere3->setPosition(2.0, 1.0, 0.0);
-	std::shared_ptr<RenderObject> wall = std::make_shared<RenderObject>(wallGeom, wall2Mat);
+	std::shared_ptr<RenderObject> ground = std::make_shared<RenderObject>("ground", groundGeom, ground3Mat);
+	std::shared_ptr<RenderObject> wall = std::make_shared<RenderObject>("wall", wallGeom, wall2Mat);
 	wall->setRotation(90, 0, 0);
-	wall->setPosition(0, 0, -20);
-	//std::shared_ptr<RenderObject> box1 = std::make_shared<RenderObject>(cube, boxMat);
-	//std::shared_ptr<RenderObject> box2 = std::make_shared<RenderObject>(cube, boxMat);
-	//box1->setPosition(-3, 0.5, -4);
-	//box2->setPosition(5, 0.5, -4);
-	//box2->setRotation(0, 25, 0);
-	//box2->setScale(0.5);
+	wall->setPosition(0, 0, -10);
+
+	std::shared_ptr<RenderObject> sphere1 = std::make_shared<RenderObject>("sphere1", sphereGeometry, wall2Mat);
+	sphere1->setPosition(0.6, 1.0, -0.8);
+	std::shared_ptr<RenderObject> sphere2 = std::make_shared<RenderObject>("sphere2", sphereGeometry, pbrMat2);
+	sphere2->setPosition(-2.8, 1.0, -3.6);
+	std::shared_ptr<RenderObject> sphere3 = std::make_shared<RenderObject>("sphere3", sphereGeometry, pbrMat3);
+	sphere3->setPosition(-6.4, 1.0, -1.2);
+	std::shared_ptr<RenderObject> sphere4 = std::make_shared<RenderObject>("sphere4", sphereGeometry, pbrMat4);
+	sphere4->setPosition(0.6, 1.0, 2.8);
+	std::shared_ptr<RenderObject> sphere5 = std::make_shared<RenderObject>("sphere5", sphereGeometry, pbrMat5);
+	sphere5->setPosition(-4.8, 1.0, 2.2);
+	std::shared_ptr<RenderObject> sphere6 = std::make_shared<RenderObject>("sphere6", sphereGeometry, pbrMat6);
+	sphere6->setPosition(-2.2, 1.0, 0.2);
+	
+	std::shared_ptr<RenderObject> box1 = std::make_shared<RenderObject>("box1", cube, pbrMat2);
+	std::shared_ptr<RenderObject> box2 = std::make_shared<RenderObject>("box2", cube, metallicMat);
+	box1->setPosition(-3, 0.5, -4);
+	box2->setPosition(5, 0.5, -4);
+	box2->setRotation(0, 25, 0);
+	box2->setScale(0.5);
+	scene->addRenderObject({ ground, wall, sphere1, sphere2, sphere3,sphere4, sphere5, sphere6, box1, box2 });
 	
 	//model
 	//Model model("models/backpack/backpack.obj");
@@ -157,7 +178,7 @@ Application::Application(uint width, uint height, const char* title)
 	//	renderObject->setScale(0.08);
 	//}
 
-	scene->addRenderObject({ ground, wall, sphere1, sphere2, sphere3/*, wall, sphere1, sphere2, sphere3*/ });
+	
 	//scene->addRenderObject(model.getRenderList());
 	//scene->addRenderObject(model2.getRenderList());
 	//scene->addRenderObject(model3.getRenderList());
@@ -165,17 +186,17 @@ Application::Application(uint width, uint height, const char* title)
 	//scene->addRenderObject(model5.getRenderList());
 	
 	//camera
-	auto camera = std::make_shared<Camera>(glm::vec3(3, 3, 5), 60.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.01f, 1000.0f);
+	auto camera = std::make_shared<Camera>(glm::vec3(4, 6, 5), 54.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.01f, 1000.0f);
 	scene->setMainCamera(camera);
 
 	//light
-	auto light1 = std::make_shared<PointLight>(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	auto light2 = std::make_shared<PointLight>(glm::vec3(0.0f, 1.0f, -.5f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	auto light3 = std::make_shared<PointLight>(glm::vec3(5.0f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	auto spotLight1 = std::make_shared<SpotLight>(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 17.f, 15.5f);
-	auto spotLight2 = std::make_shared<SpotLight>(glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(10.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f, 17.5f, 15.5f);
-	auto spotLight3 = std::make_shared<SpotLight>(glm::vec3(0.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(5.0f, 5.0f, 5.0f), 1.0f, 0.09f, 0.032f, 17.5f, 15.5f);
-	scene->addLights({ light1,spotLight1 });
+	auto light1 = std::make_shared<PointLight>("point Light1", glm::vec3(-0.5f, 1.7f, 0.0f), glm::vec3(500.0f/255.0f, 500.0f/255.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	auto light2 = std::make_shared<PointLight>("point Light2", glm::vec3(0.4f, 1.5f, 1.0f), glm::vec3(0.0f/255.0f, 500.0f/255.0f, 0.0f/255.0f), 1.0f, 0.09f, 0.032f);
+	auto light3 = std::make_shared<PointLight>("point Light3", glm::vec3(-2.3f, 1.0f, 2.0f), glm::vec3(100.0f/255.0f, 400.0f/255.0f, 400.0f/255.0f), 1.0f, 0.09f, 0.032f);
+	auto spotLight1 = std::make_shared<SpotLight>("spot Light1", glm::vec3(1.0f, 14.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 17.f, 15.5f);
+	auto spotLight2 = std::make_shared<SpotLight>("spot Light2", glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(10.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f, 17.5f, 15.5f);
+	auto spotLight3 = std::make_shared<SpotLight>("spot Light3", glm::vec3(0.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(5.0f, 5.0f, 5.0f), 1.0f, 0.09f, 0.032f, 17.5f, 15.5f);
+	scene->addLights({ light1, light2, light3, spotLight1 });
 	
 	//pass
 	//PASS GROUP#1

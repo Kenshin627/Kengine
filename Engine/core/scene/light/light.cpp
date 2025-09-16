@@ -3,8 +3,8 @@
 #include "material/phongMaterial.h"
 #include "scene/scene.h"
 
-Light::Light(const glm::vec3& pos, const glm::vec3& dir, const glm::vec3& color, float kc, float kl, float kq)
-	:RenderObject(),
+Light::Light(const std::string& name, const glm::vec3& pos, const glm::vec3& dir, const glm::vec3& color, float kc, float kl, float kq)
+	:RenderObject(name),
 	 mPosition(pos),
 	 mDirection(glm::normalize(dir)),
 	 mColor(color),
