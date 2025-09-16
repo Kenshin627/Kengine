@@ -30,6 +30,7 @@ public:
 	const glm::vec3&			   getPosition() const;
 	const glm::vec3&			   getCenter() const;
 	const glm::vec3&			   getViewUp() const;
+	float						   getFov() const;
 	const glm::mat4&			   getViewMatrix();
 	const glm::mat4&			   getProjectionMatrix();
 	const glm::mat4&			   getViewProjectionMatrix();

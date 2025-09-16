@@ -246,7 +246,7 @@ void Scene::updateLightBuffer()
 
 void Scene::updateSceneUI()
 {
-	ImGui::Begin("Control pannel");
+	ImGui::Begin("Light Control");
 	auto lights = mLights;
 	for (int i = 0; i < lights.size(); i++)
 	{
@@ -309,6 +309,33 @@ void Scene::updateSceneUI()
 
 	bool show = true;
 	ImGui::ShowDemoWindow(&show);
+	ImGui::End();
+
+	ImGui::Begin("Camera Control");
+	ImGui::Text("mainCamera");
+	glm::vec3 pos = mMainCamera->getPosition();
+	if (ImGui::DragFloat3("position", &pos.x))
+	{
+		mMainCamera->setPosition(pos);
+	}
+
+	glm::vec3 center = mMainCamera->getCenter();
+	if (ImGui::DragFloat3("focalPoint", &center.x))
+	{
+		mMainCamera->setFocalPoint(center);
+	}
+
+	glm::vec3 up = mMainCamera->getViewUp();
+	if (ImGui::DragFloat3("viewUp", &up.x))
+	{
+		mMainCamera->setViewUp(up);
+	}
+
+	float fovAngle = mMainCamera->getFov();
+	if (ImGui::DragFloat("fov", &fovAngle, 1.0, 0.0, 360.0))
+	{
+		mMainCamera->setFovAngle(fovAngle);
+	}
 	ImGui::End();
 }
 

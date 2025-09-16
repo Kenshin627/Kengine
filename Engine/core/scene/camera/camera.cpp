@@ -65,6 +65,11 @@ const glm::vec3& Camera::getViewUp() const
 	return mViewUp;
 }
 
+float Camera::getFov() const
+{
+	return mFovAngle;
+}
+
 void Camera::setPosition(const glm::vec3& pos)
 {
 	setPosition(pos.x, pos.y, pos.z);
