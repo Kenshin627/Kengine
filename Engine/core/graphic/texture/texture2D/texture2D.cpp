@@ -88,6 +88,21 @@ void Texture2D::loadFromFile(const char* path, bool flipY)
 		default:
 			break;
 	}
+	//TODO:采取更严格的判断SRGB的方式
+	if (std::string(path).find("albedo") != std::string::npos)
+	{
+		if (channels == 4)
+		{
+			internalFormat = TextureInternalFormat::SRGB8ALPHA8;
+			dataFormat = TextureDataFormat::RGBA;
+		}
+		else if (channels == 3)
+		{
+			internalFormat = TextureInternalFormat::SRGB8;
+			dataFormat = TextureDataFormat::RGB;
+		}
+		
+	}
 	//TODO: CHECK DATATYPE
 	loadFromData(width, height, data, channels, internalFormat, dataFormat, GL_UNSIGNED_BYTE);
 }
@@ -146,6 +161,8 @@ uint Texture2D::convertToGLInternalFormat(TextureInternalFormat format)
 		case TextureInternalFormat::RGBA8:				return   GL_RGBA8;
 		case TextureInternalFormat::RGB16F:				return   GL_RGB16F;
 		case TextureInternalFormat::RGB32F:				return   GL_RGB32F;
+		case TextureInternalFormat::SRGB8:				return	 GL_SRGB8;
+		case TextureInternalFormat::SRGB8ALPHA8:			return	 GL_SRGB8_ALPHA8;
 		case TextureInternalFormat::RGBA16F:			return   GL_RGBA16F;
 		case TextureInternalFormat::RGBA32F:			return   GL_RGBA32F;
 		case TextureInternalFormat::DEPTH24STENCIL8:	return   GL_DEPTH24_STENCIL8;

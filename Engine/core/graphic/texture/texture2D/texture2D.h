@@ -11,6 +11,8 @@ enum class TextureInternalFormat
 	RGBA16F,
 	RGBA32F,
 	DEPTH32,
+	SRGB8,          //albedo Texture need to gamma 2.2 first
+	SRGB8ALPHA8,     //albedo Texture need to gamma 2.2 first
 	DEPTH24STENCIL8
 };
 

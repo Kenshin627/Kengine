@@ -90,7 +90,9 @@ void main()
 	float materialType     = texture(gMaterialType, vTexcoord).r;
 
 	vec4  diffEmissive	   = texture(gDiffuse, vTexcoord);
-	vec3  diff			   = pow(diffEmissive.rgb, vec3(2.2));              //for pbr this is albedo
+	//has done in load textureFlie
+	//vec3  diff			   = pow(diffEmissive.rgb, vec3(2.2));              //for pbr this is albedo
+	vec3  diff			   = diffEmissive.rgb;   
 	float emmisive		   = diffEmissive.a;
 	//check if si emissiveLighting return it's emissiveColor, no calc lghting
 	if(emmisive == 1.0)
