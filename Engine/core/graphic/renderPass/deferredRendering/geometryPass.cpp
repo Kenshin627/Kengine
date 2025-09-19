@@ -79,8 +79,14 @@ GeometryPass::GeometryPass(const RenderState& state)
 	});
 }
 
+void GeometryPass::beginPass()
+{
+	RenderPass::beginPass();	
+}
+
 void GeometryPass::runPass(Scene* scene)
 {
+	mProgram->setUniform("heightMapScale", scene->getHeightMapScale());
 	for (auto& renderObject : scene->getRenderList())
 	{
 		renderObject->beginDraw(mProgram.get());

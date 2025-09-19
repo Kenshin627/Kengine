@@ -8,6 +8,7 @@ struct BlinnPhongMaterialSpecification
 	std::shared_ptr<Texture2D> specularMap		{ nullptr		};
 	std::shared_ptr<Texture2D> normalMap		{ nullptr		};
 	std::shared_ptr<Texture2D> shinessMap		{ nullptr		};
+	std::shared_ptr<Texture2D> heightMap		{ nullptr		};
 	glm::vec3				   diffuseColor		{ 0.5, 0.5, 0.5 };
 	glm::vec3				   specularColor	{ 1.0, 1.0, 1.0 };
 	glm::vec3				   emissiveColor    { 0, 0, 0 };
@@ -30,6 +31,7 @@ private:
 	std::shared_ptr<Texture2D> mSpecularMap;
 	std::shared_ptr<Texture2D> mNormalMap;
 	std::shared_ptr<Texture2D> mShinessMap;
+	std::shared_ptr<Texture2D> mHeightMap;
 	glm::vec3				   mDiffuseColor;
 	glm::vec3				   mSpecularColor;
 	glm::vec3				   mEmissiveColor;
@@ -38,5 +40,6 @@ private:
 	bool					   mHasSpecularTex{ false };
 	bool					   mHasNormalTex  { false };
 	bool					   mHasShinessTex { false };
+	bool					   mhasHeighTex   { false };
 	bool					   mIsEmissive    { false };
 };

@@ -290,16 +290,16 @@ void Scene::updateSceneUI()
 				light->setDirection(dir);
 			}
 
-			std::shared_ptr<SpotLight> spot = std::static_pointer_cast<SpotLight>(light);
-			float inner = spot->getInner();
-			if (ImGui::DragFloat("spot Inner cutoff", &inner, 0.1, 0.0))
-			{
-				spot->setInner(inner);
-			}
+			std::shared_ptr<SpotLight> spot = std::static_pointer_cast<SpotLight>(light);			
 			float outter = spot->getOutter();
 			if (ImGui::DragFloat("spot Outter cutoff", &outter, 0.1, 0.0))
 			{
 				spot->setOutter(outter);
+			}
+			float inner = spot->getInner();
+			if (ImGui::DragFloat("spot Inner cutoff", &inner, 0.1, 0.0))
+			{
+				spot->setInner(inner);
 			}
 		}
 
@@ -314,7 +314,7 @@ void Scene::updateSceneUI()
 	ImGui::Begin("Camera Control");
 	ImGui::Text("mainCamera");
 	glm::vec3 pos = mMainCamera->getPosition();
-	if (ImGui::DragFloat3("position", &pos.x))
+	if (ImGui::DragFloat3("position", &pos.x, 0.1))
 	{
 		mMainCamera->setPosition(pos);
 	}
@@ -352,6 +352,10 @@ void Scene::updateSceneUI()
 		}
 		ImGui::PopID();
 	}
+	ImGui::End();
+
+	ImGui::Begin("Scene Settings");
+	ImGui::DragFloat("heightMap Scale", &mHeightMapScale, 0.01);
 	ImGui::End();
 }
 

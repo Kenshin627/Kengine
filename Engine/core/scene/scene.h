@@ -34,6 +34,7 @@ public:
 	ScreenQuad* getScreenQuad() const;
 	void updateLightBuffer();
 	void updateSceneUI();
+	float getHeightMapScale() const { return mHeightMapScale; }
 private:
 	std::vector<std::shared_ptr<RenderObject>> mRenderList;
 	std::vector<std::shared_ptr<Light>>		   mLights;
@@ -42,4 +43,5 @@ private:
 	std::unique_ptr<UniformBuffer>			   mLightBuffer;
 	uint									   mLightCount;
 	std::unique_ptr<ScreenQuad>				   mScreenQuad;
+	float									   mHeightMapScale { 0.1 };
 };

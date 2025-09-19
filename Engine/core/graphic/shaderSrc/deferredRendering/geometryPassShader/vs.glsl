@@ -17,16 +17,33 @@ uniform mat4 modelMatrix;
 uniform mat4 modelMatrixInvertTranspose;
 
 uniform bool hasNormalTex;
+uniform bool hasHeightTex;
 
 out vec3 vPos;
 out vec3 vNormal;
 out vec2 vTexcoord;
 out mat3 vTBN;
 
+//only has value in heightMap
+out vec3 tangentSpaceViewPos;
+out vec3 tangentSpaceFragPos;
+
 void main()
 {	
 	mat4 modelViewMatrix = cameraBuffer.viewMatrix* modelMatrix;
 	mat4 modelViewMatrixInverseTranspose = transpose(inverse(modelViewMatrix));
+	if(hasHeightTex)
+	{
+		vec3 pos = vec3(modelMatrix * vec4(aPos, 1.0));
+		vec3 n = normalize(mat3(modelMatrix) * aNormal);
+		vec3 t = mat3(modelMatrix) * aTangent;
+		t = normalize(t - n * dot(t, n));
+		vec3 b = cross(n, t);
+		mat3 tbn = transpose(mat3(t, b, n));
+		tangentSpaceViewPos = tbn * cameraBuffer.position;
+		tangentSpaceFragPos = tbn * pos;
+	}
+
 	if(hasNormalTex)
 	{
 		//mat3 modelMat3 = mat3(modelMatrix);

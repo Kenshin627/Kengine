@@ -11,6 +11,7 @@ struct PBRMaterialSpecification
 	const char* metallicMapPath		{ nullptr		};
 	const char* roughnessMapPath	{ nullptr		};
 	const char* normalMapPath		{ nullptr		};
+	const char* heightMapPath		{ nullptr		};
 };
 
 class PBRMaterial :public Material
@@ -27,8 +28,10 @@ private:
 	std::shared_ptr<Texture2D> mMetallicMap;
 	std::shared_ptr<Texture2D> mRoughnessMap;
 	std::shared_ptr<Texture2D> mNormalMap;
+	std::shared_ptr<Texture2D> mHeightMap;
 	bool					   mHasAlbedoTex    { false			};
 	bool					   mHasMetallicTex  { false			};
 	bool					   mHasRoughnessTex { false			};
 	bool					   mHasNormalTex    { false			};
+	bool					   mhasHeightTex	{ false			};
 };

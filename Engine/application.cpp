@@ -51,9 +51,10 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<PBRMaterial> groundMat = std::make_shared<PBRMaterial>(groundSpec);
 
 	PBRMaterialSpecification ground3Spec;
-	ground3Spec.albedoMapPath = "images/oakfloor/albedo.png";
-	ground3Spec.roughnessMapPath = "images/oakfloor/roughness.png";
-	ground3Spec.normalMapPath = "images/oakfloor/normal.png";
+	ground3Spec.albedoMapPath = "images/rocky-rugged-terrain-bl/albedo.png";
+	ground3Spec.roughnessMapPath = "images/rocky-rugged-terrain-bl/roughness.png";
+	ground3Spec.normalMapPath = "images/rocky-rugged-terrain-bl/normal.png";
+	ground3Spec.heightMapPath = "images/rocky-rugged-terrain-bl/height.png";
 	std::shared_ptr<PBRMaterial> ground3Mat = std::make_shared<PBRMaterial>(ground3Spec);
 
 	PBRMaterialSpecification wallSpec;
@@ -68,6 +69,7 @@ Application::Application(uint width, uint height, const char* title)
 	wall2Spec.roughnessMapPath = "images/stonewall-bl/roughness.png";
 	wall2Spec.metallicMapPath = "images/stonewall-bl/metallic.png";
 	wall2Spec.normalMapPath = "images/stonewall-bl/normal.png";
+	wall2Spec.heightMapPath = "images/stonewall-bl/height.png";
 	std::shared_ptr<PBRMaterial> wall2Mat = std::make_shared<PBRMaterial>(wall2Spec);
 
 	PBRMaterialSpecification metallicSpec;
@@ -78,10 +80,11 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<PBRMaterial> metallicMat = std::make_shared<PBRMaterial>(metallicSpec);
 
 	PBRMaterialSpecification pbrSpec2;
-	pbrSpec2.albedoMapPath = "images/light-gold-bl/albedo.png";
-	pbrSpec2.metallicMapPath = "images/light-gold-bl/metallic.png";
-	pbrSpec2.roughnessMapPath = "images/light-gold-bl/roughness.png";
-	pbrSpec2.normalMapPath = "images/light-gold-bl/normal.png";		
+	pbrSpec2.albedoMapPath = "images/space-cruiser-panels2-bl/albedo.png";
+	pbrSpec2.metallicMapPath = "images/space-cruiser-panels2-bl/metallic.png";
+	pbrSpec2.roughnessMapPath = "images/space-cruiser-panels2-bl/roughness.png";
+	pbrSpec2.normalMapPath = "images/space-cruiser-panels2-bl/normal.png";
+	pbrSpec2.heightMapPath = "images/space-cruiser-panels2-bl/height.png";
 	std::shared_ptr<PBRMaterial> pbrMat2 = std::make_shared<PBRMaterial>(pbrSpec2);
 
 	PBRMaterialSpecification pbrSpec3;
@@ -139,12 +142,12 @@ Application::Application(uint width, uint height, const char* title)
 	scene->addRenderObject({ ground, wall, sphere1, sphere2, sphere3,sphere4, sphere5, sphere6, box1, box2 });
 	
 	//model
-	//Model model("models/backpack/backpack.obj");
-	//for (auto& renderObject : model.getRenderList())
-	//{
-	//	renderObject->setPosition(2, 1, -3);
-	//	renderObject->setScale(0.3);
-	//}
+	/*Model model("models/backpack/backpack.obj");
+	for (auto& renderObject : model.getRenderList())
+	{
+		renderObject->setPosition(2, 1, -3);
+		renderObject->setScale(0.3);
+	}*/
 	//
 	//Model model2("models/Cow.glb");
 	//for (auto& renderObject : model2.getRenderList())
@@ -171,19 +174,19 @@ Application::Application(uint width, uint height, const char* title)
 	//	renderObject->setScale(0.2);
 	//}
 	////Oops.glb
-	//Model model5("models/Oops.glb");
-	//for (auto& renderObject : model5.getRenderList())
-	//{
-	//	renderObject->setPosition(-1, 0.5, 0);
-	//	renderObject->setScale(0.08);
-	//}
+	Model model5("models/Oops.glb");
+	for (auto& renderObject : model5.getRenderList())
+	{
+		renderObject->setPosition(-1, 0.5, 0);
+		renderObject->setScale(0.08);
+	}
 
 	
 	//scene->addRenderObject(model.getRenderList());
 	//scene->addRenderObject(model2.getRenderList());
 	//scene->addRenderObject(model3.getRenderList());
 	//scene->addRenderObject(model4.getRenderList());
-	//scene->addRenderObject(model5.getRenderList());
+	scene->addRenderObject(model5.getRenderList());
 	
 	//camera
 	auto camera = std::make_shared<Camera>(glm::vec3(4, 6, 5), 54.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.01f, 1000.0f);

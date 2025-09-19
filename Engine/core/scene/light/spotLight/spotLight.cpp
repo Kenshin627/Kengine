@@ -12,6 +12,10 @@ SpotLight::SpotLight(const std::string& name, const glm::vec3& pos, const glm::v
 
 void SpotLight::setInner(float inner)
 {
+	if (inner > mOutter)
+	{
+		inner = mOutter - 0.01;
+	}
 	mInnerCutoff = glm::cos(glm::radians(inner));
 	mInner = inner;
 	updateLightBuffer();
@@ -29,6 +33,11 @@ float SpotLight::getCosInner() const
 
 void SpotLight::setOutter(float outter)
 {
+	//clamp
+	if (outter <= mInner)
+	{
+		outter = mInner + 0.01;
+	}
 	mOutterCutoff = glm::cos(glm::radians(outter));
 	mOutter = outter;
 	updateLightBuffer();

@@ -32,6 +32,12 @@ PBRMaterial::PBRMaterial(const PBRMaterialSpecification& spec)
 		mNormalMap = ts.getTexture(spec.normalMapPath);
 		mHasNormalTex = true;
 	}
+
+	if (spec.heightMapPath)
+	{
+		mHeightMap = ts.getTexture(spec.heightMapPath);
+		mhasHeightTex = true;
+	}
 }
 
 PBRMaterial::~PBRMaterial()
@@ -65,6 +71,12 @@ void PBRMaterial::setUniforms(Program* p) const
 		p->setUniform("shinessMap", 3);
 	}
 
+	if (mhasHeightTex)
+	{
+		mHeightMap->bind(4);
+		p->setUniform("heightMap", 4);
+	}
+
 	p->setUniform("materialType", 1);
 
 	//colors
@@ -77,4 +89,5 @@ void PBRMaterial::setUniforms(Program* p) const
 	p->setUniform("hasMetallicTex", mHasMetallicTex);
 	p->setUniform("hasNormalTex", mHasNormalTex);
 	p->setUniform("hasRoughnessTex", mHasRoughnessTex);
+	p->setUniform("hasHeightTex", mhasHeightTex);
 }
