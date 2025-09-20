@@ -159,6 +159,7 @@ void FrameBuffer::buildAttachment(const FrameBufferSpecification& attachmentSpec
 		texSpec.internalFormat = attachmentSpec.internalFormat;
 		texSpec.dataFormat = attachmentSpec.dataFormat;
 		texSpec.mipmapLevel = 1;
+		texSpec.mBorderColor = attachmentSpec.borderColor;
 		if (texSpec.depth > 1)
 		{
 			mDepthStencilAttachment = std::make_unique<Texture3D>(texSpec);
