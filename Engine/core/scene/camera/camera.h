@@ -27,13 +27,16 @@ public:
 	void computeDistance();
 	void computeViewPlaneNormal();
 	
-	const glm::vec3&			   getPosition() const;
-	const glm::vec3&			   getCenter() const;
-	const glm::vec3&			   getViewUp() const;
-	float						   getFov() const;
-	const glm::mat4&			   getViewMatrix();
-	const glm::mat4&			   getProjectionMatrix();
-	const glm::mat4&			   getViewProjectionMatrix();
+	const glm::vec3&	getPosition() const;
+	const glm::vec3&	getCenter() const;
+	const glm::vec3&	getViewUp() const;
+	float				getFov() const;
+	const glm::mat4&	getViewMatrix();
+	const glm::mat4&	getProjectionMatrix();
+	const glm::mat4&	getViewProjectionMatrix();
+	float				getNear() const;
+	float				getFar() const;
+	float			    getAspectRatio() const;
 	bool isViewProjectionDirty() const { return mViewProjectionMatrixDirty; }
 	bool isCameraUniformDirty() const { return mViewMatrixDirty || mProjectionMatrixDirty || mViewProjectionMatrixDirty; }
 private:

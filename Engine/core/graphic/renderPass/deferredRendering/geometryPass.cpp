@@ -71,7 +71,7 @@ GeometryPass::GeometryPass(const RenderState& state)
 			TextureFilter::NEAREST
 		}
 	};
-	mFrameBuffer = std::make_unique<FrameBuffer>(state.width, state.height, specs);
+	mFrameBuffer = std::make_unique<FrameBuffer>(glm::vec3{ state.width, state.height , 0 }, specs);
 	mProgram = std::make_unique<Program>();
 	mProgram->buildFromFiles({
 		{ "core/graphic/shaderSrc/deferredRendering/geometryPassShader/vs.glsl", ShaderType::Vertex },

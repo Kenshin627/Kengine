@@ -21,7 +21,7 @@ void GrayScaleEffect::runPass(Scene* scene)
 	if (!mlastPassFrameBuffer.empty())
 	{
 		//TODO
-		Texture2D* tex = mlastPassFrameBuffer[0]->getColorAttachment(0);
+		Texture* tex = mlastPassFrameBuffer[0]->getColorAttachment(0);
 		if (!tex)
 		{
 			KS_CORE_ERROR("framebuffer attachment at index {0} is null", 0);

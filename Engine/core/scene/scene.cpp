@@ -359,3 +359,8 @@ void Scene::updateSceneUI()
 	ImGui::End();
 }
 
+Light* Scene::getShadowLight() const
+{
+	return mLights.back().get();
+}
+

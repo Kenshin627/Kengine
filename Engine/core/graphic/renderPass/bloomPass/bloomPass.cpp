@@ -4,6 +4,7 @@
 #include <graphic/program/program.h>
 #include "geometry/screenQuad.h"
 #include "scene/scene.h"
+#include "graphic/texture/texture.h"
 
 BloomPass::BloomPass(const RenderState& state)
 	:RenderPass(state)
@@ -38,7 +39,7 @@ BloomPass::BloomPass(const RenderState& state)
 			TextureFilter::NEAREST
 		}
 	};
-	mFrameBuffer = std::make_shared<FrameBuffer>(state.width, state.height, specs);
+	mFrameBuffer = std::make_shared<FrameBuffer>(glm::vec3{ state.width, state.height, 0 }, specs);
 }
 
 BloomPass::~BloomPass()
@@ -48,7 +49,7 @@ BloomPass::~BloomPass()
 void BloomPass::beginPass()
 {
 	RenderPass::beginPass();
-	Texture2D* tex = mlastPassFrameBuffer[0]->getColorAttachment(0);
+	Texture* tex = mlastPassFrameBuffer[0]->getColorAttachment(0);
 	tex->bind();
 	mProgram->setUniform("screenMap", 0);
 }

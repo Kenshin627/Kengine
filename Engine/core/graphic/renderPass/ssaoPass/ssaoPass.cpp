@@ -5,6 +5,7 @@
 #include "graphic/program/program.h"
 #include "graphic/gpuBuffer/frameBuffer.h"
 #include "geometry/screenQuad.h"
+#include "graphic/texture/texture2D/texture2D.h"
 
 SSAOPass::SSAOPass(uint kernelSize = 64, float radius = 0.5f, const RenderState& state = RenderState())
 	:RenderPass(state),
@@ -38,7 +39,7 @@ SSAOPass::SSAOPass(uint kernelSize = 64, float radius = 0.5f, const RenderState&
 			TextureFilter::NEAREST
 		}
 	};
-	mFrameBuffer = std::make_unique<FrameBuffer>(state.width, state.height, specs);
+	mFrameBuffer = std::make_unique<FrameBuffer>(glm::vec3{ state.width, state.height , 0 }, specs);
 }
 
 void SSAOPass::setKernelSize(uint kernelSize)
@@ -79,8 +80,8 @@ void SSAOPass::beginPass()
 	mProgram->setUniform("kernelSize", mKernelSize);
 	//upload gPositionTexture + gNormalTexture
 	//TODO
-	Texture2D* gPosDepth = mlastPassFrameBuffer[0] ->getColorAttachment(0);
-	Texture2D* gNormal = mlastPassFrameBuffer[0]->getColorAttachment(1);
+	Texture* gPosDepth = mlastPassFrameBuffer[0] ->getColorAttachment(0);
+	Texture* gNormal = mlastPassFrameBuffer[0]->getColorAttachment(1);
 	gPosDepth->bind(0);
 	gNormal->bind(1);
 	mProgram->setUniform("gPosition", 0);

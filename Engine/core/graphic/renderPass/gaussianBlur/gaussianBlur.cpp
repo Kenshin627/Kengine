@@ -30,8 +30,8 @@ GaussianBlur::GaussianBlur(const RenderState& state)
 			TextureFilter::LINEAR
 		}
 	};
-	mDoubleBuffers.push_back(std::make_shared<FrameBuffer>(state.width, state.height, spec));
-	mDoubleBuffers.push_back(std::make_shared<FrameBuffer>(state.width, state.height, spec));
+	mDoubleBuffers.push_back(std::make_shared<FrameBuffer>(glm::vec3{ state.width, state.height , 0}, spec));
+	mDoubleBuffers.push_back(std::make_shared<FrameBuffer>(glm::vec3{ state.width, state.height , 0}, spec));
 }
 
 GaussianBlur::~GaussianBlur()
@@ -55,7 +55,7 @@ void GaussianBlur::runPass(Scene* scene)
 	bool isFirstIteration = true;
 	mProgram->bind();
 	uint amount = 20;
-	Texture2D* tex;
+	Texture* tex;
 	for (int i = 0; i < amount; i++)
 	{
 		mDoubleBuffers[!isHorizontal]->bind();

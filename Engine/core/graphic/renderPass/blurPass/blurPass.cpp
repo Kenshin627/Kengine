@@ -29,7 +29,7 @@ BlurPass::BlurPass(uint radius, const RenderState& state)
 			TextureFilter::NEAREST
 		}
 	};
-	mFrameBuffer = std::make_unique<FrameBuffer>(state.width, state.height, specs);
+	mFrameBuffer = std::make_unique<FrameBuffer>(glm::vec3{ state.width, state.height , 0}, specs);
 }
 
 BlurPass::~BlurPass()
@@ -55,7 +55,7 @@ void BlurPass::beginPass()
 	//set blur Radius
 	mProgram->setUniform("blurRadius", mRadius);
 	//set lastFrame ssaoMap
-	Texture2D* ssaoMap = mlastPassFrameBuffer[0]->getColorAttachment(0);
+	Texture* ssaoMap = mlastPassFrameBuffer[0]->getColorAttachment(0);
 	ssaoMap->bind(0);
 	mProgram->setUniform("ssaoMap", 0);
 }

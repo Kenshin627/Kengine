@@ -21,6 +21,7 @@
 #include "graphic/renderPass/ssaoPass/ssaoPass.h"
 #include "graphic/renderPass/blurPass/blurPass.h"
 #include "graphic/renderPass/bloomPass/bloomPass.h"
+#include "graphic/renderPass/cascadeShadowMap/cascadeShadowMap.h"
 #include "graphic/renderPass/gaussianBlur/gaussianBlur.h"
 #include "graphic/renderPass/toneMapping/toneMapping.h"
 #include "graphic/texture/textureSystem.h"
@@ -189,16 +190,16 @@ Application::Application(uint width, uint height, const char* title)
 	scene->addRenderObject(model5.getRenderList());
 	
 	//camera
-	auto camera = std::make_shared<Camera>(glm::vec3(4, 6, 5), 54.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.01f, 1000.0f);
+	auto camera = std::make_shared<Camera>(glm::vec3(4, 6, 5), 54.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.01f, 100.0f);
 	scene->setMainCamera(camera);
 
 	//light
 	auto light1 = std::make_shared<PointLight>("point Light1", glm::vec3(-0.5f, 1.7f, 0.0f), glm::vec3(500.0f/255.0f, 500.0f/255.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	auto light2 = std::make_shared<PointLight>("point Light2", glm::vec3(0.4f, 1.5f, 1.0f), glm::vec3(0.0f/255.0f, 500.0f/255.0f, 0.0f/255.0f), 1.0f, 0.09f, 0.032f);
 	auto light3 = std::make_shared<PointLight>("point Light3", glm::vec3(-2.3f, 1.0f, 2.0f), glm::vec3(100.0f/255.0f, 400.0f/255.0f, 400.0f/255.0f), 1.0f, 0.09f, 0.032f);
-	auto spotLight1 = std::make_shared<SpotLight>("spot Light1", glm::vec3(1.0f, 14.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 17.f, 15.5f);
+	auto spotLight1 = std::make_shared<SpotLight>("spot Light1", glm::vec3(3.0f, 2.0f, 2.0f), glm::vec3(-3.0f, -2.0f, -2.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 17.f, 15.5f);
 	auto spotLight2 = std::make_shared<SpotLight>("spot Light2", glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(10.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f, 17.5f, 15.5f);
-	auto spotLight3 = std::make_shared<SpotLight>("spot Light3", glm::vec3(0.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(5.0f, 5.0f, 5.0f), 1.0f, 0.09f, 0.032f, 17.5f, 15.5f);
+	auto spotLight3 = std::make_shared<SpotLight>("spot Light3", glm::vec3(0.0f, 2.0f, 10.0f), glm::vec3(0.0f, -2.0f, -10.0f), glm::vec3(5.0f, 5.0f, 5.0f), 1.0f, 0.09f, 0.032f, 17.5f, 15.5f);
 	scene->addLights({ light1, light2, light3, spotLight1 });
 	
 	//pass
@@ -295,7 +296,17 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<ToneMapping> toneMappingPass = std::make_shared<ToneMapping>(1.0, toneMappingState);
 	toneMappingPass->setLastPassFBOs({ gaussianBlur->getOutputFrameBuffer(), bloomPass->getCurrentFrameBuffer() });
 
-	renderer->setRenderPass({ gPass, ssaoPass, blurPass, lightingPass, bloomPass, gaussianBlur, toneMappingPass });
+	//CSM
+	RenderState cascadeShadowMapPassState;
+	cascadeShadowMapPassState.width = 4096;
+	cascadeShadowMapPassState.height = 4096;
+	cascadeShadowMapPassState.viewport.z = 4096;
+	cascadeShadowMapPassState.viewport.w = 4096;
+	cascadeShadowMapPassState.depthTest = true;
+	cascadeShadowMapPassState.target = RenderTarget::FRAMEBUFFER;
+	std::shared_ptr<CascadeShadowMapPass> cascadeShadowMapPass = std::make_shared<CascadeShadowMapPass>(scene.get(), cascadeShadowMapPassState);
+
+	renderer->setRenderPass({ cascadeShadowMapPass});
 }
 
 Application::~Application()

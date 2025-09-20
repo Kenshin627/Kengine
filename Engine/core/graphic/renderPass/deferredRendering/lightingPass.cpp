@@ -25,7 +25,7 @@ LightingPass::LightingPass(const RenderState& state)
 			TextureFilter::NEAREST
 		}
 	};
-	mFrameBuffer = std::make_shared<FrameBuffer>(state.width, state.height, specs);
+	mFrameBuffer = std::make_shared<FrameBuffer>(glm::vec3{ state.width, state.height , 0 }, specs);
 }
 
 void LightingPass::runPass(Scene* scene)

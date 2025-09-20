@@ -168,6 +168,15 @@
     <ClCompile Include="core\material\pbrMaterial.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\graphic\texture\texture3D\texture3D.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\graphic\texture\texture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\graphic\renderPass\cascadeShadowMap\cascadeShadowMap.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -335,6 +344,15 @@
     <ClInclude Include="core\material\pbrMaterial.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="core\graphic\texture\texture3D\texture3D.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\graphic\texture\texture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\cascadeShadowMap\cascadeShadowMap.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="core\graphic\shaderSrc\blinnPhong\vs.glsl" />
@@ -355,5 +373,8 @@
     <None Include="core\graphic\shaderSrc\bloom\fs.glsl" />
     <None Include="core\graphic\shaderSrc\gaussianBlur\vs.glsl" />
     <None Include="core\graphic\shaderSrc\gaussianBlur\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\cascadeShadowMap\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\cascadeShadowMap\gs.glsl" />
+    <None Include="core\graphic\shaderSrc\cascadeShadowMap\fs.glsl" />
   </ItemGroup>
 </Project>

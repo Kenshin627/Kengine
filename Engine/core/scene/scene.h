@@ -35,6 +35,7 @@ public:
 	void updateLightBuffer();
 	void updateSceneUI();
 	float getHeightMapScale() const { return mHeightMapScale; }
+	Light* getShadowLight() const;
 private:
 	std::vector<std::shared_ptr<RenderObject>> mRenderList;
 	std::vector<std::shared_ptr<Light>>		   mLights;

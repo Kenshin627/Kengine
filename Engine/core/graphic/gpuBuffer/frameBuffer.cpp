@@ -1,21 +1,25 @@
 #include <glad/glad.h>
 #include "core.h"
 #include "frameBuffer.h"
+#include "graphic/texture/texture2D/texture2D.h"
+#include "graphic/texture/texture3D/texture3D.h"
 
 FrameBuffer::FrameBuffer()
 	:mRendererID(0),
 	 mWidth(0),
 	 mHeight(0),
+	 mDepth(0),
 	 mMaxAttachmentCount(0)
 {
 	GLCALL(glCreateFramebuffers(1, &mRendererID));
 	checkMaxColorAttachment();
 }
 
-FrameBuffer::FrameBuffer(uint width, uint height, const std::initializer_list<FrameBufferSpecification>& attachmentSpecs)
+FrameBuffer::FrameBuffer(const glm::vec3& size, const std::initializer_list<FrameBufferSpecification>& attachmentSpecs)
 	:mRendererID(0),
-	 mWidth(width),
-	 mHeight(height),
+	 mWidth(size.x),
+	 mHeight(size.y),
+	 mDepth(size.z),
 	 mMaxAttachmentCount(0),
 	 mSpecifications(attachmentSpecs)
 {
@@ -92,9 +96,20 @@ void FrameBuffer::buildAttachment(const FrameBufferSpecification& attachmentSpec
 		texSpec.internalFormat = attachmentSpec.internalFormat;
 		texSpec.dataFormat = attachmentSpec.dataFormat;
 		texSpec.mipmapLevel = 1;
-
-		auto texture = std::make_unique<Texture2D>(texSpec);
-		GLCALL(glTextureStorage2D(texture->id(), 1, texture->convertToGLInternalFormat(texSpec.internalFormat), texSpec.width, texSpec.height));
+		texSpec.mBorderColor = attachmentSpec.borderColor;
+		std::unique_ptr<Texture> texture;
+		if (mDepth > 1)
+		{
+			texture = std::make_unique<Texture3D>(texSpec);
+			//GLCALL(glTextureStorage2D(texture->id(), 1, texture->convertToGLInternalFormat(texSpec.internalFormat), texSpec.width, texSpec.height));
+			//GLCALL(glTextureStorage3D(texture->id(), 1, texture->convertToGLInternalFormat(texSpec.internalFormat), texSpec.width, texSpec.height, texSpec.depth));
+		}
+		else
+		{
+			texture = std::make_unique<Texture2D>(texSpec);
+			GLCALL(glTextureStorage2D(texture->id(), 1, texture->convertToGLInternalFormat(texSpec.internalFormat), texSpec.width, texSpec.height));
+		}
+		
 		GLCALL(glNamedFramebufferTexture(mRendererID, GL_COLOR_ATTACHMENT0 + mColorAttachments.size(), texture->id(), 0));
 		mColorAttachments.push_back(std::move(texture));
 		mDrawBuffers.push_back(GL_COLOR_ATTACHMENT0 + mColorAttachments.size() - 1);
@@ -109,6 +124,7 @@ void FrameBuffer::buildAttachment(const FrameBufferSpecification& attachmentSpec
 		TextureSpecification texSpec;
 		texSpec.width = mWidth;
 		texSpec.height = mHeight;
+		texSpec.depth = mDepth;
 		texSpec.warpS = attachmentSpec.warpS;
 		texSpec.warpT = attachmentSpec.warpT;
 		texSpec.minFilter = attachmentSpec.minFilter;
@@ -116,8 +132,17 @@ void FrameBuffer::buildAttachment(const FrameBufferSpecification& attachmentSpec
 		texSpec.internalFormat = attachmentSpec.internalFormat;
 		texSpec.dataFormat = attachmentSpec.dataFormat;
 		texSpec.mipmapLevel = 1;
-		mDepthStencilAttachment = std::make_unique<Texture2D>(texSpec);
-		GLCALL(glTextureStorage2D(mDepthStencilAttachment->id(), 1, mDepthStencilAttachment->convertToGLInternalFormat(texSpec.internalFormat), texSpec.width, texSpec.height));
+		if (texSpec.depth > 1)
+		{
+			mDepthStencilAttachment = std::make_unique<Texture3D>(texSpec);
+			//GLCALL(glTextureStorage3D(mDepthStencilAttachment->id(), 1, mDepthStencilAttachment->convertToGLInternalFormat(texSpec.internalFormat), texSpec.width, texSpec.height, texSpec.depth));
+		}
+		else
+		{
+
+			mDepthStencilAttachment = std::make_unique<Texture2D>(texSpec);
+			GLCALL(glTextureStorage2D(mDepthStencilAttachment->id(), 1, mDepthStencilAttachment->convertToGLInternalFormat(texSpec.internalFormat), texSpec.width, texSpec.height));
+		}
 		GLCALL(glNamedFramebufferTexture(mRendererID, GL_DEPTH_STENCIL_ATTACHMENT, mDepthStencilAttachment->id(), 0));
 	}
 	//TODO:DEPTH ATTACHMENT
@@ -126,6 +151,7 @@ void FrameBuffer::buildAttachment(const FrameBufferSpecification& attachmentSpec
 		TextureSpecification texSpec;
 		texSpec.width = mWidth;
 		texSpec.height = mHeight;
+		texSpec.depth = mDepth;
 		texSpec.warpS = attachmentSpec.warpS;
 		texSpec.warpT = attachmentSpec.warpT;
 		texSpec.minFilter = attachmentSpec.minFilter;
@@ -133,8 +159,17 @@ void FrameBuffer::buildAttachment(const FrameBufferSpecification& attachmentSpec
 		texSpec.internalFormat = attachmentSpec.internalFormat;
 		texSpec.dataFormat = attachmentSpec.dataFormat;
 		texSpec.mipmapLevel = 1;
-		mDepthStencilAttachment = std::make_unique<Texture2D>(texSpec);
-		GLCALL(glTextureStorage2D(mDepthStencilAttachment->id(), 1, mDepthStencilAttachment->convertToGLInternalFormat(texSpec.internalFormat), texSpec.width, texSpec.height));
+		if (texSpec.depth > 1)
+		{
+			mDepthStencilAttachment = std::make_unique<Texture3D>(texSpec);
+			//GLCALL(glTextureStorage3D(mDepthStencilAttachment->id(), 1, mDepthStencilAttachment->convertToGLInternalFormat(texSpec.internalFormat), texSpec.width, texSpec.height, texSpec.depth));
+		}
+		else
+		{
+
+			mDepthStencilAttachment = std::make_unique<Texture2D>(texSpec);
+			GLCALL(glTextureStorage2D(mDepthStencilAttachment->id(), 1, mDepthStencilAttachment->convertToGLInternalFormat(texSpec.internalFormat), texSpec.width, texSpec.height));
+		}
 		GLCALL(glNamedFramebufferTexture(mRendererID, GL_DEPTH_ATTACHMENT, mDepthStencilAttachment->id(), 0));		
 	}
 	else
@@ -206,7 +241,7 @@ void FrameBuffer::checkMaxColorAttachment()
 	glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &mMaxAttachmentCount);
 }
 
-Texture2D* FrameBuffer::getColorAttachment(uint index) const
+Texture* FrameBuffer::getColorAttachment(uint index) const
 {
 	if (index >= mColorAttachments.size())
 	{

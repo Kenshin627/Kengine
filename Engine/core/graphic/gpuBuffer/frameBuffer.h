@@ -1,8 +1,9 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include <glm.hpp>
 #include "typedef.h"
-#include "graphic/texture/texture2D/texture2D.h"
+#include "graphic/texture/texture.h"
 
 enum class AttachmentType
 {
@@ -21,13 +22,14 @@ struct FrameBufferSpecification
 	TextureWarpMode		   warpT;
 	TextureFilter		   minFilter;
 	TextureFilter		   magFilter;
+	glm::vec4              borderColor;
 };
 
 class FrameBuffer
 {
 public:
 	FrameBuffer();
-	FrameBuffer(uint width, uint height, const std::initializer_list<FrameBufferSpecification>& attachmentSpecs);
+	FrameBuffer(const glm::vec3& size, const std::initializer_list<FrameBufferSpecification>& attachmentSpecs);
 	~FrameBuffer();
 	void bind() const;
 	void unBind() const;
@@ -37,7 +39,7 @@ public:
 	bool isComplete() const;
 	void resize(uint width, uint height);
 	void checkMaxColorAttachment();
-	Texture2D* getColorAttachment(uint index) const;
+	Texture* getColorAttachment(uint index) const;
 private:
 	void buildAttachment(const FrameBufferSpecification& attachmentSpec);
 	void buildAttachments();
@@ -45,9 +47,10 @@ private:
 	uint								    mRendererID;
 	uint								    mWidth;
 	uint								    mHeight;
+	uint								    mDepth;
 	int 									mMaxAttachmentCount;
-	std::vector<std::unique_ptr<Texture2D>> mColorAttachments;
+	std::vector<std::unique_ptr<Texture>> mColorAttachments;
 	std::vector<FrameBufferSpecification>	mSpecifications;
-	std::unique_ptr<Texture2D>				mDepthStencilAttachment;
+	std::unique_ptr<Texture>				mDepthStencilAttachment;
 	std::vector<uint>						mDrawBuffers;
 };

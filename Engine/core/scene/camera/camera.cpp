@@ -50,6 +50,21 @@ const glm::mat4& Camera::getViewProjectionMatrix()
 	return mViewProjectionMatrix;
 }
 
+float Camera::getNear() const
+{
+	return mClippingRange[0];
+}
+
+float Camera::getFar() const
+{
+	return mClippingRange[1];
+}
+
+float Camera::getAspectRatio() const
+{
+	return mAspectRatio;
+}
+
 const glm::vec3& Camera::getPosition() const
 {
 	return mPosition;

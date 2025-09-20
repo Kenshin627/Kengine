@@ -31,7 +31,7 @@ ToneMapping::ToneMapping(float exposure, const RenderState& state)
 			TextureFilter::LINEAR
 		}
 	};
-	mFrameBuffer = std::make_shared<FrameBuffer>(state.width, state.height, spec);
+	mFrameBuffer = std::make_shared<FrameBuffer>(glm::vec3{ state.width, state.height , 0 }, spec);
 }
 
 ToneMapping::~ToneMapping()
@@ -42,11 +42,11 @@ void ToneMapping::beginPass()
 {
 	RenderPass::beginPass();
 	mProgram->setUniform("exposure", mExposure);
-	Texture2D* gaussianBlurMap = mlastPassFrameBuffer[0]->getColorAttachment(0);
+	Texture* gaussianBlurMap = mlastPassFrameBuffer[0]->getColorAttachment(0);
 	gaussianBlurMap->bind(0);
 	mProgram->setUniform("gaussian", 0);
 
-	Texture2D* ldrMap = mlastPassFrameBuffer[1]->getColorAttachment(0);
+	Texture* ldrMap = mlastPassFrameBuffer[1]->getColorAttachment(0);
 	ldrMap->bind(1);
 	mProgram->setUniform("ldrMap", 1);
 }
