@@ -22,7 +22,7 @@ static void windowSizeChanged(GLFWwindow* window, int width, int height)
 	{
 		return;
 	}
-	win->setWindSize(width, height);	
+	//win->setWindSize(width, height);	
 }
 
 Window::Window(uint width, uint height, const char* title)
@@ -124,7 +124,7 @@ void Window::RunLoop()
 		{
 			mRenderer->render();
 		}
-		//ImGui::Image((void*)(intptr_t)mRenderer->getLastFrameBufferTexture(), ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::Image((void*)(intptr_t)mRenderer->getLastFrameBufferTexture(), ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::End();
 
 		auto scene = mRenderer->getCurrentScene();

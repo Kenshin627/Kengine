@@ -174,7 +174,7 @@
     <ClCompile Include="core\graphic\texture\texture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="core\graphic\renderPass\cascadeShadowMap\cascadeShadowMap.cpp">
+    <ClCompile Include="core\graphic\renderPass\cascadeShadowMapPass\cascadeShadowMapPass.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -350,7 +350,7 @@
     <ClInclude Include="core\graphic\texture\texture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="core\graphic\renderPass\cascadeShadowMap\cascadeShadowMap.h">
+    <ClInclude Include="core\graphic\renderPass\cascadeShadowMapPass\cascadeShadowMapPass.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

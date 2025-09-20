@@ -359,8 +359,9 @@ void Scene::updateSceneUI()
 	ImGui::End();
 }
 
-Light* Scene::getShadowLight() const
+//TODO: setting in ui
+uint Scene::getShadowLightIndex() const
 {
-	return mLights.back().get();
+	return 3;
 }
 

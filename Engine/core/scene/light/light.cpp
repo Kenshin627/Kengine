@@ -23,6 +23,8 @@ Light::Light(const std::string& name, const glm::vec3& pos, const glm::vec3& dir
 	spec.emissiveColor = color;
 	std::shared_ptr<PhongMaterial> mat = std::make_shared<PhongMaterial>(spec);
 	setMaterial(mat);
+	//set renderobjectType Light, shadowMappingPass filter renderObject no cast shadows
+	setRenderObjectType(RenderObjectType::Light);
 }
 
 void Light::setPosition(const glm::vec3& pos)

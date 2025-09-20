@@ -7,22 +7,6 @@ layout (location = 0) out vec4 FragColor;
 
 in vec2 vTexcoord;
 
-uniform sampler2D gPosition;
-uniform sampler2D gNormal;
-uniform sampler2D gDiffuse;
-uniform sampler2D gSpecShiness;
-uniform sampler2D gMaterialType;
-uniform sampler2D ssaoMap;
-uniform int lightCount;
-
-layout (std140, binding = 0) uniform CameraBuffer
-{
-	mat4 viewProjectionMatrix;
-	mat4 projectionMatrix;
-	mat4 viewMatrix;
-	vec3 position;
-} cameraBuffer;
-
 struct Light
 {
 	vec4	position;
@@ -35,10 +19,39 @@ struct Light
 	int		lightCount;
 };
 
+uniform sampler2D      gPosition;
+uniform sampler2D      gNormal;
+uniform sampler2D      gDiffuse;
+uniform sampler2D      gSpecShiness;
+uniform sampler2D      gMaterialType;
+uniform sampler2D      ssaoMap;
+
+//cascaded shadow map
+uniform sampler2DArray cascadedShadowMap;
+uniform int			   cascadedLayerCount;
+uniform float          cascadedLayerDistances[16];
+uniform int            cascadedShadowLightIndex;   //index to lightBuffer ubo
+ 
+uniform int lightCount;
+
+layout (std140, binding = 0) uniform CameraBuffer
+{
+	mat4 viewProjectionMatrix;
+	mat4 projectionMatrix;
+	mat4 viewMatrix;
+	vec3 position;
+} cameraBuffer;
+
 layout (std140, binding = 1) uniform LightBuffer
 {
 	Light lights[MAX_LIGHT_COUNT];
 } lightBuffer;
+
+layout (std140, binding = 2) uniform LightMatricesBuffer
+{
+	mat4 lightMatrices[16];
+} lightMatricesBuffer;
+
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -80,9 +93,77 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
+float calcShadow(vec3 viewSpacePos, vec3 viewSpaceNormal)
+{	
+	//select cascaded shadowmap layer depends on viewspace Fragpos distance 
+	float depth = abs(viewSpacePos.z);
+	int layer = -1;
+	for(int i = 0; i < cascadedLayerCount; i++)
+	{
+		if(depth < cascadedLayerDistances[i])
+		{
+			layer = i;
+			break;
+		}
+	}
+	if(layer == -1)
+	{
+		layer = cascadedLayerCount;
+	}
+
+	//calc fragPos worldPos, transform to current Cascaded lightMatrices
+	vec4 worldPos = inverse(cameraBuffer.viewMatrix) * vec4(viewSpacePos, 1.0);
+	worldPos /= worldPos.w;
+	mat4 currentLayerLightMatrix = lightMatricesBuffer.lightMatrices[layer];
+	vec4 lightSpacePos = currentLayerLightMatrix * worldPos;
+	lightSpacePos /= lightSpacePos.w;
+	lightSpacePos = lightSpacePos * 0.5 + 0.5;
+	float currentDepth = lightSpacePos.z;
+	if(currentDepth > 1.0)
+	{
+		currentDepth = 0.0f;
+	}
+
+	vec4 shadowLightDir = lightBuffer.lights[cascadedShadowLightIndex].direction;
+	//convert direction to viewSpace, bcaz wll dot with normal in viewSpace
+	vec4 shadowLightDirInViewSpace = cameraBuffer.viewMatrix * vec4(vec3(-shadowLightDir), 0.0);
+	shadowLightDirInViewSpace /= shadowLightDirInViewSpace.w;
+	vec3 shadowlightDir =  normalize(shadowLightDirInViewSpace.xyz);
+	//float bias = dot(viewSpaceNormal, shadowlightDir);
+	float bias = max(0.05 * (1.0 - dot(viewSpaceNormal, shadowlightDir)), 0.005);
+    const float biasModifier = 0.5f;
+	//TODO:set uniform farPlane 
+    if (layer == cascadedLayerCount)
+    {
+        bias *= 1 / (100.0f * biasModifier);
+    }
+    else
+    {
+        bias *= 1 / (cascadedLayerDistances[layer] * biasModifier);
+    }
+
+	float shadow = 0.0f;
+	vec2 texelSize = 1.0 / vec2(textureSize(cascadedShadowMap, 0));
+	for(int x  = -1;x <= 1; x++)
+	{
+		for(int y = -1; y <= 1; y++)
+		{
+			vec2 texCoord = lightSpacePos.xy + vec2(x, y) * texelSize;
+			float pcfShadowDepth = texture(cascadedShadowMap, vec3(texCoord, layer)).r;
+			if((currentDepth - bias) > pcfShadowDepth)
+			{
+				shadow += 1.0;
+			}
+			
+		}
+	}
+	shadow /= 9.0;
+	return shadow;
+}
+
 void main()
 {
-	//calc illumulation in vewSpace
+	//calc illumulation in viewSpace
 	vec3  fragmentPos	   =  texture(gPosition, vTexcoord).xyz;
 	vec3  n				   =  normalize(texture(gNormal, vTexcoord).xyz);
 	vec3  v				   = normalize(-fragmentPos);
@@ -166,5 +247,9 @@ void main()
 				FragColor.a = 1.0;
 			}
 		}	
+
+		//calc shadows
+		float shadow = calcShadow(fragmentPos, n);
+		FragColor.rgb = vec3((1.0 - shadow));
 	}	
 }

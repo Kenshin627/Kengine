@@ -9,6 +9,13 @@ class Material;
 class Scene;
 class Program;
 
+enum class RenderObjectType
+{
+	Mesh,
+	Light,
+	Camera
+};
+
 class RenderObject
 {
 public:
@@ -37,6 +44,9 @@ public:
 	Scene* getOwner();
 	std::shared_ptr<Material> getMaterial() const;
 	const std::string& getName() const { return mName; };
+	RenderObjectType getType() const { return mRenderObjectType; };
+protected:
+	void setRenderObjectType(RenderObjectType type) { mRenderObjectType = type; }
 private:
 	std::string				  mName;
 	std::shared_ptr<Geometry> mMesh;
@@ -47,4 +57,5 @@ private:
 	glm::mat4				  mModelMatrix				  = glm::identity<glm::mat4>();
 	glm::mat4				  mModelMatrixInvertTranspose = glm::identity<glm::mat4>();
 	Scene*					  mOnwningScene                 { nullptr };
+	RenderObjectType		  mRenderObjectType			  = RenderObjectType::Mesh;
 };

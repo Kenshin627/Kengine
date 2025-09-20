@@ -12,12 +12,16 @@ public:
 	~CascadeShadowMapPass();
 	virtual void beginPass() override;
 	virtual void runPass(Scene* scene) override;
+	const std::vector<float>& getCascadedFrustumDistanes() const;
+	int getCascadedLayerCount() const;
+	int getShadowLightIndex() const;
 private:
 	std::vector<glm::vec4> getFrustumWorldSpaceCorners(float near, float far);
 	glm::mat4 getFrustaProjectionViewMatrix();
 	void updateLightMatricesBuffer();
 private:
-	Scene*						   mScene;
+	Scene* mScene;
 	std::unique_ptr<UniformBuffer> mLightMatricesBuffer;
-	float		                   cascadeFrustumDistances[4];
+	std::vector<float>             mCascadeFrustumDistances;
+	int							   mCascadedLayerNum;
 };

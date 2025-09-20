@@ -35,6 +35,15 @@ FrameBuffer::~FrameBuffer()
 
 void FrameBuffer::bind() const
 {
+	//config drawBuffers
+	if (mDrawBuffers.empty())
+	{
+		GLCALL(glDrawBuffer(GL_NONE));
+	}
+	else
+	{
+		GLCALL(glNamedFramebufferDrawBuffers(mRendererID, mDrawBuffers.size(), mDrawBuffers.data()));
+	}
 	GLCALL(glBindFramebuffer(GL_FRAMEBUFFER, mRendererID));
 }
 
@@ -62,16 +71,7 @@ void FrameBuffer::buildAttachments()
 	for (auto& spec : mSpecifications)
 	{
 		buildAttachment(spec);
-	}
-	//config drawBuffers
-	if (mDrawBuffers.empty())
-	{
-		GLCALL(glDrawBuffer(GL_NONE));
-	}
-	else
-	{
-		GLCALL(glNamedFramebufferDrawBuffers(mRendererID, mDrawBuffers.size(), mDrawBuffers.data()));
-	}
+	}	
 	//checkComplete
 	bool success = isComplete();
 	KS_CORE_INFO("[FRAMEBUFFER]: Build {0}x{1} Framebuffer {2}", mWidth, mHeight, success ? "Success" : "Failed");
@@ -79,6 +79,18 @@ void FrameBuffer::buildAttachments()
 
 void FrameBuffer::buildAttachment(const FrameBufferSpecification& attachmentSpec)
 {
+	TextureSpecification texSpec;
+	texSpec.width = mWidth;
+	texSpec.height = mHeight;
+	texSpec.depth = mDepth;
+	texSpec.warpS = attachmentSpec.warpS;
+	texSpec.warpT = attachmentSpec.warpT;
+	texSpec.minFilter = attachmentSpec.minFilter;
+	texSpec.magFilter = attachmentSpec.magFilter;
+	texSpec.internalFormat = attachmentSpec.internalFormat;
+	texSpec.dataFormat = attachmentSpec.dataFormat;
+	texSpec.mipmapLevel = 1;
+	texSpec.mBorderColor = attachmentSpec.borderColor;
 	if (attachmentSpec.attachmentType == AttachmentType::Color)
 	{
 		if (mColorAttachments.size() >= mMaxAttachmentCount)
@@ -86,23 +98,11 @@ void FrameBuffer::buildAttachment(const FrameBufferSpecification& attachmentSpec
 			KS_CORE_WARN("[FRAMEBUFFER WARNING]: Exceed max color attachment count!");
 			return;
 		}
-		TextureSpecification texSpec;
-		texSpec.width  = mWidth;
-		texSpec.height = mHeight;
-		texSpec.warpS = attachmentSpec.warpS;
-		texSpec.warpT = attachmentSpec.warpT;
-		texSpec.minFilter = attachmentSpec.minFilter;
-		texSpec.magFilter = attachmentSpec.magFilter;
-		texSpec.internalFormat = attachmentSpec.internalFormat;
-		texSpec.dataFormat = attachmentSpec.dataFormat;
-		texSpec.mipmapLevel = 1;
-		texSpec.mBorderColor = attachmentSpec.borderColor;
+		
 		std::unique_ptr<Texture> texture;
-		if (mDepth > 1)
+		if (texSpec.depth > 1)
 		{
 			texture = std::make_unique<Texture3D>(texSpec);
-			//GLCALL(glTextureStorage2D(texture->id(), 1, texture->convertToGLInternalFormat(texSpec.internalFormat), texSpec.width, texSpec.height));
-			//GLCALL(glTextureStorage3D(texture->id(), 1, texture->convertToGLInternalFormat(texSpec.internalFormat), texSpec.width, texSpec.height, texSpec.depth));
 		}
 		else
 		{
@@ -121,21 +121,9 @@ void FrameBuffer::buildAttachment(const FrameBufferSpecification& attachmentSpec
 			KS_CORE_WARN("[FRAMEBUFFER WARNING]: Only one depth stencil attachment allowed!");
 			return;
 		}
-		TextureSpecification texSpec;
-		texSpec.width = mWidth;
-		texSpec.height = mHeight;
-		texSpec.depth = mDepth;
-		texSpec.warpS = attachmentSpec.warpS;
-		texSpec.warpT = attachmentSpec.warpT;
-		texSpec.minFilter = attachmentSpec.minFilter;
-		texSpec.magFilter = attachmentSpec.magFilter;
-		texSpec.internalFormat = attachmentSpec.internalFormat;
-		texSpec.dataFormat = attachmentSpec.dataFormat;
-		texSpec.mipmapLevel = 1;
 		if (texSpec.depth > 1)
 		{
 			mDepthStencilAttachment = std::make_unique<Texture3D>(texSpec);
-			//GLCALL(glTextureStorage3D(mDepthStencilAttachment->id(), 1, mDepthStencilAttachment->convertToGLInternalFormat(texSpec.internalFormat), texSpec.width, texSpec.height, texSpec.depth));
 		}
 		else
 		{
@@ -148,26 +136,12 @@ void FrameBuffer::buildAttachment(const FrameBufferSpecification& attachmentSpec
 	//TODO:DEPTH ATTACHMENT
 	else if(attachmentSpec.attachmentType == AttachmentType::Depth)
 	{
-		TextureSpecification texSpec;
-		texSpec.width = mWidth;
-		texSpec.height = mHeight;
-		texSpec.depth = mDepth;
-		texSpec.warpS = attachmentSpec.warpS;
-		texSpec.warpT = attachmentSpec.warpT;
-		texSpec.minFilter = attachmentSpec.minFilter;
-		texSpec.magFilter = attachmentSpec.magFilter;
-		texSpec.internalFormat = attachmentSpec.internalFormat;
-		texSpec.dataFormat = attachmentSpec.dataFormat;
-		texSpec.mipmapLevel = 1;
-		texSpec.mBorderColor = attachmentSpec.borderColor;
 		if (texSpec.depth > 1)
 		{
 			mDepthStencilAttachment = std::make_unique<Texture3D>(texSpec);
-			//GLCALL(glTextureStorage3D(mDepthStencilAttachment->id(), 1, mDepthStencilAttachment->convertToGLInternalFormat(texSpec.internalFormat), texSpec.width, texSpec.height, texSpec.depth));
 		}
 		else
 		{
-
 			mDepthStencilAttachment = std::make_unique<Texture2D>(texSpec);
 			GLCALL(glTextureStorage2D(mDepthStencilAttachment->id(), 1, mDepthStencilAttachment->convertToGLInternalFormat(texSpec.internalFormat), texSpec.width, texSpec.height));
 		}
@@ -249,4 +223,9 @@ Texture* FrameBuffer::getColorAttachment(uint index) const
 		KS_CORE_ERROR("Color attachment index out of range");
 	}
 	return mColorAttachments[index].get();
+}
+
+Texture* FrameBuffer::getDepthStencilAttachment() const
+{
+	return mDepthStencilAttachment.get();
 }

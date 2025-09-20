@@ -172,7 +172,7 @@
     <ClCompile Include="core\graphic\gpuBuffer\vertexBuffer.cpp" />
     <ClCompile Include="core\graphic\renderPass\bloomPass\bloomPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\blurPass\blurPass.cpp" />
-    <ClCompile Include="core\graphic\renderPass\cascadeShadowMap\cascadeShadowMap.cpp" />
+    <ClCompile Include="core\graphic\renderPass\cascadeShadowMapPass\cascadeShadowMapPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\defaultToScreen\defaultPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\deferredRendering\geometryPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\deferredRendering\lightingPass.cpp" />
@@ -231,7 +231,7 @@
     <ClInclude Include="core\graphic\gpuBuffer\vertexBuffer.h" />
     <ClInclude Include="core\graphic\renderPass\bloomPass\bloomPass.h" />
     <ClInclude Include="core\graphic\renderPass\blurPass\blurPass.h" />
-    <ClInclude Include="core\graphic\renderPass\cascadeShadowMap\cascadeShadowMap.h" />
+    <ClInclude Include="core\graphic\renderPass\cascadeShadowMapPass\cascadeShadowMapPass.h" />
     <ClInclude Include="core\graphic\renderPass\defaultToScreen\defaultPass.h" />
     <ClInclude Include="core\graphic\renderPass\deferredRendering\geometryPass.h" />
     <ClInclude Include="core\graphic\renderPass\deferredRendering\lightingPass.h" />

@@ -40,6 +40,7 @@ public:
 	void resize(uint width, uint height);
 	void checkMaxColorAttachment();
 	Texture* getColorAttachment(uint index) const;
+	Texture* getDepthStencilAttachment() const;
 private:
 	void buildAttachment(const FrameBufferSpecification& attachmentSpec);
 	void buildAttachments();

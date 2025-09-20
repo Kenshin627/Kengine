@@ -21,10 +21,12 @@
 #include "graphic/renderPass/ssaoPass/ssaoPass.h"
 #include "graphic/renderPass/blurPass/blurPass.h"
 #include "graphic/renderPass/bloomPass/bloomPass.h"
-#include "graphic/renderPass/cascadeShadowMap/cascadeShadowMap.h"
+#include "graphic/renderPass/cascadeShadowMapPass/cascadeShadowMapPass.h"
 #include "graphic/renderPass/gaussianBlur/gaussianBlur.h"
 #include "graphic/renderPass/toneMapping/toneMapping.h"
 #include "graphic/texture/textureSystem.h"
+
+constexpr int shadowMapResolution = 2048;
 
 Application::Application(uint width, uint height, const char* title)
 	:mWindow(std::make_unique<Window>(width, height, title))
@@ -225,6 +227,16 @@ Application::Application(uint width, uint height, const char* title)
 	grayScalePass->setLastPassFBOs({ defaultPass->getCurrentFrameBuffer() });
 
 	//PASS GROUP #2
+	//CSM
+	RenderState cascadeShadowMapPassState;
+	cascadeShadowMapPassState.width = shadowMapResolution;
+	cascadeShadowMapPassState.height = shadowMapResolution;
+	cascadeShadowMapPassState.viewport.z = shadowMapResolution;
+	cascadeShadowMapPassState.viewport.w = shadowMapResolution;
+	cascadeShadowMapPassState.depthTest = true;
+	cascadeShadowMapPassState.target = RenderTarget::FRAMEBUFFER;
+	std::shared_ptr<CascadeShadowMapPass> cascadeShadowMapPass = std::make_shared<CascadeShadowMapPass>(scene.get(), cascadeShadowMapPassState);
+	
 	//pass#1 geometryPass
 	RenderState geometryPassState;
 	geometryPassState.width = width;
@@ -255,6 +267,7 @@ Application::Application(uint width, uint height, const char* title)
 	blurPasState.target = RenderTarget::FRAMEBUFFER;
 	std::shared_ptr<BlurPass> blurPass = std::make_shared<BlurPass>(4, blurPasState);
 	blurPass->setLastPassFBOs({ ssaoPass->getCurrentFrameBuffer() });
+
 	//pass#4 lightingPass
 	RenderState lightingPassState;
 	lightingPassState.width = width;
@@ -264,7 +277,8 @@ Application::Application(uint width, uint height, const char* title)
 	lightingPassState.depthTest = false;
 	lightingPassState.target = RenderTarget::FRAMEBUFFER;
 	std::shared_ptr<LightingPass> lightingPass = std::make_shared<LightingPass>(lightingPassState);
-	lightingPass->setLastPassFBOs({ gPass->getCurrentFrameBuffer(), blurPass->getCurrentFrameBuffer()});
+	lightingPass->setLastPassFBOs({ gPass->getCurrentFrameBuffer(), blurPass->getCurrentFrameBuffer(), cascadeShadowMapPass->getCurrentFrameBuffer() });
+	lightingPass->setCascadedShadowMapPass(cascadeShadowMapPass.get());
 
 	RenderState bloomPassState;
 	bloomPassState.width = width;
@@ -286,6 +300,7 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<GaussianBlur> gaussianBlur = std::make_shared<GaussianBlur>(gaussianPassState);
 	gaussianBlur->setLastPassFBOs({ bloomPass->getCurrentFrameBuffer() });
 
+
 	RenderState toneMappingState;
 	toneMappingState.width = width;
 	toneMappingState.height = height;
@@ -294,19 +309,9 @@ Application::Application(uint width, uint height, const char* title)
 	toneMappingState.depthTest = false;
 	toneMappingState.target = RenderTarget::FRAMEBUFFER;
 	std::shared_ptr<ToneMapping> toneMappingPass = std::make_shared<ToneMapping>(1.0, toneMappingState);
-	toneMappingPass->setLastPassFBOs({ gaussianBlur->getOutputFrameBuffer(), bloomPass->getCurrentFrameBuffer() });
-
-	//CSM
-	RenderState cascadeShadowMapPassState;
-	cascadeShadowMapPassState.width = 4096;
-	cascadeShadowMapPassState.height = 4096;
-	cascadeShadowMapPassState.viewport.z = 4096;
-	cascadeShadowMapPassState.viewport.w = 4096;
-	cascadeShadowMapPassState.depthTest = true;
-	cascadeShadowMapPassState.target = RenderTarget::FRAMEBUFFER;
-	std::shared_ptr<CascadeShadowMapPass> cascadeShadowMapPass = std::make_shared<CascadeShadowMapPass>(scene.get(), cascadeShadowMapPassState);
-
-	renderer->setRenderPass({ cascadeShadowMapPass});
+	toneMappingPass->setLastPassFBOs({ gaussianBlur->getOutputFrameBuffer(), bloomPass->getCurrentFrameBuffer()});
+	
+	renderer->setRenderPass({ cascadeShadowMapPass, gPass, ssaoPass, blurPass, lightingPass, bloomPass, gaussianBlur, toneMappingPass });
 }
 
 Application::~Application()
