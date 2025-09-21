@@ -124,7 +124,13 @@ void Window::RunLoop()
 		{
 			mRenderer->render();
 		}
+		//mainViewport
 		ImGui::Image((void*)(intptr_t)mRenderer->getLastFrameBufferTexture(), ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::End();
+
+		//secondViewport
+		ImGui::Begin("secondViewport");
+		ImGui::Image((void*)(intptr_t)mRenderer->getPassBufferTexture(), ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::End();
 
 		auto scene = mRenderer->getCurrentScene();

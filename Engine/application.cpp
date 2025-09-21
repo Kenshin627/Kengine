@@ -192,7 +192,7 @@ Application::Application(uint width, uint height, const char* title)
 	scene->addRenderObject(model5.getRenderList());
 	
 	//camera
-	auto camera = std::make_shared<Camera>(glm::vec3(4, 6, 5), 54.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.1f, 100);
+	auto camera = std::make_shared<Camera>(glm::vec3(4, 6, 5), 54.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.01f, 100);
 	scene->setMainCamera(camera);
 
 	//light
@@ -224,7 +224,7 @@ Application::Application(uint width, uint height, const char* title)
 	grayScalePassState.target = RenderTarget::SCREEN;
 	grayScalePassState.depthTest = false;
 	std::shared_ptr<GrayScaleEffect> grayScalePass = std::make_shared<GrayScaleEffect>(grayScalePassState);
-	grayScalePass->setLastPassFBOs({ defaultPass->getCurrentFrameBuffer() });
+	grayScalePass->setLastPassFBOs({ defaultPass->getCurrentFrameBuffer().get()});
 
 	//PASS GROUP #2
 	//CSM
@@ -264,7 +264,7 @@ Application::Application(uint width, uint height, const char* title)
 	ssaoPassState.depthTest = false;
 	ssaoPassState.target = RenderTarget::FRAMEBUFFER;
 	std::shared_ptr<SSAOPass> ssaoPass = std::make_shared<SSAOPass>(128, 1.0, ssaoPassState);
-	ssaoPass->setLastPassFBOs({ gPass->getCurrentFrameBuffer() });
+	ssaoPass->setLastPassFBOs({ gPass->getCurrentFrameBuffer().get()});
 	
 	//pass#3 blurPass
 	RenderState blurPasState;
@@ -275,7 +275,7 @@ Application::Application(uint width, uint height, const char* title)
 	blurPasState.depthTest = false;
 	blurPasState.target = RenderTarget::FRAMEBUFFER;
 	std::shared_ptr<BlurPass> blurPass = std::make_shared<BlurPass>(4, blurPasState);
-	blurPass->setLastPassFBOs({ ssaoPass->getCurrentFrameBuffer() });
+	blurPass->setLastPassFBOs({ ssaoPass->getCurrentFrameBuffer().get() });
 
 	//pass#4 lightingPass
 	RenderState lightingPassState;
@@ -286,7 +286,7 @@ Application::Application(uint width, uint height, const char* title)
 	lightingPassState.depthTest = false;
 	lightingPassState.target = RenderTarget::FRAMEBUFFER;
 	std::shared_ptr<LightingPass> lightingPass = std::make_shared<LightingPass>(lightingPassState);
-	lightingPass->setLastPassFBOs({ gPass->getCurrentFrameBuffer(), blurPass->getCurrentFrameBuffer(), cascadeShadowMapPass->getCurrentFrameBuffer() });
+	lightingPass->setLastPassFBOs({ gPass->getCurrentFrameBuffer().get(), blurPass->getCurrentFrameBuffer().get(), cascadeShadowMapPass->getCurrentFrameBuffer().get()});
 	lightingPass->setCascadedShadowMapPass(cascadeShadowMapPass.get());
 
 	RenderState bloomPassState;
@@ -297,7 +297,7 @@ Application::Application(uint width, uint height, const char* title)
 	bloomPassState.depthTest = false;
 	bloomPassState.target = RenderTarget::FRAMEBUFFER;
 	std::shared_ptr<BloomPass> bloomPass = std::make_shared<BloomPass>(bloomPassState);
-	bloomPass->setLastPassFBOs({ lightingPass->getCurrentFrameBuffer() });
+	bloomPass->setLastPassFBOs({ lightingPass->getCurrentFrameBuffer().get()});
 
 	RenderState gaussianPassState;
 	gaussianPassState.width = width;
@@ -307,7 +307,7 @@ Application::Application(uint width, uint height, const char* title)
 	gaussianPassState.depthTest = false;
 	gaussianPassState.target = RenderTarget::FRAMEBUFFER;
 	std::shared_ptr<GaussianBlur> gaussianBlur = std::make_shared<GaussianBlur>(gaussianPassState);
-	gaussianBlur->setLastPassFBOs({ bloomPass->getCurrentFrameBuffer() });
+	gaussianBlur->setLastPassFBOs({ bloomPass->getCurrentFrameBuffer().get() });
 
 
 	RenderState toneMappingState;
@@ -318,7 +318,7 @@ Application::Application(uint width, uint height, const char* title)
 	toneMappingState.depthTest = false;
 	toneMappingState.target = RenderTarget::FRAMEBUFFER;
 	std::shared_ptr<ToneMapping> toneMappingPass = std::make_shared<ToneMapping>(1.0, toneMappingState);
-	toneMappingPass->setLastPassFBOs({ gaussianBlur->getOutputFrameBuffer(), bloomPass->getCurrentFrameBuffer()});
+	toneMappingPass->setLastPassFBOs({ gaussianBlur->getOutputFrameBuffer(), bloomPass->getCurrentFrameBuffer().get() });
 	spotLight1->castShadow(cascadeShadowMapPass.get());
 	renderer->setRenderPass({ cascadeShadowMapPass, gPass, ssaoPass, blurPass, lightingPass, bloomPass, gaussianBlur, toneMappingPass });
 }

@@ -83,9 +83,9 @@ void GaussianBlur::endPass()
 {
 }
 
-std::shared_ptr<FrameBuffer> GaussianBlur::getOutputFrameBuffer()
+FrameBuffer* GaussianBlur::getOutputFrameBuffer()
 {
-	return mDoubleBuffers[1];
+	return mDoubleBuffers[1].get();
 }
 
 void GaussianBlur::resize(uint width, uint height)

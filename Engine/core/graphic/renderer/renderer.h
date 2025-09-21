@@ -18,6 +18,7 @@ public:
 	void onWindowSizeChanged(uint width, uint height);
 	void setRenderPass(const std::initializer_list<std::shared_ptr<RenderPass>>& passes);
 	uint getLastFrameBufferTexture() const;
+	uint getPassBufferTexture();
 private:
 	void setDefaultRenderPass();
 private:	

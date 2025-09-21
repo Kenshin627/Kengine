@@ -49,7 +49,7 @@ void LightingPass::beginPass()
 	RenderPass::beginPass();
 	//get colorattachment from gpass
 	//set uniform textureSampler2D
-	std::shared_ptr<FrameBuffer> geometryBuffer = mlastPassFrameBuffer[0];
+	FrameBuffer* geometryBuffer = mlastPassFrameBuffer[0];
 	auto gPos = geometryBuffer->getColorAttachment(0);
 	auto gNormal = geometryBuffer->getColorAttachment(1);
 	auto gDiff = geometryBuffer->getColorAttachment(2);
@@ -67,12 +67,12 @@ void LightingPass::beginPass()
 	mProgram->setUniform("gSpecShiness", 3);
 	mProgram->setUniform("gMaterialType", 4);
 
-	std::shared_ptr<FrameBuffer> blurSsaoBuffer = mlastPassFrameBuffer[1];
+	FrameBuffer* blurSsaoBuffer = mlastPassFrameBuffer[1];
 	auto blurSsao = blurSsaoBuffer->getColorAttachment(0);
 	blurSsao->bind(5);
 	mProgram->setUniform("ssaoMap", 5);
 
-	std::shared_ptr<FrameBuffer> csmBufer = mlastPassFrameBuffer[2];
+	FrameBuffer* csmBufer = mlastPassFrameBuffer[2];
 	Texture* depthStencilTex = csmBufer->getDepthStencilAttachment();
 	
 	depthStencilTex->bind(6);

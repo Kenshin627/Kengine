@@ -5,7 +5,7 @@
 #include "graphic/renderPass/renderPass.h"
 #include "graphic/renderPass/defaultToScreen/defaultPass.h"
 #include "graphic/gpuBuffer/frameBuffer.h"
-
+#include "graphic/renderPass/gaussianBlur/gaussianBlur.h"
 Renderer::Renderer(uint width, uint height)
 	:mWidth(width),
 	 mHeight(height)
@@ -77,6 +77,13 @@ void Renderer::setRenderPass(const std::initializer_list<std::shared_ptr<RenderP
 uint Renderer::getLastFrameBufferTexture() const
 {
 	return mRenderPasses.back()->getCurrentFrameBuffer()->getColorAttachment(0)->id();
+}
+
+//TODO:PASS KEY
+uint Renderer::getPassBufferTexture()
+{
+	//TODO blurPass->getCurrentFrameBuffer()
+	return mRenderPasses.at(3).get()->getCurrentFrameBuffer()->getColorAttachment(0)->id();
 }
 
 void Renderer::setDefaultRenderPass()

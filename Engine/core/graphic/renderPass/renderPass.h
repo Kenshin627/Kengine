@@ -60,12 +60,12 @@ public:
 	void updateRenderState() const;
 	void setRenderState(const RenderState& state);
 	bool checkPassReady();
-	void setLastPassFBOs(const std::initializer_list<std::shared_ptr<FrameBuffer>>& fbo);
+	void setLastPassFBOs(const std::initializer_list<FrameBuffer*>& fbo);
 	std::shared_ptr<FrameBuffer> getCurrentFrameBuffer() const;
 	virtual void renderUI() {};
 protected:
 	std::shared_ptr<Program>					 mProgram;
 	std::shared_ptr<FrameBuffer>				 mFrameBuffer;
-	std::vector<std::shared_ptr<FrameBuffer>>    mlastPassFrameBuffer;
+	std::vector<FrameBuffer*>			         mlastPassFrameBuffer;
 	RenderState									 mRenderState;
 };

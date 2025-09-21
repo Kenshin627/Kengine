@@ -9,7 +9,7 @@ public:
 	virtual void beginPass();
 	virtual void runPass(Scene* scene) override;
 	virtual void endPass() override;
-	std::shared_ptr<FrameBuffer> getOutputFrameBuffer();
+	FrameBuffer* getOutputFrameBuffer();
 	virtual void resize(uint width, uint height) override;
 private:
 	std::vector<std::shared_ptr<FrameBuffer>> mDoubleBuffers;
