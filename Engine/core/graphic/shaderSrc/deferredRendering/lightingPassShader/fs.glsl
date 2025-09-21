@@ -32,6 +32,8 @@ uniform int			   cascadedLayerCount;
 uniform float          cascadedLayerDistances[16];
 uniform int            cascadedShadowLightIndex;   //index to lightBuffer ubo
 uniform int 		   pcfSize;
+uniform bool		   displayCacadedColor;
+uniform bool		   enablePCF;
  
 layout (std140, binding = 0) uniform CameraBuffer
 {
@@ -145,9 +147,14 @@ float calcShadow(vec3 viewSpacePos, vec3 viewSpaceNormal, out int layer)
 	float shadow = 0.0f;
 	vec2 texelSize = 1.0 / vec2(textureSize(cascadedShadowMap, 0));
 	int count = 0;
-	for(int x  = -pcfSize; x <= pcfSize; x++)
+	int pcfBlurSize = 0;
+	if(enablePCF)
 	{
-		for(int y = -pcfSize; y <= pcfSize; y++)
+		pcfBlurSize = pcfSize;
+	}
+	for(int x  = -pcfBlurSize; x <= pcfBlurSize; x++)
+	{
+		for(int y = -pcfBlurSize; y <= pcfBlurSize; y++)
 		{
 			vec2 texCoord = lightSpacePos.xy + vec2(x, y) * texelSize;
 			float pcfShadowDepth = texture(cascadedShadowMap, vec3(texCoord, layer)).r;
@@ -250,18 +257,25 @@ void main()
 		//calc shadows
 		int layer;
 		float shadow = calcShadow(fragmentPos, n, layer);
-		if(layer == 0)
+		if(displayCacadedColor)
 		{
-			FragColor.rgb *= vec3(1, 0, 0);
-		}
-		else if(layer == 1)
-		{
-			FragColor.rgb *= vec3(0, 1, 0);
-		}
-		else if(layer == 2)
-		{
-			FragColor.rgb *= vec3(0, 0, 1);
-		}
+			if(layer == 0)
+			{
+				FragColor.rgb *= vec3(1, 0, 0);
+			}
+			else if(layer == 1)
+			{
+				FragColor.rgb *= vec3(0, 1, 0);
+			}
+			else if(layer == 2)
+			{
+				FragColor.rgb *= vec3(0, 0, 1);
+			}
+			else if(layer == 3)
+			{
+				FragColor.rgb *= vec3(1, 0, 1);
+			}
+		}		
 		FragColor.rgb *= vec3((1.0 - shadow));
 	}	
 }

@@ -28,6 +28,7 @@ struct GPULightBufferDataWrapper
 	glm::vec4 lightCount;
 };
 
+class CascadeShadowMapPass;
 class Light:public RenderObject
 {
 public:
@@ -56,13 +57,18 @@ public:
 	float getQuadratic() const;
 	LightType getType() const;
 	void updateLightBuffer();
+	void castShadow(CascadeShadowMapPass* csmPass);
+	bool isCastShadow() const { return mCastShadow; }
 protected:
-	LightType  mType;
-private:
-	glm::vec3  mPosition{ 0.0f, 0.0f, 0.0f };
-	glm::vec3  mDirection{ 0.0, -1.0, 0.0 };
-	glm::vec3  mColor{ 1.0f, 1.0f, 1.0f };
-	float	   mConstant{ 1.0f };
-	float	   mLinear{ 0.09f };
-	float	   mQuadratic{ 0.032f };
+	LightType			  mType;
+private:				  
+	glm::vec3			  mPosition{ 0.0f, 0.0f, 0.0f };
+	glm::vec3			  mDirection{ 0.0, -1.0, 0.0 };
+	glm::vec3			  mColor{ 1.0f, 1.0f, 1.0f };
+	float				  mConstant{ 1.0f };
+	float				  mLinear{ 0.09f };
+	float				  mQuadratic{ 0.032f };
+	//TODO: using eventDispatcher
+	CascadeShadowMapPass* mCsmPass;
+	bool				  mCastShadow{ false };
 };

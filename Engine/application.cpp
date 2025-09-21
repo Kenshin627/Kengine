@@ -192,7 +192,7 @@ Application::Application(uint width, uint height, const char* title)
 	scene->addRenderObject(model5.getRenderList());
 	
 	//camera
-	auto camera = std::make_shared<Camera>(glm::vec3(4, 6, 5), 54.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.01f, 100.0f);
+	auto camera = std::make_shared<Camera>(glm::vec3(4, 6, 5), 54.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.1f, 100);
 	scene->setMainCamera(camera);
 
 	//light
@@ -237,7 +237,14 @@ Application::Application(uint width, uint height, const char* title)
 	cascadeShadowMapPassState.cullFaceMode = GL_FRONT;
 	cascadeShadowMapPassState.depthTest = true;
 	cascadeShadowMapPassState.target = RenderTarget::FRAMEBUFFER;
-	std::shared_ptr<CascadeShadowMapPass> cascadeShadowMapPass = std::make_shared<CascadeShadowMapPass>(scene.get(), 2, 4, cascadeShadowMapPassState);
+
+	//Scene* scene;
+	//uint pcfSize;
+	//uint cascadedLayer;
+	//float splitLambda;
+	//FrustumSplitMethod splitMethod;
+	CascadeShadowMapPassSpecification spec{ scene.get(), 2, 6, 0.9, FrustumSplitMethod::Pratical  };
+	std::shared_ptr<CascadeShadowMapPass> cascadeShadowMapPass = std::make_shared<CascadeShadowMapPass>(spec, cascadeShadowMapPassState);
 	
 	//pass#1 geometryPass
 	RenderState geometryPassState;
@@ -312,7 +319,7 @@ Application::Application(uint width, uint height, const char* title)
 	toneMappingState.target = RenderTarget::FRAMEBUFFER;
 	std::shared_ptr<ToneMapping> toneMappingPass = std::make_shared<ToneMapping>(1.0, toneMappingState);
 	toneMappingPass->setLastPassFBOs({ gaussianBlur->getOutputFrameBuffer(), bloomPass->getCurrentFrameBuffer()});
-	
+	spotLight1->castShadow(cascadeShadowMapPass.get());
 	renderer->setRenderPass({ cascadeShadowMapPass, gPass, ssaoPass, blurPass, lightingPass, bloomPass, gaussianBlur, toneMappingPass });
 }
 

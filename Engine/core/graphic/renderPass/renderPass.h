@@ -62,6 +62,7 @@ public:
 	bool checkPassReady();
 	void setLastPassFBOs(const std::initializer_list<std::shared_ptr<FrameBuffer>>& fbo);
 	std::shared_ptr<FrameBuffer> getCurrentFrameBuffer() const;
+	virtual void renderUI() {};
 protected:
 	std::shared_ptr<Program>					 mProgram;
 	std::shared_ptr<FrameBuffer>				 mFrameBuffer;

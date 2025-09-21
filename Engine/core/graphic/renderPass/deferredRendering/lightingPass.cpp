@@ -89,6 +89,12 @@ void LightingPass::beginPass()
 
 	//pcfSize
 	mProgram->setUniform("pcfSize", mCascadedShadowMapPass->getPcfSize());
+
+	//set display cascadedColor
+	mProgram->setUniform("displayCacadedColor", mCascadedShadowMapPass->getDisplayCacadedColor());
+
+	//pcf enable
+	mProgram->setUniform("enablePCF", mCascadedShadowMapPass->getEnablePCF());
 }
 
 void LightingPass::setCascadedShadowMapPass(CascadeShadowMapPass* pass)

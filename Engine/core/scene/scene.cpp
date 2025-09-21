@@ -341,14 +341,23 @@ void Scene::updateSceneUI()
 	ImGui::End();
 
 	ImGui::Begin("Scene Settings");
+	//remove to parallax occlusion map pass
 	ImGui::DragFloat("heightMap Scale", &mHeightMapScale, 0.01);
 	ImGui::End();
 }
 
 //TODO: setting in ui
 uint Scene::getShadowLightIndex() const
-{
-	return 3;
+{	
+	for (size_t i = 0; i < mLights.size(); i++)
+	{
+		auto l = mLights[i];
+		if (l->isCastShadow())
+		{
+			return i;
+		}
+	}
+	return -1;
 }
 
 void Scene::updateCameraBuffer()

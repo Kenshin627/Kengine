@@ -3,10 +3,29 @@
 
 class Scene;
 class UniformBuffer;
+enum class FrustumSplitMethod
+{
+	Uniform = 0,
+	Log,
+	Pratical    //blend uniform with log using splitLambda
+};
+
+static const char* splitMethods[] = { "uniform", "log", "Pratical"};
+
+
+struct CascadeShadowMapPassSpecification
+{
+	Scene* scene;
+	uint pcfSize;
+	uint cascadedLayer;
+	float splitLambda;
+	FrustumSplitMethod splitMethod;
+};
+
 class CascadeShadowMapPass :public RenderPass
 {
 public:
-	CascadeShadowMapPass(Scene* scene, uint pcfSize, uint cascadedLayer, const RenderState& state);
+	CascadeShadowMapPass(const CascadeShadowMapPassSpecification& spec, const RenderState& state);
 	~CascadeShadowMapPass();
 	virtual void beginPass() override;
 	virtual void runPass(Scene* scene) override;
@@ -14,15 +33,30 @@ public:
 	int getCascadedLayerCount() const;
 	int getShadowLightIndex() const;
 	int getPcfSize() const;
+	void selectSplitMethod(FrustumSplitMethod method);
+	void setSplitLambda(float lambda);
+	void setPcfSize(int size);
+	void updateLightMatricesBuffer();
+	virtual void renderUI() override;
+	void setDisplayCacadedColor(bool show);
+	bool getDisplayCacadedColor() const { return mDisplayCacadedColor; };
+	void setEnablePCF(bool enable);
+	bool getEnablePCF() const { return mEnablePcf; }
+	void cascadedSplit();
 private:
+	void uniformSplit();
+	void logarithmicSplit();
+	void practicalSplit();
 	std::vector<glm::vec4> getFrustumWorldSpaceCorners(float near, float far);
 	glm::mat4 getFrustaProjectionViewMatrix();
-	void updateLightMatricesBuffer();
 private:
-	Scene* mScene;
+	Scene*						   mScene;
 	std::unique_ptr<UniformBuffer> mLightMatricesBuffer;
-	std::vector<float>             mCascadeFrustumDistances;
-	int							   mCascadedLayerNum;
-	uint						   mPcfSize;
-	uint						   mCascadedLayer;
+	std::vector<float>             mCascadedFrustumSplit;
+	uint						   mPcfSize		  { 2	 };
+	uint						   mCascadedLayer { 4	 };
+	float						   mSplitLambda   { 0.95 };
+	FrustumSplitMethod			   mSplitMethod;
+	bool						   mDisplayCacadedColor{ false };
+	bool						   mEnablePcf{ true };
 };

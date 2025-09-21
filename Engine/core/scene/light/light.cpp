@@ -2,6 +2,7 @@
 #include "geometry/sphere.h"
 #include "material/phongMaterial.h"
 #include "scene/scene.h"
+#include "graphic/renderPass/cascadeShadowMapPass/cascadeShadowMapPass.h"
 
 Light::Light(const std::string& name, const glm::vec3& pos, const glm::vec3& dir, const glm::vec3& color, float kc, float kl, float kq)
 	:RenderObject(name),
@@ -143,5 +144,19 @@ LightType Light::getType() const
 
 void Light::updateLightBuffer()
 {
+	//TODO: using eventDispatcher
 	getOwner()->updateLightBuffer();
+	if (mCsmPass)
+	{
+		mCsmPass->updateLightMatricesBuffer();
+	}
 }
+
+void Light::castShadow(CascadeShadowMapPass* csmPass)
+{
+	mCsmPass = csmPass;
+	mCastShadow = true;
+	mCsmPass->cascadedSplit();
+}
+
+

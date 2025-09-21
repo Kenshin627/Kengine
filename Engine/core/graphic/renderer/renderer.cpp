@@ -26,6 +26,7 @@ void Renderer::render()
 	//run pass loop
 	for (auto& pass : mRenderPasses)
 	{
+		pass->renderUI();
 		pass->beginPass();
 		pass->runPass(mCurrentScene.get());
 		pass->endPass();
