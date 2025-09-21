@@ -93,11 +93,11 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
-float calcShadow(vec3 viewSpacePos, vec3 viewSpaceNormal)
+float calcShadow(vec3 viewSpacePos, vec3 viewSpaceNormal, out int layer)
 {	
 	//select cascaded shadowmap layer depends on viewspace Fragpos distance 
 	float depth = abs(viewSpacePos.z);
-	int layer = -1;
+	layer = -1;
 	for(int i = 0; i < cascadedLayerCount; i++)
 	{
 		if(depth < cascadedLayerDistances[i])
@@ -247,9 +247,21 @@ void main()
 				FragColor.a = 1.0;
 			}
 		}	
-
 		//calc shadows
-		float shadow = calcShadow(fragmentPos, n);
-		FragColor.rgb = vec3((1.0 - shadow));
+		int layer;
+		float shadow = calcShadow(fragmentPos, n, layer);
+		if(layer == 0)
+		{
+			FragColor.rgb *= vec3(1, 0, 0);
+		}
+		else if(layer == 1)
+		{
+			FragColor.rgb *= vec3(0, 1, 0);
+		}
+		else if(layer == 2)
+		{
+			FragColor.rgb *= vec3(0, 0, 1);
+		}
+		FragColor.rgb *= vec3((1.0 - shadow));
 	}	
 }

@@ -17,10 +17,10 @@ CascadeShadowMapPass::CascadeShadowMapPass(Scene* scene, const RenderState& stat
 	mLightMatricesBuffer = std::make_unique<UniformBuffer>(16 * sizeof(glm::mat4), 2);
 	auto camera = mScene->getCurrentCamera();
 	float farPlane = camera->getFar();
-	mCascadeFrustumDistances.push_back(farPlane / 50.0f);
-	mCascadeFrustumDistances.push_back(farPlane / 40.0f);
 	mCascadeFrustumDistances.push_back(farPlane / 10.0f);
 	mCascadeFrustumDistances.push_back(farPlane / 5.0f);
+	mCascadeFrustumDistances.push_back(farPlane / 2.0f);
+	mCascadeFrustumDistances.push_back(farPlane / 1.0f);
 	mCascadedLayerNum = mCascadeFrustumDistances.size();
 	//texture array depthBuffer fbo
 	std::initializer_list<FrameBufferSpecification> spec =
@@ -172,7 +172,7 @@ void CascadeShadowMapPass::updateLightMatricesBuffer()
 		}
 
 		// Tune this parameter according to the scene
-		constexpr float zMult = 20.0f;
+		constexpr float zMult = 10.0f;
 		if (minZ < 0)
 		{
 			minZ *= zMult;

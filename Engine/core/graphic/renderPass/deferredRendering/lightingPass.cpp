@@ -82,11 +82,8 @@ void LightingPass::beginPass()
 	mProgram->setUniform("cascadedLayerCount", mCascadedShadowMapPass->getCascadedLayerCount());
 	//set cascadedDistances
 	auto csmDistances = mCascadedShadowMapPass->getCascadedFrustumDistanes();
-	for (int i = 0; i < csmDistances.size(); i++)
-	{
-		std::string key = "cascadedLayerDistances[" + std::to_string(i) + "]";
-		mProgram->setUniform(key.c_str(), csmDistances[i]);
-	}
+	mProgram->setUniform("cascadedLayerDistances", csmDistances.size(), csmDistances.data());
+	
 	//set cascaded lightIndex
 	mProgram->setUniform("cascadedShadowLightIndex", mCascadedShadowMapPass->getShadowLightIndex());
 }

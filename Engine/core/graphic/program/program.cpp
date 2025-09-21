@@ -125,6 +125,15 @@ void Program::setUniform(const char* name, float value) const
 	}
 }
 
+void Program::setUniform(const char* name, uint size, float* data) const
+{
+	int loc = getUniformLocation(name);
+	if (loc != -1)
+	{
+		glUniform1fv(loc, size, data);
+	}
+}
+
 void Program::setUniform(const char* name, const glm::vec2& value) const
 {
 	//checkLinkState();

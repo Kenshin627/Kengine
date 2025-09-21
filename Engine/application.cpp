@@ -26,7 +26,7 @@
 #include "graphic/renderPass/toneMapping/toneMapping.h"
 #include "graphic/texture/textureSystem.h"
 
-constexpr int shadowMapResolution = 2048;
+constexpr int shadowMapResolution = 4096;
 
 Application::Application(uint width, uint height, const char* title)
 	:mWindow(std::make_unique<Window>(width, height, title))
@@ -233,6 +233,8 @@ Application::Application(uint width, uint height, const char* title)
 	cascadeShadowMapPassState.height = shadowMapResolution;
 	cascadeShadowMapPassState.viewport.z = shadowMapResolution;
 	cascadeShadowMapPassState.viewport.w = shadowMapResolution;
+	cascadeShadowMapPassState.cullFace = true;
+	cascadeShadowMapPassState.cullFaceMode = GL_FRONT;
 	cascadeShadowMapPassState.depthTest = true;
 	cascadeShadowMapPassState.target = RenderTarget::FRAMEBUFFER;
 	std::shared_ptr<CascadeShadowMapPass> cascadeShadowMapPass = std::make_shared<CascadeShadowMapPass>(scene.get(), cascadeShadowMapPassState);
