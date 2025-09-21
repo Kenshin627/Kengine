@@ -12,20 +12,25 @@ layout (std140, binding = 0) uniform CameraBuffer
 	mat4 viewProjectionMatrix;
 	mat4 projectionMatrix;
 	mat4 viewMatrix;
-	vec3 position;
+	vec4 position;
+	vec4 clipRange;
 } cameraBuffer;
 
-struct PointLight
+struct Light
 {
-	vec4 position;
-	vec4 color;
-	vec4 factor;
+	vec4	position;
+	vec4	direction;
+	vec4	color;
+	vec4	attentionFactor;
+	float	outterCutoff;
+	float	innerCutoff;
+	int		type;
+	int		lightCount;
 };
 
 layout (std140, binding = 1) uniform LightBuffer
 {
-	PointLight pointLights[MAX_LIGHT_COUNT];
-	vec4 lightCount;
+	Light lights[MAX_LIGHT_COUNT];
 } lightBuffer;
 
 uniform sampler2D diffuseMap;
@@ -34,24 +39,23 @@ uniform float     shiness;
 
 void main()
 {
-	vec3 camaraPos = cameraBuffer.position;
-	vec3 v = normalize(camaraPos - vPos);
-	vec3 n = normalize(vNormal);
-	vec3 diff = texture(diffuseMap, vTexcoord).rgb;
-	float spec = texture(specularMap, vTexcoord).r;
-	int lightCount = int(lightBuffer.lightCount.r);
-	//TODO: update pointsLightCount
-	for(int i = 0; i < 3; i++)
+	vec3  camaraPos  = cameraBuffer.position.xyz;
+	vec3  v			 = normalize(camaraPos - vPos);
+	vec3  n			 = normalize(vNormal);
+	vec3  diff		 = texture(diffuseMap, vTexcoord).rgb;
+	float spec		 = texture(specularMap, vTexcoord).r;
+	int   lightCount = lightBuffer.lights[0].lightCount;
+	for(int i = 0; i < lightCount; i++)
 	{
-		vec3 lightPos = lightBuffer.pointLights[i].position.xyz;
+		vec3 lightPos = lightBuffer.lights[i].position.xyz;
 		vec3 l = lightPos - vPos;
 		float distance = length(l);
 		l = normalize(l);
 		vec3 h = normalize(l + v);
-		vec3 lightColor = lightBuffer.pointLights[i].color.rgb;
-		float constant = lightBuffer.pointLights[i].factor.r;
-		float linear = lightBuffer.pointLights[i].factor.g;
-		float quadratic = lightBuffer.pointLights[i].factor.b;
+		vec3 lightColor = lightBuffer.lights[i].color.rgb;
+		float constant = lightBuffer.lights[i].attentionFactor.r;
+		float linear = lightBuffer.lights[i].attentionFactor.g;
+		float quadratic = lightBuffer.lights[i].attentionFactor.b;
 		vec3 ambient = 0.1 * lightColor * diff;
 		vec3 diffuse = max(dot(n, l), 0.0) * lightColor * diff;
 		vec3 specular = pow(max(dot(n, h), 0.0), 32) * lightColor * spec;

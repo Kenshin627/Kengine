@@ -237,7 +237,7 @@ Application::Application(uint width, uint height, const char* title)
 	cascadeShadowMapPassState.cullFaceMode = GL_FRONT;
 	cascadeShadowMapPassState.depthTest = true;
 	cascadeShadowMapPassState.target = RenderTarget::FRAMEBUFFER;
-	std::shared_ptr<CascadeShadowMapPass> cascadeShadowMapPass = std::make_shared<CascadeShadowMapPass>(scene.get(), cascadeShadowMapPassState);
+	std::shared_ptr<CascadeShadowMapPass> cascadeShadowMapPass = std::make_shared<CascadeShadowMapPass>(scene.get(), 2, 4, cascadeShadowMapPassState);
 	
 	//pass#1 geometryPass
 	RenderState geometryPassState;

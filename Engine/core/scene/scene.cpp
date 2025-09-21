@@ -22,8 +22,9 @@ Scene::Scene()
 	// | PROJECTIONMATRIX     mat4                                                  |
 	// | VIEWMATRIX			  mat4                                                  |
 	// | POSITION vec3		       + padding float                                  |
+	// | NEAR FAR	float * 2	   + padding float * 2                              |
 	//viewprojectionMatrix + projectionMatrix + viewMatrix + position + padding
-	mCameraBuffer = std::make_unique<UniformBuffer>(sizeof(glm::mat4) * 3 + sizeof(glm::vec4), 0); 
+	mCameraBuffer = std::make_unique<UniformBuffer>(sizeof(glm::mat4) * 3 + sizeof(glm::vec4) * 2, 0); 
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	//LIGHTBUFFER BINDINGPOINT 1
@@ -106,17 +107,9 @@ void Scene::setMainCamera(std::shared_ptr<Camera> camera)
 	}
 	
 	mMainCamera = camera;
-	//update camera buffer
 	if (mMainCamera)
 	{
-		const glm::mat4& viewProj = mMainCamera->getViewProjectionMatrix();
-		const glm::mat4& proj = mMainCamera->getProjectionMatrix();
-		const glm::mat4& view = mMainCamera->getViewMatrix();
-		glm::vec4 camPos = glm::vec4(mMainCamera->getPosition(), 1.0f);
-		mCameraBuffer->setData(sizeof(glm::mat4), &viewProj, 0);
-		mCameraBuffer->setData(sizeof(glm::mat4), &proj, sizeof(glm::mat4));
-		mCameraBuffer->setData(sizeof(glm::mat4), &view, sizeof(glm::mat4) * 2);
-		mCameraBuffer->setData(sizeof(glm::vec4), &camPos, sizeof(glm::mat4) * 3);
+		updateCameraBuffer();
 	}
 }
 
@@ -143,14 +136,7 @@ void Scene::beginScene()
 	//update cameraBuffer if nessesary
 	if (mMainCamera && mMainCamera->isCameraUniformDirty())
 	{
-		glm::mat4 viewProj = mMainCamera->getViewProjectionMatrix();
-		const glm::mat4& proj = mMainCamera->getProjectionMatrix();
-		const glm::mat4& view = mMainCamera->getViewMatrix();
-		glm::vec4 camPos = glm::vec4(mMainCamera->getPosition(), 1.0f);
-		mCameraBuffer->setData(sizeof(glm::mat4), &viewProj, 0);
-		mCameraBuffer->setData(sizeof(glm::mat4), &proj, sizeof(glm::mat4));
-		mCameraBuffer->setData(sizeof(glm::mat4), &view, sizeof(glm::mat4) * 2);
-		mCameraBuffer->setData(sizeof(glm::vec4), &camPos, sizeof(glm::mat4) * 3);
+		updateCameraBuffer();
 	}
 	//update lightCount
 
@@ -363,5 +349,21 @@ void Scene::updateSceneUI()
 uint Scene::getShadowLightIndex() const
 {
 	return 3;
+}
+
+void Scene::updateCameraBuffer()
+{
+	const glm::mat4& viewProj = mMainCamera->getViewProjectionMatrix();
+	const glm::mat4& proj = mMainCamera->getProjectionMatrix();
+	const glm::mat4& view = mMainCamera->getViewMatrix();
+	glm::vec4 camPos = glm::vec4(mMainCamera->getPosition(), 1.0f);
+	float nearPlane = mMainCamera->getNear();
+	float farPlane = mMainCamera->getFar();
+	glm::vec4 clipRnage{ nearPlane, farPlane, 0.0f, 0.0f };
+	mCameraBuffer->setData(sizeof(glm::mat4), &viewProj, 0);
+	mCameraBuffer->setData(sizeof(glm::mat4), &proj, sizeof(glm::mat4));
+	mCameraBuffer->setData(sizeof(glm::mat4), &view, sizeof(glm::mat4) * 2);
+	mCameraBuffer->setData(sizeof(glm::vec4), &camPos, sizeof(glm::mat4) * 3);
+	mCameraBuffer->setData(sizeof(glm::vec4), &clipRnage, sizeof(glm::mat4) * 3 + sizeof(glm::vec4));
 }
 

@@ -12,7 +12,8 @@ layout (std140, binding = 0) uniform CameraBuffer
 	mat4 viewProjectionMatrix;
 	mat4 projectionMatrix;
 	mat4 viewMatrix;
-	vec3 position;
+	vec4 position;
+	vec4 clipRange;
 } cameraBuffer;
 
 uniform float	  samperRadius;

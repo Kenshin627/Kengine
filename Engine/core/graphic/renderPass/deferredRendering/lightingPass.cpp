@@ -86,6 +86,9 @@ void LightingPass::beginPass()
 	
 	//set cascaded lightIndex
 	mProgram->setUniform("cascadedShadowLightIndex", mCascadedShadowMapPass->getShadowLightIndex());
+
+	//pcfSize
+	mProgram->setUniform("pcfSize", mCascadedShadowMapPass->getPcfSize());
 }
 
 void LightingPass::setCascadedShadowMapPass(CascadeShadowMapPass* pass)

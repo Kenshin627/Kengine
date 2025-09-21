@@ -31,15 +31,15 @@ uniform sampler2DArray cascadedShadowMap;
 uniform int			   cascadedLayerCount;
 uniform float          cascadedLayerDistances[16];
 uniform int            cascadedShadowLightIndex;   //index to lightBuffer ubo
+uniform int 		   pcfSize;
  
-uniform int lightCount;
-
 layout (std140, binding = 0) uniform CameraBuffer
 {
 	mat4 viewProjectionMatrix;
 	mat4 projectionMatrix;
 	mat4 viewMatrix;
-	vec3 position;
+	vec4 position;
+	vec4 clipRange;
 } cameraBuffer;
 
 layout (std140, binding = 1) uniform LightBuffer
@@ -132,10 +132,10 @@ float calcShadow(vec3 viewSpacePos, vec3 viewSpaceNormal, out int layer)
 	//float bias = dot(viewSpaceNormal, shadowlightDir);
 	float bias = max(0.05 * (1.0 - dot(viewSpaceNormal, shadowlightDir)), 0.005);
     const float biasModifier = 0.5f;
-	//TODO:set uniform farPlane 
+	float far = cameraBuffer.clipRange[1];
     if (layer == cascadedLayerCount)
     {
-        bias *= 1 / (100.0f * biasModifier);
+        bias *= 1 / (far * biasModifier);
     }
     else
     {
@@ -144,9 +144,10 @@ float calcShadow(vec3 viewSpacePos, vec3 viewSpaceNormal, out int layer)
 
 	float shadow = 0.0f;
 	vec2 texelSize = 1.0 / vec2(textureSize(cascadedShadowMap, 0));
-	for(int x  = -1;x <= 1; x++)
+	int count = 0;
+	for(int x  = -pcfSize; x <= pcfSize; x++)
 	{
-		for(int y = -1; y <= 1; y++)
+		for(int y = -pcfSize; y <= pcfSize; y++)
 		{
 			vec2 texCoord = lightSpacePos.xy + vec2(x, y) * texelSize;
 			float pcfShadowDepth = texture(cascadedShadowMap, vec3(texCoord, layer)).r;
@@ -154,10 +155,10 @@ float calcShadow(vec3 viewSpacePos, vec3 viewSpaceNormal, out int layer)
 			{
 				shadow += 1.0;
 			}
-			
+			count++;
 		}
 	}
-	shadow /= 9.0;
+	shadow /= count;
 	return shadow;
 }
 
@@ -172,7 +173,6 @@ void main()
 
 	vec4  diffEmissive	   = texture(gDiffuse, vTexcoord);
 	//has done in load textureFlie
-	//vec3  diff			   = pow(diffEmissive.rgb, vec3(2.2));              //for pbr this is albedo
 	vec3  diff			   = diffEmissive.rgb;   
 	float emmisive		   = diffEmissive.a;
 	//check if si emissiveLighting return it's emissiveColor, no calc lghting

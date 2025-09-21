@@ -133,7 +133,6 @@ void FrameBuffer::buildAttachment(const FrameBufferSpecification& attachmentSpec
 		}
 		GLCALL(glNamedFramebufferTexture(mRendererID, GL_DEPTH_STENCIL_ATTACHMENT, mDepthStencilAttachment->id(), 0));
 	}
-	//TODO:DEPTH ATTACHMENT
 	else if(attachmentSpec.attachmentType == AttachmentType::Depth)
 	{
 		if (texSpec.depth > 1)

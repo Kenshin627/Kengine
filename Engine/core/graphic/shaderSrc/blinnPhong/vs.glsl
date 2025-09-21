@@ -14,8 +14,10 @@ layout (std140, binding = 0) uniform CameraBuffer
 	mat4 viewProjectionMatrix;
 	mat4 projectionMatrix;
 	mat4 viewMatrix;
-	vec3 position;
+	vec4 position;
+	vec4 clipRange;
 } cameraBuffer;
+
 
 out vec3 vPos;
 out vec3 vNormal;

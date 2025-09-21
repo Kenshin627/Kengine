@@ -36,6 +36,8 @@ public:
 	void updateSceneUI();
 	float getHeightMapScale() const { return mHeightMapScale; }
 	uint getShadowLightIndex() const;
+	private:
+		void updateCameraBuffer();
 private:
 	std::vector<std::shared_ptr<RenderObject>> mRenderList;
 	std::vector<std::shared_ptr<Light>>		   mLights;

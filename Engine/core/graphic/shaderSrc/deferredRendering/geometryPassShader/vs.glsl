@@ -10,7 +10,8 @@ layout (std140, binding = 0) uniform CameraBuffer
 	mat4 viewProjectionMatrix;
 	mat4 projectionMatrix;
 	mat4 viewMatrix;
-	vec3 position;
+	vec4 position;
+	vec4 clipRange;
 } cameraBuffer;
 
 uniform mat4 modelMatrix;
@@ -40,7 +41,7 @@ void main()
 		t = normalize(t - n * dot(t, n));
 		vec3 b = cross(n, t);
 		mat3 tbn = transpose(mat3(t, b, n));
-		tangentSpaceViewPos = tbn * cameraBuffer.position;
+		tangentSpaceViewPos = tbn * cameraBuffer.position.xyz;
 		tangentSpaceFragPos = tbn * pos;
 	}
 

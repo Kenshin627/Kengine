@@ -9,8 +9,10 @@
 #include "scene/light/light.h"
 
 //NEED DEPTH TEST!!!
-CascadeShadowMapPass::CascadeShadowMapPass(Scene* scene, const RenderState& state)
+CascadeShadowMapPass::CascadeShadowMapPass(Scene* scene, uint pcfSize, uint cascadedLayer, const RenderState& state)
 	:RenderPass(state),
+	 mPcfSize(pcfSize),
+	 mCascadedLayer(cascadedLayer),
 	 mScene(scene)
 {
 	//lightMatrices uniform buffer
@@ -124,15 +126,16 @@ void CascadeShadowMapPass::updateLightMatricesBuffer()
 	auto camera = mScene->getCurrentCamera();
 	float cameraNear = camera->getNear();
 	float cameraFar = camera->getFar();
-	Light* light = mScene->getLights()[mScene->getShadowLightIndex()].get();
-	for(int i = 0; i < CascadeLayers; i++)
+	uint lightIndex = mScene->getShadowLightIndex();
+	Light* light = mScene->getLights().at(lightIndex).get();
+	for(int i = 0; i < mCascadedLayer; i++)
 	{
 		if (i == 0)
 		{
 			near = cameraNear;
 			far = mCascadeFrustumDistances[i];
 		}
-		else if (i == CascadeLayers - 1)
+		else if (i == mCascadedLayer - 1)
 		{
 			near = mCascadeFrustumDistances[i - 1];
 			far = cameraFar;
@@ -152,7 +155,7 @@ void CascadeShadowMapPass::updateLightMatricesBuffer()
 		center /= worldSpaceCorners.size();
 		glm::vec3 lightPos = light->getPosition();
 		glm::vec3 lightDirection = light->getDirection();
-		glm::mat4 lightViewSpace = glm::lookAt(lightPos, lightDirection, { 0, 1, 0 });
+		glm::mat4 lightViewSpace = glm::lookAt(center - lightDirection, center, { 0, 1, 0 });
 		//transform worldspace corners to lightViewSpace calc frustum
 		float minX = std::numeric_limits<float>::max();
 		float maxX = std::numeric_limits<float>::lowest();
@@ -208,4 +211,9 @@ int CascadeShadowMapPass::getCascadedLayerCount() const
 int CascadeShadowMapPass::getShadowLightIndex() const
 {
 	return mScene->getShadowLightIndex();
+}
+
+int CascadeShadowMapPass::getPcfSize() const
+{
+	return mPcfSize;
 }
