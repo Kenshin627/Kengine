@@ -69,6 +69,7 @@ uint Texture::convertToGLInternalFormat(TextureInternalFormat format)
 	switch (format)
 	{
 	case TextureInternalFormat::R8:					return   GL_R8;
+	case TextureInternalFormat::RG8:			    return GL_RG8;
 	case TextureInternalFormat::RGB8:				return   GL_RGB8;
 	case TextureInternalFormat::RGBA8:				return   GL_RGBA8;
 	case TextureInternalFormat::RGB16F:				return   GL_RGB16F;
@@ -88,6 +89,7 @@ uint Texture::convertToGLDataFormat(TextureDataFormat format)
 	switch (format)
 	{
 	case TextureDataFormat::R:						return GL_RED;
+	case TextureDataFormat::RG:						return GL_RG;
 	case TextureDataFormat::RGB:					return GL_RGB;
 	case TextureDataFormat::RGBA:					return GL_RGBA;
 	default: KS_CORE_ERROR("[TEXTURE DATA FORMAT ERROR]: Unsupported texture data format!"); return 0;

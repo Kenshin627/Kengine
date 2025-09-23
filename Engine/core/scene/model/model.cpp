@@ -192,6 +192,8 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		spec.specularMap = processTexture(scene, mat, aiTextureType_SPECULAR);
 		spec.normalMap = processTexture(scene, mat, aiTextureType_HEIGHT);
 		spec.shinessMap = processTexture(scene, mat, aiTextureType_SHININESS);
+		spec.alphaMap = processTexture(scene, mat, aiTextureType_OPACITY);
+		
 
 		//colors
 		aiColor3D diffColor;

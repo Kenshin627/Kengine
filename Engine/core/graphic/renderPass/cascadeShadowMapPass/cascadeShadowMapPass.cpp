@@ -260,7 +260,7 @@ void CascadeShadowMapPass::updateLightMatricesBuffer()
 		}
 
 		// Tune this parameter according to the scene
-		constexpr float zMult = 2.0f;
+		constexpr float zMult = 4.0f;
 		if (minZ < 0)
 		{
 			minZ *= zMult;
