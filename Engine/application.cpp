@@ -215,118 +215,44 @@ Application::Application(uint width, uint height, const char* title)
 	
 	//pass
 	//PASS GROUP#1
-	//pass#1 to framebuffer
-	RenderState defaultPassState;
-	defaultPassState.width = width;
-	defaultPassState.height = height;
-	defaultPassState.viewport.z = width;
-	defaultPassState.viewport.w = height;
-	defaultPassState.target = RenderTarget::SCREEN;
-	std::shared_ptr<DefaultPass> defaultPass = std::make_shared<DefaultPass>(defaultPassState);
+	glm::vec4 viewport{ 0, 0, width, height };
 
-	//pass#2 graySCcale effect
-	RenderState grayScalePassState;
-	grayScalePassState.width = width;
-	grayScalePassState.height = height;
-	grayScalePassState.viewport.z = width;
-	grayScalePassState.viewport.w = height;
-	grayScalePassState.target = RenderTarget::SCREEN;
-	grayScalePassState.depthTest = false;
-	std::shared_ptr<GrayScaleEffect> grayScalePass = std::make_shared<GrayScaleEffect>(grayScalePassState);
+	std::shared_ptr<DefaultPass> defaultPass = std::make_shared<DefaultPass>(RenderState{ viewport, RenderTarget::SCREEN });
+
+	std::shared_ptr<GrayScaleEffect> grayScalePass = std::make_shared<GrayScaleEffect>(RenderState{ viewport, RenderTarget::SCREEN, false });
 	grayScalePass->setLastPassFBOs({ defaultPass->getCurrentFrameBuffer().get()});
 
 	//PASS GROUP #2
 	//CSM
-	RenderState cascadeShadowMapPassState;
-	cascadeShadowMapPassState.width = shadowMapResolution;
-	cascadeShadowMapPassState.height = shadowMapResolution;
-	cascadeShadowMapPassState.viewport.z = shadowMapResolution;
-	cascadeShadowMapPassState.viewport.w = shadowMapResolution;
-	cascadeShadowMapPassState.cullFace = true;
-	cascadeShadowMapPassState.cullFaceMode = GL_FRONT;
-	cascadeShadowMapPassState.depthTest = true;
-	cascadeShadowMapPassState.target = RenderTarget::FRAMEBUFFER;
+	RenderState cascadeShadowMapPassState{ { 0, 0, shadowMapResolution, shadowMapResolution }, RenderTarget::FRAMEBUFFER, true, GL_LESS, GL_TRUE, true, GL_FRONT };
 
-	//Scene* scene;
-	//uint pcfSize;
-	//uint cascadedLayer;
-	//float splitLambda;
-	//FrustumSplitMethod splitMethod;
 	CascadeShadowMapPassSpecification spec{ scene.get(), 2, 6, 0.9, FrustumSplitMethod::Pratical  };
 	std::shared_ptr<CascadeShadowMapPass> cascadeShadowMapPass = std::make_shared<CascadeShadowMapPass>(spec, cascadeShadowMapPassState);
 	
 	//pass#1 geometryPass
-	RenderState geometryPassState;
-	geometryPassState.width = width;
-	geometryPassState.height = height;
-	geometryPassState.viewport.z = width;
-	geometryPassState.viewport.w = height;
-	geometryPassState.target = RenderTarget::FRAMEBUFFER;
-	std::shared_ptr<GeometryPass> gPass = std::make_shared<GeometryPass>(geometryPassState);
+	std::shared_ptr<GeometryPass> gPass = std::make_shared<GeometryPass>(RenderState{viewport, RenderTarget::FRAMEBUFFER});
 
 	//pass#2 ssaoPass
-	RenderState ssaoPassState;
-	ssaoPassState.width = width;
-	ssaoPassState.height = height;
-	ssaoPassState.viewport.z = width;
-	ssaoPassState.viewport.w = height;
-	ssaoPassState.depthTest = false;
-	ssaoPassState.target = RenderTarget::FRAMEBUFFER;
-	std::shared_ptr<SSAOPass> ssaoPass = std::make_shared<SSAOPass>(128, 1.0, ssaoPassState);
+	std::shared_ptr<SSAOPass> ssaoPass = std::make_shared<SSAOPass>(128, 1.0, RenderState{viewport, RenderTarget::FRAMEBUFFER, false});
 	ssaoPass->setLastPassFBOs({ gPass->getCurrentFrameBuffer().get()});
 	
 	//pass#3 blurPass
-	RenderState blurPasState;
-	blurPasState.width = width;
-	blurPasState.height = height;
-	blurPasState.viewport.z = width;
-	blurPasState.viewport.w = height;
-	blurPasState.depthTest = false;
-	blurPasState.target = RenderTarget::FRAMEBUFFER;
-	std::shared_ptr<BlurPass> blurPass = std::make_shared<BlurPass>(4, blurPasState);
+	std::shared_ptr<BlurPass> blurPass = std::make_shared<BlurPass>(4, RenderState{viewport, RenderTarget::FRAMEBUFFER, false});
 	blurPass->setLastPassFBOs({ ssaoPass->getCurrentFrameBuffer().get() });
 
 	//pass#4 lightingPass
-	RenderState lightingPassState;
-	lightingPassState.width = width;
-	lightingPassState.height = height;
-	lightingPassState.viewport.z = width;
-	lightingPassState.viewport.w = height;
-	lightingPassState.depthTest = false;
-	lightingPassState.target = RenderTarget::FRAMEBUFFER;
-	std::shared_ptr<LightingPass> lightingPass = std::make_shared<LightingPass>(lightingPassState);
+	std::shared_ptr<LightingPass> lightingPass = std::make_shared<LightingPass>(RenderState{viewport, RenderTarget::FRAMEBUFFER, false});
 	lightingPass->setLastPassFBOs({ gPass->getCurrentFrameBuffer().get(), blurPass->getCurrentFrameBuffer().get(), cascadeShadowMapPass->getCurrentFrameBuffer().get()});
 	lightingPass->setCascadedShadowMapPass(cascadeShadowMapPass.get());
 
-	RenderState bloomPassState;
-	bloomPassState.width = width;
-	bloomPassState.height = height;
-	bloomPassState.viewport.z = width;
-	bloomPassState.viewport.w = height;
-	bloomPassState.depthTest = false;
-	bloomPassState.target = RenderTarget::FRAMEBUFFER;
-	std::shared_ptr<BloomPass> bloomPass = std::make_shared<BloomPass>(bloomPassState);
+	//pass#5 bloom
+	std::shared_ptr<BloomPass> bloomPass = std::make_shared<BloomPass>(RenderState{viewport, RenderTarget::FRAMEBUFFER, false});
 	bloomPass->setLastPassFBOs({ lightingPass->getCurrentFrameBuffer().get()});
 
-	RenderState gaussianPassState;
-	gaussianPassState.width = width;
-	gaussianPassState.height = height;
-	gaussianPassState.viewport.z = width;
-	gaussianPassState.viewport.w = height;
-	gaussianPassState.depthTest = false;
-	gaussianPassState.target = RenderTarget::FRAMEBUFFER;
-	std::shared_ptr<GaussianBlur> gaussianBlur = std::make_shared<GaussianBlur>(gaussianPassState);
+	std::shared_ptr<GaussianBlur> gaussianBlur = std::make_shared<GaussianBlur>(RenderState{viewport, RenderTarget::FRAMEBUFFER, false});
 	gaussianBlur->setLastPassFBOs({ bloomPass->getCurrentFrameBuffer().get() });
 
-
-	RenderState toneMappingState;
-	toneMappingState.width = width;
-	toneMappingState.height = height;
-	toneMappingState.viewport.z = width;
-	toneMappingState.viewport.w = height;
-	toneMappingState.depthTest = false;
-	toneMappingState.target = RenderTarget::FRAMEBUFFER;
-	std::shared_ptr<ToneMapping> toneMappingPass = std::make_shared<ToneMapping>(1.0, toneMappingState);
+	std::shared_ptr<ToneMapping> toneMappingPass = std::make_shared<ToneMapping>(1.0, RenderState{ viewport, RenderTarget::FRAMEBUFFER, false });
 	toneMappingPass->setLastPassFBOs({ gaussianBlur->getOutputFrameBuffer(), bloomPass->getCurrentFrameBuffer().get() });
 	spotLight1->castShadow(cascadeShadowMapPass.get());
 	renderer->setRenderPass({ cascadeShadowMapPass, gPass, ssaoPass, blurPass, lightingPass, bloomPass, gaussianBlur, toneMappingPass });

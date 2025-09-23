@@ -90,8 +90,6 @@ void Renderer::setDefaultRenderPass()
 {
 	//set renderState
 	RenderState state;
-	state.width = mWidth;
-	state.height = mHeight;
 	state.viewport.z = mWidth;
 	state.viewport.w = mHeight;
 	state.target = RenderTarget::SCREEN;

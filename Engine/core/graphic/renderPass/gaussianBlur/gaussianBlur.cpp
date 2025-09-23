@@ -30,8 +30,8 @@ GaussianBlur::GaussianBlur(const RenderState& state)
 			TextureFilter::LINEAR
 		}
 	};
-	mDoubleBuffers.push_back(std::make_shared<FrameBuffer>(glm::vec3{ state.width, state.height , 0}, spec));
-	mDoubleBuffers.push_back(std::make_shared<FrameBuffer>(glm::vec3{ state.width, state.height , 0}, spec));
+	mDoubleBuffers.push_back(std::make_shared<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, spec));
+	mDoubleBuffers.push_back(std::make_shared<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, spec));
 }
 
 GaussianBlur::~GaussianBlur()

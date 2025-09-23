@@ -18,25 +18,24 @@ enum class RenderTarget
 
 struct RenderState
 {
-	bool		 cullFace        { false                                     };
+	glm::vec4	 viewport		 { 0, 0, 800, 600						     };
+	RenderTarget target			 { RenderTarget::SCREEN					     };
 	bool		 depthTest       { true                                      };
+	GLenum		 depthFunc		 { GL_LESS									 };
+	GLenum	     depthMask		 { GL_TRUE									 };
+	bool		 cullFace        { true                                     };
+	GLenum		 cullFaceMode    { GL_BACK                                   };	
+	GLenum		 frontFace       { GL_CCW                                    };
 	bool		 blend           { false                                     };
 	bool		 stencilTest     { false                                     };
 	bool		 scissorTest     { false                                     };
-	GLenum		 cullFaceMode    { GL_BACK                                   };
-	GLenum		 depthFunc       { GL_LESS                                   };
 	GLenum		 blendSrcFactor  { GL_SRC_ALPHA                              };
 	GLenum		 blendDstFactor  { GL_ONE_MINUS_SRC_ALPHA                    };
-	GLenum		 frontFace       { GL_CCW                                    };
 	GLenum		 polygonMode     { GL_FILL                                   };
 	int		     clearBits       { GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT };
 	float		 clearDepth      { 1.0f                                      };
 	float		 clearStencil    { 0.0f                                      };
-	glm::vec4	 clearColor      { 0.1f, 0.1f, 0.1f, 1.0f                    };
-	glm::vec4	 viewport        { 0, 0, 800, 600                            };
-	RenderTarget target			 { RenderTarget::SCREEN						 };
-	uint		 width			 { 800										 };
-	uint		 height			 { 600										 };
+	glm::vec4	 clearColor      { 0.1f, 0.1f, 0.1f, 1.0f                    };	
 	glm::vec4	 scissorBox		 { 0, 0, 800, 600                            };
 };
 
@@ -68,4 +67,5 @@ protected:
 	std::shared_ptr<FrameBuffer>				 mFrameBuffer;
 	std::vector<FrameBuffer*>			         mlastPassFrameBuffer;
 	RenderState									 mRenderState;
+	glm::vec2									 mSize;
 };

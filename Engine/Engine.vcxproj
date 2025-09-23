@@ -286,6 +286,8 @@
     <None Include="core\graphic\shaderSrc\gaussianBlur\vs.glsl" />
     <None Include="core\graphic\shaderSrc\postProcess\grayScale\fs.glsl" />
     <None Include="core\graphic\shaderSrc\postProcess\grayScale\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\preDepthPass\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\preDepthPass\vs.glsl" />
     <None Include="core\graphic\shaderSrc\ssao\blur\fs.glsl" />
     <None Include="core\graphic\shaderSrc\ssao\blur\vs.glsl" />
     <None Include="core\graphic\shaderSrc\ssao\occlusion\fs.glsl" />

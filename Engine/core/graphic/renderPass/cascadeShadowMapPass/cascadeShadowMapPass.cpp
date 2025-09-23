@@ -45,7 +45,7 @@ CascadeShadowMapPass::CascadeShadowMapPass(const CascadeShadowMapPassSpecificati
 			{1.0, 1.0, 1.0, 1.0}
 		}
 	};
-	mFrameBuffer = std::make_shared<FrameBuffer>(glm::vec3{state.width, state.height, mCascadedLayer }, fboSpec);
+	mFrameBuffer = std::make_shared<FrameBuffer>(glm::vec3{ mSize.x, mSize.y , mCascadedLayer }, fboSpec);
 	//program
 	mProgram = std::make_shared<Program>();
 	std::initializer_list<ShaderFile> files =

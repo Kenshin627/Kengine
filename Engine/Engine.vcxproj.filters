@@ -376,5 +376,7 @@
     <None Include="core\graphic\shaderSrc\cascadeShadowMap\vs.glsl" />
     <None Include="core\graphic\shaderSrc\cascadeShadowMap\gs.glsl" />
     <None Include="core\graphic\shaderSrc\cascadeShadowMap\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\preDepthPass\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\preDepthPass\fs.glsl" />
   </ItemGroup>
 </Project>

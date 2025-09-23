@@ -29,7 +29,7 @@ BlurPass::BlurPass(uint radius, const RenderState& state)
 			TextureFilter::NEAREST
 		}
 	};
-	mFrameBuffer = std::make_unique<FrameBuffer>(glm::vec3{ state.width, state.height , 0}, specs);
+	mFrameBuffer = std::make_unique<FrameBuffer>(glm::vec3{ mSize.x, mSize.y , 0}, specs);
 }
 
 BlurPass::~BlurPass()

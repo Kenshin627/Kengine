@@ -9,6 +9,8 @@ RenderPass::RenderPass(const RenderState& state)
 	 mFrameBuffer(nullptr),
 	 mProgram(nullptr)
 {
+	mSize.x = state.viewport.z;
+	mSize.y = state.viewport.w;
 }
 
 void RenderPass::beginPass()
@@ -56,8 +58,6 @@ void RenderPass::resize(uint width, uint height)
 	//resize viewport
 	mRenderState.viewport.z = width;
 	mRenderState.viewport.w = height;
-	mRenderState.width = width;
-	mRenderState.height = height;
 	//resize fbo if nessesary
 	if (mFrameBuffer)
 	{
@@ -75,6 +75,7 @@ void RenderPass::updateRenderState() const
 	{
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(mRenderState.depthFunc);
+		glDepthMask(mRenderState.depthMask);
 	}
 	else
 	{

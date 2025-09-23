@@ -31,7 +31,7 @@ ToneMapping::ToneMapping(float exposure, const RenderState& state)
 			TextureFilter::LINEAR
 		}
 	};
-	mFrameBuffer = std::make_shared<FrameBuffer>(glm::vec3{ state.width, state.height , 0 }, spec);
+	mFrameBuffer = std::make_shared<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, spec);
 }
 
 ToneMapping::~ToneMapping()

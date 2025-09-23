@@ -39,7 +39,7 @@ SSAOPass::SSAOPass(uint kernelSize = 64, float radius = 0.5f, const RenderState&
 			TextureFilter::NEAREST
 		}
 	};
-	mFrameBuffer = std::make_unique<FrameBuffer>(glm::vec3{ state.width, state.height , 0 }, specs);
+	mFrameBuffer = std::make_unique<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, specs);
 }
 
 void SSAOPass::setKernelSize(uint kernelSize)
@@ -90,7 +90,7 @@ void SSAOPass::beginPass()
 	mNoiseTexture->bind(2);
 	mProgram->setUniform("noise", 2);
 	//update framebuffersize
-	glm::vec2 size{ mRenderState.width, mRenderState.height };
+	glm::vec2 size{ mRenderState.viewport.z, mRenderState.viewport.w };
 	mProgram->setUniform("frameBufferSize", size);
 	//upload projectMaTrix in cameraBuffer
 	
