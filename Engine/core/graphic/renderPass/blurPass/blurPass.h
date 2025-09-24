@@ -4,7 +4,7 @@
 class BlurPass :public RenderPass
 {
 public:
-	BlurPass(uint radius, const RenderState& state);
+	BlurPass(uint radius, Renderer* r, const RenderState& state);
 	~BlurPass();
 	void setBlurRadius(uint radius);
 	uint getBlurRadius() const;

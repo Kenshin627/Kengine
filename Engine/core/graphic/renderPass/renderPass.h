@@ -9,6 +9,7 @@ class Program;
 class FrameBuffer;
 class Geometry;
 class Scene;
+class Renderer;
 
 enum class RenderTarget
 {
@@ -19,7 +20,7 @@ enum class RenderTarget
 struct RenderState
 {
 	glm::vec4	 viewport		 { 0, 0, 800, 600						     };
-	RenderTarget target			 { RenderTarget::SCREEN					     };
+	RenderTarget target			 { RenderTarget::FRAMEBUFFER				 };
 	bool		 depthTest       { true                                      };
 	GLenum		 depthFunc		 { GL_LESS									 };
 	GLenum	     depthMask		 { GL_TRUE									 };
@@ -39,13 +40,26 @@ struct RenderState
 	glm::vec4	 scissorBox		 { 0, 0, 800, 600                            };
 };
 
+enum class RenderPassKey
+{
+	SSAO,
+	SSAOBLUR,
+	CSM,
+	BLOOM,
+	BLOOMBLUR,
+	GEOMETRY,
+	DEFFEREDSHADING,
+	FORWARDSHADING,
+	TONEMAPPING
+};
+
 /// <summary>
 /// RenderPass
 /// </summary>
 class RenderPass
 {
 public:
-	RenderPass(const RenderState& state);
+	RenderPass(Renderer* s, const RenderState& state);
 	virtual ~RenderPass() = default;
 	RenderPass(const RenderPass& pass) = delete;
 	RenderPass(RenderPass&& pass) = delete;
@@ -59,13 +73,18 @@ public:
 	void updateRenderState() const;
 	void setRenderState(const RenderState& state);
 	bool checkPassReady();
-	void setLastPassFBOs(const std::initializer_list<FrameBuffer*>& fbo);
-	std::shared_ptr<FrameBuffer> getCurrentFrameBuffer() const;
+	//void setLastPassFBOs(const std::initializer_list<FrameBuffer*>& fbo);
+	FrameBuffer* getCurrentFrameBuffer() const;
 	virtual void renderUI() {};
+	void setPrev(RenderPass* pass);
+	void setNext(RenderPass* pass);
 protected:
 	std::shared_ptr<Program>					 mProgram;
 	std::shared_ptr<FrameBuffer>				 mFrameBuffer;
-	std::vector<FrameBuffer*>			         mlastPassFrameBuffer;
+	//std::vector<FrameBuffer*>			         mlastPassFrameBuffer;
 	RenderState									 mRenderState;
 	glm::vec2									 mSize;
+	RenderPass*									 mPrevPass{ nullptr };
+	RenderPass*									 mNextPass{ nullptr };
+	Renderer*									 mOwner   { nullptr };
 };

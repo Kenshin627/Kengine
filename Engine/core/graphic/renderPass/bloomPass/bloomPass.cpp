@@ -6,8 +6,8 @@
 #include "scene/scene.h"
 #include "graphic/texture/texture.h"
 
-BloomPass::BloomPass(const RenderState& state)
-	:RenderPass(state)
+BloomPass::BloomPass(Renderer* r, const RenderState& state)
+	:RenderPass(r, state)
 {
 	mProgram = std::make_shared<Program>();
 	std::initializer_list<ShaderFile> shaders =
@@ -49,7 +49,7 @@ BloomPass::~BloomPass()
 void BloomPass::beginPass()
 {
 	RenderPass::beginPass();
-	Texture* tex = mlastPassFrameBuffer[0]->getColorAttachment(0);
+	Texture* tex = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(0);
 	tex->bind();
 	mProgram->setUniform("screenMap", 0);
 }
@@ -65,4 +65,14 @@ void BloomPass::runPass(Scene* scene)
 	quad->beginDraw();
 	quad->draw();
 	quad->endDraw();
+}
+
+Texture* BloomPass::getHDRTexture() const
+{
+	return mFrameBuffer->getColorAttachment(1);
+}
+
+Texture* BloomPass::getLDRTexture() const
+{
+	return mFrameBuffer->getColorAttachment(0);
 }

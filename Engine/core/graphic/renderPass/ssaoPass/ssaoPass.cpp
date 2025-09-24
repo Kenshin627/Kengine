@@ -7,8 +7,8 @@
 #include "geometry/screenQuad.h"
 #include "graphic/texture/texture2D/texture2D.h"
 
-SSAOPass::SSAOPass(uint kernelSize = 64, float radius = 0.5f, const RenderState& state = RenderState())
-	:RenderPass(state),
+SSAOPass::SSAOPass(Renderer* r, const RenderState& state, uint kernelSize, float radius)
+	:RenderPass(r, state),
 	 mKernelSize(kernelSize),
 	 mRadius(radius)
 {
@@ -80,8 +80,8 @@ void SSAOPass::beginPass()
 	mProgram->setUniform("kernelSize", mKernelSize);
 	//upload gPositionTexture + gNormalTexture
 	//TODO
-	Texture* gPosDepth = mlastPassFrameBuffer[0] ->getColorAttachment(0);
-	Texture* gNormal = mlastPassFrameBuffer[0]->getColorAttachment(1);
+	Texture* gPosDepth = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(0);
+	Texture* gNormal = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(1);
 	gPosDepth->bind(0);
 	gNormal->bind(1);
 	mProgram->setUniform("gPosition", 0);
@@ -90,8 +90,7 @@ void SSAOPass::beginPass()
 	mNoiseTexture->bind(2);
 	mProgram->setUniform("noise", 2);
 	//update framebuffersize
-	glm::vec2 size{ mRenderState.viewport.z, mRenderState.viewport.w };
-	mProgram->setUniform("frameBufferSize", size);
+	mProgram->setUniform("frameBufferSize", mSize);
 	//upload projectMaTrix in cameraBuffer
 	
 }

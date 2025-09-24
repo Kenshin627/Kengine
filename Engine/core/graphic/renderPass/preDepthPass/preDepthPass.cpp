@@ -4,8 +4,8 @@
 #include "scene/scene.h"
 #include "scene/renderObject.h"
 
-PreDepthPass::PreDepthPass(const RenderState& state)
-	:RenderPass(state)
+PreDepthPass::PreDepthPass(Renderer* r, const RenderState& state)
+	:RenderPass(r, state)
 {
 	std::initializer_list<FrameBufferSpecification> fboSpec =
 	{

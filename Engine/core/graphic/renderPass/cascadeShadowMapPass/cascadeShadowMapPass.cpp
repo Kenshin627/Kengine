@@ -8,10 +8,10 @@
 #include "scene/renderObject.h"
 #include "scene/light/light.h"
 #include "imgui.h"
+#include "graphic/renderer/renderer.h"
 
-CascadeShadowMapPass::CascadeShadowMapPass(const CascadeShadowMapPassSpecification& spec, const RenderState& state)
-	:RenderPass(state),
-	 mScene(spec.scene),
+CascadeShadowMapPass::CascadeShadowMapPass(const CascadeShadowMapPassSpecification& spec, Renderer* r, const RenderState& state)
+	:RenderPass(r, state),
 	 mPcfSize(spec.pcfSize),
 	 mCascadedLayer(spec.cascadedLayer),
 	 mSplitLambda(spec.splitLambda),
@@ -124,7 +124,7 @@ void CascadeShadowMapPass::uniformSplit()
 {
 	mCascadedFrustumSplit.clear();
 	mCascadedFrustumSplit.reserve(mCascadedLayer);
-	auto camera = mScene->getCurrentCamera();
+	auto camera = mOwner->getCurrentScene()->getCurrentCamera();
 	float near = camera->getNear();
 	float far = camera->getFar();
 	float range = far - near;
@@ -141,7 +141,7 @@ void CascadeShadowMapPass::logarithmicSplit()
 {
 	mCascadedFrustumSplit.clear();
 	mCascadedFrustumSplit.reserve(mCascadedLayer);
-	auto camera = mScene->getCurrentCamera();
+	auto camera = mOwner->getCurrentScene()->getCurrentCamera();
 	float near = camera->getNear();
 	float far = camera->getFar();
 	float range = far - near;
@@ -158,7 +158,7 @@ void CascadeShadowMapPass::practicalSplit()
 {
 	mCascadedFrustumSplit.clear();
 	mCascadedFrustumSplit.reserve(mCascadedLayer);
-	auto camera = mScene->getCurrentCamera();
+	auto camera = mOwner->getCurrentScene()->getCurrentCamera();
 	float near = camera->getNear();
 	float far = camera->getFar();
 	float range = far - near;
@@ -175,7 +175,7 @@ void CascadeShadowMapPass::practicalSplit()
 
 std::vector<glm::vec4> CascadeShadowMapPass::getFrustumWorldSpaceCorners(float near, float far)
 {
-	auto camera = mScene->getCurrentCamera();
+	auto camera = mOwner->getCurrentScene()->getCurrentCamera();
 	const glm::mat4& viewMatrix = camera->getViewMatrix();
 	float fov = camera->getFov();
 	float aspectRatio = camera->getAspectRatio();
@@ -207,16 +207,16 @@ void CascadeShadowMapPass::updateLightMatricesBuffer()
 {
 	float near;
 	float far;
-	auto camera = mScene->getCurrentCamera();
+	auto camera = mOwner->getCurrentScene()->getCurrentCamera();
 	float cameraNear = camera->getNear();
 	float cameraFar = camera->getFar();
-	int lightIndex = mScene->getShadowLightIndex();
+	int lightIndex = mOwner->getCurrentScene()->getShadowLightIndex();
 	if (lightIndex == -1)
 	{
 		//TODO
 		return;
 	}
-	Light* light = mScene->getLights().at(lightIndex).get();
+	Light* light = mOwner->getCurrentScene()->getLights().at(lightIndex).get();
 	for(int i = 0; i < mCascadedLayer; i++)
 	{
 		if (i == 0)
@@ -348,7 +348,7 @@ int CascadeShadowMapPass::getCascadedLayerCount() const
 
 int CascadeShadowMapPass::getShadowLightIndex() const
 {
-	return mScene->getShadowLightIndex();
+	return mOwner->getCurrentScene()->getShadowLightIndex();
 }
 
 int CascadeShadowMapPass::getPcfSize() const

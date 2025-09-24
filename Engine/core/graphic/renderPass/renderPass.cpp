@@ -4,10 +4,11 @@
 #include "graphic/program/program.h"
 #include "geometry/geometry.h"
 
-RenderPass::RenderPass(const RenderState& state)
+RenderPass::RenderPass(Renderer* s, const RenderState& state)
 	:mRenderState(state),
 	 mFrameBuffer(nullptr),
-	 mProgram(nullptr)
+	 mProgram(nullptr),
+	 mOwner(s)
 {
 	mSize.x = state.viewport.z;
 	mSize.y = state.viewport.w;
@@ -135,12 +136,22 @@ bool RenderPass::checkPassReady()
 	return true;
 }
 
-void RenderPass::setLastPassFBOs(const std::initializer_list<FrameBuffer*>& fbo)
+//void RenderPass::`(const std::initializer_list<FrameBuffer*>& fbo)
+//{
+//	mlastPassFrameBuffer = fbo;
+//}
+
+FrameBuffer* RenderPass::getCurrentFrameBuffer() const
 {
-	mlastPassFrameBuffer = fbo;
+	return mFrameBuffer.get();
 }
 
-std::shared_ptr<FrameBuffer> RenderPass::getCurrentFrameBuffer() const
+void RenderPass::setPrev(RenderPass* pass)
 {
-	return mFrameBuffer;
+	mPrevPass = pass;
+}
+
+void RenderPass::setNext(RenderPass* pass)
+{
+	mNextPass = pass;
 }

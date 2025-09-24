@@ -24,9 +24,12 @@ uniform sampler2D      gNormal;
 uniform sampler2D      gDiffuse;
 uniform sampler2D      gSpecShiness;
 uniform sampler2D      gMaterialType;
+
+uniform bool		   enableSSAO;
 uniform sampler2D      ssaoMap;
 
 //cascaded shadow map
+uniform bool		   enableCSM;
 uniform sampler2DArray cascadedShadowMap;
 uniform int			   cascadedLayerCount;
 uniform float          cascadedLayerDistances[16];
@@ -175,7 +178,12 @@ void main()
 	vec3  fragmentPos	   =  texture(gPosition, vTexcoord).xyz;
 	vec3  n				   =  normalize(texture(gNormal, vTexcoord).xyz);
 	vec3  v				   = normalize(-fragmentPos);
-	float ambientOcclusion = texture(ssaoMap, vTexcoord).r;
+
+	float ambientOcclusion = 1.0;
+	if(enableSSAO)
+	{
+		ambientOcclusion   = texture(ssaoMap, vTexcoord).r;
+	}
 	float materialType     = texture(gMaterialType, vTexcoord).r;
 
 	vec4  diffEmissive	   = texture(gDiffuse, vTexcoord);
@@ -255,27 +263,30 @@ void main()
 			}
 		}	
 		//calc shadows
-		int layer;
-		float shadow = calcShadow(fragmentPos, n, layer);
-		if(displayCacadedColor)
+		if(enableCSM)
 		{
-			if(layer == 0)
+			int layer;
+			float shadow = calcShadow(fragmentPos, n, layer);
+			if(displayCacadedColor)
 			{
-				FragColor.rgb *= vec3(1, 0, 0);
-			}
-			else if(layer == 1)
-			{
-				FragColor.rgb *= vec3(0, 1, 0);
-			}
-			else if(layer == 2)
-			{
-				FragColor.rgb *= vec3(0, 0, 1);
-			}
-			else if(layer == 3)
-			{
-				FragColor.rgb *= vec3(1, 0, 1);
-			}
-		}		
-		FragColor.rgb *= vec3((1.0 - shadow));
+				if(layer == 0)
+				{
+					FragColor.rgb *= vec3(1, 0, 0);
+				}
+				else if(layer == 1)
+				{
+					FragColor.rgb *= vec3(0, 1, 0);
+				}
+				else if(layer == 2)
+				{
+					FragColor.rgb *= vec3(0, 0, 1);
+				}
+				else if(layer == 3)
+				{
+					FragColor.rgb *= vec3(1, 0, 1);
+				}
+			}		
+			FragColor.rgb *= vec3((1.0 - shadow));
+		}
 	}	
 }

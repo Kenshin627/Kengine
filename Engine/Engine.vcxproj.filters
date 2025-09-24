@@ -108,7 +108,7 @@
     <ClCompile Include="core\geometry\screenQuad.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="core\graphic\renderPass\defaultToScreen\defaultPass.cpp">
+    <ClCompile Include="core\graphic\renderPass\forwardShading\forwardShadingPass.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="core\graphic\renderPass\postProcess\grayScaleEffect\grayScaleEffect.cpp">
@@ -281,7 +281,7 @@
     <ClInclude Include="core\geometry\screenQuad.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="core\graphic\renderPass\defaultToScreen\defaultPass.h">
+    <ClInclude Include="core\graphic\renderPass\forwardShading\forwardShadingPass.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="core\graphic\renderPass\postProcess\grayScaleEffect\grayScaleEffect.h">
@@ -357,6 +357,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="core\graphic\renderPass\preDepthPass\preDepthPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\passFactory.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

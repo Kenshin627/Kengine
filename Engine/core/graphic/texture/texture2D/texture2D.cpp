@@ -48,7 +48,7 @@ void Texture2D::loadFromData(uint width, uint height, const void* data, uint cha
 	}
 }
 
-void Texture2D::loadFromFile(const char* path, bool flipY)
+void Texture2D::loadFromFile(const char* path, bool flipY, bool SRGB)
 {
 	if (!path)
 	{
@@ -83,7 +83,7 @@ void Texture2D::loadFromFile(const char* path, bool flipY)
 			break;
 	}
 	//TODO:采取更严格的判断SRGB的方式
-	if (std::string(path).find("albedo") != std::string::npos)
+	if (SRGB)
 	{
 		if (channels == 4)
 		{

@@ -5,8 +5,8 @@
 #include "graphic/gpuBuffer/frameBuffer.h"
 #include "scene/scene.h"
 
-GrayScaleEffect::GrayScaleEffect(const RenderState& state)
-	:RenderPass(state)
+GrayScaleEffect::GrayScaleEffect(Renderer* r, const RenderState& state)
+	:RenderPass(r, state)
 {
 	mProgram = std::make_shared<Program>();
 	mProgram->buildFromFiles({
@@ -18,10 +18,10 @@ GrayScaleEffect::GrayScaleEffect(const RenderState& state)
 void GrayScaleEffect::runPass(Scene* scene)
 {
 	//get screenMap texuture
-	if (!mlastPassFrameBuffer.empty())
+	if (!mPrevPass)
 	{
 		//TODO
-		Texture* tex = mlastPassFrameBuffer[0]->getColorAttachment(0);
+		Texture* tex = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(0);
 		if (!tex)
 		{
 			KS_CORE_ERROR("framebuffer attachment at index {0} is null", 0);

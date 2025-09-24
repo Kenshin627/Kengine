@@ -3,12 +3,18 @@
 #include "renderer.h"
 #include "scene/camera/camera.h"
 #include "graphic/renderPass/renderPass.h"
-#include "graphic/renderPass/defaultToScreen/defaultPass.h"
+#include "graphic/renderPass/forwardShading/forwardShadingPass.h"
 #include "graphic/gpuBuffer/frameBuffer.h"
 #include "graphic/renderPass/gaussianBlur/gaussianBlur.h"
+#include "graphic/renderPass/deferredRendering/geometryPass.h"
+#include "graphic/renderPass/deferredRendering/lightingPass.h"
+#include "graphic/renderPass/toneMapping/toneMapping.h"
+#include "graphic/renderPass/passFactory.h"
+
 Renderer::Renderer(uint width, uint height)
 	:mWidth(width),
-	 mHeight(height)
+	 mHeight(height),
+	 mViewport(0, 0, width, height)
 {
 
 }
@@ -26,10 +32,10 @@ void Renderer::render()
 	//run pass loop
 	for (auto& pass : mRenderPasses)
 	{
-		pass->renderUI();
-		pass->beginPass();
-		pass->runPass(mCurrentScene.get());
-		pass->endPass();
+		pass.second->renderUI();
+		pass.second->beginPass();
+		pass.second->runPass(mCurrentScene.get());
+		pass.second->endPass();
 	}
 	
 	mCurrentScene->endScene();
@@ -57,41 +63,90 @@ void Renderer::onWindowSizeChanged(uint width, uint height)
 	//update renderPass, because renderPass maybe include fbo & viewport resize 
 	for (auto& pass : mRenderPasses)
 	{
-		pass->resize(width, height);
-	}
-}
-
-void Renderer::setRenderPass(const std::initializer_list<std::shared_ptr<RenderPass>>& passes)
-{
-	if (passes.size() == 0)
-	{
-		return;
-	}
-	mRenderPasses.clear();
-	for (auto& pass : passes)
-	{
-		mRenderPasses.push_back(pass);
+		pass.second->resize(width, height);
 	}
 }
 
 uint Renderer::getLastFrameBufferTexture() const
 {
-	return mRenderPasses.back()->getCurrentFrameBuffer()->getColorAttachment(0)->id();
+	return mRenderPasses.rbegin()->second->getCurrentFrameBuffer()->getColorAttachment(0)->id();
 }
 
 //TODO:PASS KEY
-uint Renderer::getPassBufferTexture()
+int Renderer::getPassBufferTexture(RenderPassKey key)
 {
 	//TODO blurPass->getCurrentFrameBuffer()
-	return mRenderPasses.at(3).get()->getCurrentFrameBuffer()->getColorAttachment(0)->id();
+	auto iter = mPassCache.find(key);
+	if (iter != mPassCache.end())
+	{
+		return iter->second->getCurrentFrameBuffer()->getColorAttachment(0)->id();
+	}
+	return -1;
+}
+
+FrameBuffer* Renderer::getFrameBuffer(RenderPassKey key) const
+{
+	auto iter = mRenderPasses.find(key);
+	if (iter != mRenderPasses.end())
+	{
+		return iter->second->getCurrentFrameBuffer();
+	}
+	else
+	{
+		return nullptr;
+	}	
+}
+
+RenderPass* Renderer::getRenderPass(RenderPassKey key) const
+{
+	auto iter = mRenderPasses.find(key);
+	if (iter != mRenderPasses.end())
+	{
+		return iter->second;
+	}
+	return nullptr;
 }
 
 void Renderer::setDefaultRenderPass()
 {
-	//set renderState
-	RenderState state;
-	state.viewport.z = mWidth;
-	state.viewport.w = mHeight;
-	state.target = RenderTarget::SCREEN;
-	setRenderPass({ std::make_shared<DefaultPass>(state) });
+	//TODO: default renderpass forwardShading + toneMapping
+	addRenderPass(RenderPassKey::GEOMETRY, RenderState{ mViewport });
+	addRenderPass(RenderPassKey::DEFFEREDSHADING, RenderState{ mViewport });
+	addRenderPass(RenderPassKey::TONEMAPPING, RenderState{ mViewport });
+}
+
+void Renderer::addRenderPass(RenderPassKey key, const RenderState& state)
+{
+	auto passCacheIter = mPassCache.find(key);
+	if (passCacheIter == mPassCache.cend())
+	{
+		auto currentPass = PassFactory::ceate(this, key, state);
+		if (!mRenderPasses.empty())
+		{
+			RenderPass* lastPass = mRenderPasses.rbegin()->second;
+			if (lastPass)
+			{
+				lastPass->setNext(currentPass.get());
+				currentPass->setPrev(lastPass);
+			}
+		}
+		
+		mRenderPasses.insert({ key, currentPass.get() });
+		mPassCache.insert({ key, std::move(currentPass) });
+	}
+	if (passCacheIter != mPassCache.cend())
+	{
+		RenderPass* currentPass = passCacheIter->second.get();
+		auto currentPassIter = mRenderPasses.find(key);
+		if (currentPassIter == mRenderPasses.cend())
+		{
+			RenderPass* lastPass = mRenderPasses.rbegin()->second;
+			if (!lastPass)
+			{
+				lastPass->setNext(currentPass);
+				currentPass->setPrev(lastPass);
+			}
+			mRenderPasses.insert({ key, currentPass });
+		}
+	}
 }

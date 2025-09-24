@@ -1,12 +1,14 @@
 #include "gaussianBlur.h"
-#include "graphic/program/program.h"
 #include "graphic/gpuBuffer/frameBuffer.h"
+#include "graphic/renderer/renderer.h"
+#include "graphic/program/program.h"
 #include "geometry/screenQuad.h"
-#include "core.h"
 #include "scene/scene.h"
+#include "core.h"
 
-GaussianBlur::GaussianBlur(const RenderState& state)
-	:RenderPass(state)
+GaussianBlur::GaussianBlur(uint amount, Renderer* r, const RenderState& state)
+	:RenderPass(r, state),
+	 mAmount(amount)
 {
 	//program
 	mProgram = std::make_shared<Program>();
@@ -54,15 +56,16 @@ void GaussianBlur::runPass(Scene* scene)
 	bool isHorizontal = true;
 	bool isFirstIteration = true;
 	mProgram->bind();
-	uint amount = 20;
+
 	Texture* tex;
-	for (int i = 0; i < amount; i++)
+	for (int i = 0; i < mAmount; i++)
 	{
 		mDoubleBuffers[!isHorizontal]->bind();
 		updateRenderState();
 		if (isFirstIteration)
 		{
-			tex = mlastPassFrameBuffer[0]->getColorAttachment(1);
+			//TODO
+			tex = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(1);
 			isFirstIteration = false;
 		}
 		else

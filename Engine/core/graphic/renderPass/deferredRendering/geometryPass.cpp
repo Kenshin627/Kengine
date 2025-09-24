@@ -5,8 +5,8 @@
 #include "scene/renderObject.h"
 #include "material/material.h"
 
-GeometryPass::GeometryPass(const RenderState& state)
-	:RenderPass(state)
+GeometryPass::GeometryPass(Renderer* r, const RenderState& state)
+	:RenderPass(r, state)
 {
 	//GBUFFER
 	//|		RGB16F     | viewPosition				     |       viewPosition         |
@@ -88,6 +88,7 @@ void GeometryPass::beginPass()
 
 void GeometryPass::runPass(Scene* scene)
 {
+	//TODO
 	mProgram->setUniform("heightMapScale", scene->getHeightMapScale());
 	for (auto& renderObject : scene->getRenderList())
 	{

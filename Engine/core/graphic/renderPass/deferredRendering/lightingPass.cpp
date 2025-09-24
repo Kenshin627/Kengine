@@ -1,14 +1,15 @@
 #include "graphic/renderPass/cascadeShadowMapPass/cascadeShadowMapPass.h"
 #include "graphic/texture/texture3D/texture3D.h"
 #include "graphic/gpuBuffer/frameBuffer.h"
+#include "graphic/renderer/renderer.h"
 #include "graphic/program/program.h"
 #include "geometry/screenQuad.h"
 #include "lightingPass.h"
 #include "scene/scene.h"
 #include "core.h"
 
-LightingPass::LightingPass(const RenderState& state)
-	:RenderPass(state)
+LightingPass::LightingPass(Renderer* r, const RenderState& state)
+	:RenderPass(r, state)
 {
 	mProgram = std::make_unique<Program>();
 	mProgram->buildFromFiles({
@@ -49,7 +50,7 @@ void LightingPass::beginPass()
 	RenderPass::beginPass();
 	//get colorattachment from gpass
 	//set uniform textureSampler2D
-	FrameBuffer* geometryBuffer = mlastPassFrameBuffer[0];
+ 	auto geometryBuffer = mPrevPass->getCurrentFrameBuffer();
 	auto gPos = geometryBuffer->getColorAttachment(0);
 	auto gNormal = geometryBuffer->getColorAttachment(1);
 	auto gDiff = geometryBuffer->getColorAttachment(2);
@@ -67,37 +68,41 @@ void LightingPass::beginPass()
 	mProgram->setUniform("gSpecShiness", 3);
 	mProgram->setUniform("gMaterialType", 4);
 
-	FrameBuffer* blurSsaoBuffer = mlastPassFrameBuffer[1];
-	auto blurSsao = blurSsaoBuffer->getColorAttachment(0);
-	blurSsao->bind(5);
-	mProgram->setUniform("ssaoMap", 5);
+	FrameBuffer* ssaoBuffer = mOwner->getFrameBuffer(RenderPassKey::SSAO);
+	mProgram->setUniform("enableSSAO", ssaoBuffer != nullptr);
+	if (ssaoBuffer)
+	{
+		auto ssaoTex = ssaoBuffer->getColorAttachment(0);
+		ssaoTex->bind(5);
+		mProgram->setUniform("ssaoMap", 5);
+	}
 
-	FrameBuffer* csmBufer = mlastPassFrameBuffer[2];
-	Texture* depthStencilTex = csmBufer->getDepthStencilAttachment();
-	
-	depthStencilTex->bind(6);
-	mProgram->setUniform("cascadedShadowMap", 6);
-	
-	//set cascadedLayernum 
-	mProgram->setUniform("cascadedLayerCount", mCascadedShadowMapPass->getCascadedLayerCount());
-	//set cascadedDistances
-	auto csmDistances = mCascadedShadowMapPass->getCascadedFrustumDistanes();
-	mProgram->setUniform("cascadedLayerDistances", csmDistances.size(), csmDistances.data());
-	
-	//set cascaded lightIndex
-	mProgram->setUniform("cascadedShadowLightIndex", mCascadedShadowMapPass->getShadowLightIndex());
+	auto csmPass = mOwner->getRenderPass(RenderPassKey::CSM);
+	mProgram->setUniform("enableCSM", csmPass != nullptr);
+	if (csmPass)
+	{
+		FrameBuffer* csmBuffer = csmPass->getCurrentFrameBuffer();
+		Texture* shadowDepthTex = csmBuffer->getDepthStencilAttachment();
+		shadowDepthTex->bind(6);
+		mProgram->setUniform("cascadedShadowMap", 6);
+		CascadeShadowMapPass* cascadedShadowMapPass = static_cast<CascadeShadowMapPass*>(csmPass);
+		
+		//set cascadedLayernum 
+		mProgram->setUniform("cascadedLayerCount", cascadedShadowMapPass->getCascadedLayerCount());
+		//set cascadedDistances
+		auto csmDistances = cascadedShadowMapPass->getCascadedFrustumDistanes();
+		mProgram->setUniform("cascadedLayerDistances", csmDistances.size(), csmDistances.data());
 
-	//pcfSize
-	mProgram->setUniform("pcfSize", mCascadedShadowMapPass->getPcfSize());
+		//set cascaded lightIndex
+		mProgram->setUniform("cascadedShadowLightIndex", cascadedShadowMapPass->getShadowLightIndex());
 
-	//set display cascadedColor
-	mProgram->setUniform("displayCacadedColor", mCascadedShadowMapPass->getDisplayCacadedColor());
+		//pcfSize
+		mProgram->setUniform("pcfSize", cascadedShadowMapPass->getPcfSize());
 
-	//pcf enable
-	mProgram->setUniform("enablePCF", mCascadedShadowMapPass->getEnablePCF());
-}
+		//set display cascadedColor
+		mProgram->setUniform("displayCacadedColor", cascadedShadowMapPass->getDisplayCacadedColor());
 
-void LightingPass::setCascadedShadowMapPass(CascadeShadowMapPass* pass)
-{
-	mCascadedShadowMapPass = pass;
+		//pcf enable
+		mProgram->setUniform("enablePCF", cascadedShadowMapPass->getEnablePCF());
+	}
 }

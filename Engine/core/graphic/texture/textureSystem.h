@@ -17,7 +17,7 @@ public:
 		static TextureSystem t;
 		return t;
 	}
-	std::shared_ptr<Texture2D> getTexture(const std::string& path);
+	std::shared_ptr<Texture2D> getTexture(const std::string& path, bool flipY = true, bool SRGB = false);
 private:
 	TextureSystem();
 private:

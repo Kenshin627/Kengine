@@ -15,7 +15,6 @@ static const char* splitMethods[] = { "uniform", "log", "Pratical"};
 
 struct CascadeShadowMapPassSpecification
 {
-	Scene* scene;
 	uint pcfSize;
 	uint cascadedLayer;
 	float splitLambda;
@@ -25,7 +24,7 @@ struct CascadeShadowMapPassSpecification
 class CascadeShadowMapPass :public RenderPass
 {
 public:
-	CascadeShadowMapPass(const CascadeShadowMapPassSpecification& spec, const RenderState& state);
+	CascadeShadowMapPass(const CascadeShadowMapPassSpecification& spec, Renderer* r, const RenderState& state);
 	~CascadeShadowMapPass();
 	virtual void beginPass() override;
 	virtual void runPass(Scene* scene) override;
@@ -50,7 +49,6 @@ private:
 	std::vector<glm::vec4> getFrustumWorldSpaceCorners(float near, float far);
 	glm::mat4 getFrustaProjectionViewMatrix();
 private:
-	Scene*						   mScene;
 	std::unique_ptr<UniformBuffer> mLightMatricesBuffer;
 	std::vector<float>             mCascadedFrustumSplit;
 	uint						   mPcfSize		  { 2	 };

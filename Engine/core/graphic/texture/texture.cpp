@@ -69,7 +69,7 @@ uint Texture::convertToGLInternalFormat(TextureInternalFormat format)
 	switch (format)
 	{
 	case TextureInternalFormat::R8:					return   GL_R8;
-	case TextureInternalFormat::RG8:			    return GL_RG8;
+	case TextureInternalFormat::RG8:			    return   GL_RG8;
 	case TextureInternalFormat::RGB8:				return   GL_RGB8;
 	case TextureInternalFormat::RGBA8:				return   GL_RGBA8;
 	case TextureInternalFormat::RGB16F:				return   GL_RGB16F;

@@ -248,14 +248,22 @@ std::shared_ptr<Texture2D> Model::processTexture(const aiScene* scene, aiMateria
 			const unsigned char* rowData = stbi_load_from_memory(reinterpret_cast<unsigned char*>(texBuffer), texelLength, &width, &height, &channel, 0);
 
 			std::shared_ptr<Texture2D> texture = std::make_shared<Texture2D>();
-			texture->loadFromData(width, height, rowData, 4, TextureInternalFormat::RGBA8, TextureDataFormat::RGBA, GL_UNSIGNED_BYTE);
+			if (texType == aiTextureType::aiTextureType_DIFFUSE)
+			{
+				texture->loadFromData(width, height, rowData, 4, TextureInternalFormat::SRGB8ALPHA8, TextureDataFormat::RGBA, GL_UNSIGNED_BYTE);
+			}
+			else
+			{
+				texture->loadFromData(width, height, rowData, 4, TextureInternalFormat::RGBA8, TextureDataFormat::RGBA, GL_UNSIGNED_BYTE);
+			}
 			return texture;
 		}
 		else 
 		{
 			
 			std::string texFilePath = (mTextureDirectory + "/" + std::string(texFileName.C_Str())).c_str();
-			return ts.getTexture(texFilePath);
+			bool Srgb = texType == aiTextureType::aiTextureType_DIFFUSE;
+			return ts.getTexture(texFilePath, true, Srgb);
 		}
 		
 }

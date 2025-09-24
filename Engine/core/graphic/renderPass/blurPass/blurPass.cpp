@@ -5,8 +5,8 @@
 #include "scene/scene.h"
 #include "core.h"
 
-BlurPass::BlurPass(uint radius, const RenderState& state)
-	:RenderPass(state),
+BlurPass::BlurPass(uint radius, Renderer* r, const RenderState& state)
+	:RenderPass(r, state),
 	 mRadius(radius)
 {
 	mProgram = std::make_shared<Program>();
@@ -55,7 +55,7 @@ void BlurPass::beginPass()
 	//set blur Radius
 	mProgram->setUniform("blurRadius", mRadius);
 	//set lastFrame ssaoMap
-	Texture* ssaoMap = mlastPassFrameBuffer[0]->getColorAttachment(0);
+	Texture* ssaoMap = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(0);
 	ssaoMap->bind(0);
 	mProgram->setUniform("ssaoMap", 0);
 }

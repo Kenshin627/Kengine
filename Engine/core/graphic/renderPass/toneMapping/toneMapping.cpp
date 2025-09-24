@@ -1,16 +1,17 @@
-#include "toneMapping.h"
-#include "graphic/program/program.h"
-#include "geometry/screenQuad.h"
-#include "core.h"
-#include "scene/scene.h"
+#include "graphic/renderPass/bloomPass/bloomPass.h"
 #include "graphic/texture/texture2D/texture2D.h"
 #include "graphic/gpuBuffer/frameBuffer.h"
+#include "graphic/renderer/renderer.h"
+#include "graphic/program/program.h"
+#include "geometry/screenQuad.h"
+#include "toneMapping.h"
+#include "scene/scene.h"
+#include "core.h"
 
-ToneMapping::ToneMapping(float exposure, const RenderState& state)
-	:RenderPass(state),
+ToneMapping::ToneMapping(float exposure, Renderer* r, const RenderState& state)
+	:RenderPass(r, state),
 	mExposure(exposure)
 {
-	//program
 	mProgram = std::make_shared<Program>();
 	std::initializer_list<ShaderFile> shaders =
 	{
@@ -27,8 +28,8 @@ ToneMapping::ToneMapping(float exposure, const RenderState& state)
 			TextureDataFormat::RGB,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,
-			TextureFilter::LINEAR,
-			TextureFilter::LINEAR
+			TextureFilter::NEAREST,
+			TextureFilter::NEAREST
 		}
 	};
 	mFrameBuffer = std::make_shared<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, spec);
@@ -42,13 +43,18 @@ void ToneMapping::beginPass()
 {
 	RenderPass::beginPass();
 	mProgram->setUniform("exposure", mExposure);
-	Texture* gaussianBlurMap = mlastPassFrameBuffer[0]->getColorAttachment(0);
-	gaussianBlurMap->bind(0);
-	mProgram->setUniform("gaussian", 0);
-
-	Texture* ldrMap = mlastPassFrameBuffer[1]->getColorAttachment(0);
-	ldrMap->bind(1);
-	mProgram->setUniform("ldrMap", 1);
+	Texture* prevLightingTex = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(0);
+	prevLightingTex->bind(0);
+	mProgram->setUniform("prevLightingMap", 0);	
+	auto pass = mOwner->getRenderPass(RenderPassKey::BLOOM);
+	mProgram->setUniform("enableBloom", pass != nullptr);
+	if (pass)
+	{	
+		auto bloomPass = static_cast<BloomPass*>(pass);
+		Texture* ldrMap = bloomPass->getLDRTexture();
+		ldrMap->bind(1);
+		mProgram->setUniform("lDRMap", 1);
+	}	
 }
 
 void ToneMapping::runPass(Scene* scene)

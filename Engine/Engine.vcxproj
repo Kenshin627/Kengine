@@ -173,7 +173,7 @@
     <ClCompile Include="core\graphic\renderPass\bloomPass\bloomPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\blurPass\blurPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\cascadeShadowMapPass\cascadeShadowMapPass.cpp" />
-    <ClCompile Include="core\graphic\renderPass\defaultToScreen\defaultPass.cpp" />
+    <ClCompile Include="core\graphic\renderPass\forwardShading\forwardShadingPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\deferredRendering\geometryPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\deferredRendering\lightingPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\gaussianBlur\gaussianBlur.cpp" />
@@ -233,10 +233,11 @@
     <ClInclude Include="core\graphic\renderPass\bloomPass\bloomPass.h" />
     <ClInclude Include="core\graphic\renderPass\blurPass\blurPass.h" />
     <ClInclude Include="core\graphic\renderPass\cascadeShadowMapPass\cascadeShadowMapPass.h" />
-    <ClInclude Include="core\graphic\renderPass\defaultToScreen\defaultPass.h" />
+    <ClInclude Include="core\graphic\renderPass\forwardShading\forwardShadingPass.h" />
     <ClInclude Include="core\graphic\renderPass\deferredRendering\geometryPass.h" />
     <ClInclude Include="core\graphic\renderPass\deferredRendering\lightingPass.h" />
     <ClInclude Include="core\graphic\renderPass\gaussianBlur\gaussianBlur.h" />
+    <ClInclude Include="core\graphic\renderPass\passFactory.h" />
     <ClInclude Include="core\graphic\renderPass\postProcess\grayScaleEffect\grayScaleEffect.h" />
     <ClInclude Include="core\graphic\renderPass\preDepthPass\preDepthPass.h" />
     <ClInclude Include="core\graphic\renderPass\renderPass.h" />

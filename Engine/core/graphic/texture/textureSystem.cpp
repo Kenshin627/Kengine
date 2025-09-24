@@ -3,7 +3,7 @@
 
 TextureSystem::TextureSystem() {}
 
-std::shared_ptr<Texture2D> TextureSystem::getTexture(const std::string& path)
+std::shared_ptr<Texture2D> TextureSystem::getTexture(const std::string& path, bool flipY, bool SRGB)
 {
 	auto iter = mTextures.find(path);
 	if (iter != mTextures.cend())
@@ -14,7 +14,7 @@ std::shared_ptr<Texture2D> TextureSystem::getTexture(const std::string& path)
 	spec.mipmapLevel = 5;
 	spec.minFilter = TextureFilter::LINEAR_MIPMAP_LINEAR;
 	std::shared_ptr<Texture2D> tex = std::make_shared<Texture2D>(spec);
-	tex->loadFromFile(path.c_str());
+	tex->loadFromFile(path.c_str(), flipY, SRGB);
 	mTextures.insert({ path, tex });
 	return tex;
 }

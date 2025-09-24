@@ -5,7 +5,7 @@ class GrayScaleEffect :public RenderPass
 {
 public:
 	//disable depthTest
-	GrayScaleEffect(const RenderState& state);
+	GrayScaleEffect(Renderer* r, const RenderState& state);
 	~GrayScaleEffect() = default;
 	virtual void runPass(Scene* scene) override;
 };

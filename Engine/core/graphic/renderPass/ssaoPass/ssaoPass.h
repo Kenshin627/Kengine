@@ -6,7 +6,7 @@ class Texture2D;
 class SSAOPass :public RenderPass
 {
 public:
-	SSAOPass(uint kernelSize, float radius, const RenderState& state);
+	SSAOPass(Renderer* r, const RenderState& state, uint kernelSize, float radius);
 	~SSAOPass() = default;
 	void setKernelSize(uint kernelSize);
 	uint getKernelSize() const;

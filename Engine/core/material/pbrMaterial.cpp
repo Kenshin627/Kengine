@@ -11,7 +11,8 @@ PBRMaterial::PBRMaterial(const PBRMaterialSpecification& spec)
 	TextureSystem& ts = TextureSystem::getInstance();
 	if (spec.albedoMapPath)
 	{
-		mAlbedoMap = ts.getTexture(spec.albedoMapPath);
+		//
+		mAlbedoMap = ts.getTexture(spec.albedoMapPath, true, true);
 		mHasAlbedoTex = true;
 	}
 
