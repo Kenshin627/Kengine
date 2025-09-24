@@ -73,14 +73,14 @@ void RenderPass::updateRenderState() const
 	glClearDepth(mRenderState.clearDepth);
 	if (mRenderState.depthTest)
 	{
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(mRenderState.depthFunc);
-		glDepthMask(mRenderState.depthMask);
+		glEnable(GL_DEPTH_TEST);		
 	}
 	else
 	{
 		glDisable(GL_DEPTH_TEST);
 	}
+	glDepthFunc(mRenderState.depthFunc);
+	glDepthMask(mRenderState.depthMask);
 	if (mRenderState.blend)
 	{
 		glEnable(GL_BLEND);

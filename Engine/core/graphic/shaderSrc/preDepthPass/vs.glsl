@@ -22,5 +22,5 @@ out vec2 vTexcoord;
 void main()
 {
 	vTexcoord = aTexcoord;
-	gl_Position = cameraBuffer.viewProjectionMatrix * modelMatrix * vec4(aPos, 1.0);
+	gl_Position = cameraBuffer.projectionMatrix * cameraBuffer.viewMatrix * modelMatrix * vec4(aPos, 1.0);
 }

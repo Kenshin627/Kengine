@@ -69,6 +69,6 @@ private:
 	float				  mLinear{ 0.09f };
 	float				  mQuadratic{ 0.032f };
 	//TODO: using eventDispatcher
-	CascadeShadowMapPass* mCsmPass;
+	CascadeShadowMapPass* mCsmPass	 {nullptr};
 	bool				  mCastShadow{ false };
 };

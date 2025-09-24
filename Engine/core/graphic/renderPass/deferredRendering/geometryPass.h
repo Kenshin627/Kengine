@@ -9,4 +9,7 @@ public:
 	~GeometryPass() = default;
 	virtual void beginPass() override;
 	virtual void runPass(Scene* scene) override;
+	void setPreDepthFrameBuffer(FrameBuffer* preDepthFBO);
+private:
+	FrameBuffer* mPreDepthFBO;
 };

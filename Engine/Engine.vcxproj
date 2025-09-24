@@ -178,6 +178,7 @@
     <ClCompile Include="core\graphic\renderPass\deferredRendering\lightingPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\gaussianBlur\gaussianBlur.cpp" />
     <ClCompile Include="core\graphic\renderPass\postProcess\grayScaleEffect\grayScaleEffect.cpp" />
+    <ClCompile Include="core\graphic\renderPass\preDepthPass\preDepthPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\renderPass.cpp" />
     <ClCompile Include="core\graphic\program\program.cpp" />
     <ClCompile Include="core\graphic\program\shader.cpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="core\graphic\renderPass\deferredRendering\lightingPass.h" />
     <ClInclude Include="core\graphic\renderPass\gaussianBlur\gaussianBlur.h" />
     <ClInclude Include="core\graphic\renderPass\postProcess\grayScaleEffect\grayScaleEffect.h" />
+    <ClInclude Include="core\graphic\renderPass\preDepthPass\preDepthPass.h" />
     <ClInclude Include="core\graphic\renderPass\renderPass.h" />
     <ClInclude Include="core\graphic\program\program.h" />
     <ClInclude Include="core\graphic\program\shader.h" />

@@ -240,12 +240,12 @@ std::shared_ptr<Texture2D> Model::processTexture(const aiScene* scene, aiMateria
 			uint tex = atoi(&texFileName.C_Str()[1]);
 			//row puxeL Data need convert using stb_image
 			aiTexture* texData = scene->mTextures[tex];
-			auto texBuffer = &(texData->pcData)[0].b;
+			auto texBuffer	 = texData->pcData;
 			auto texelLength = texData->mWidth;
 			int width;
 			int height;
 			int channel;
-			const unsigned char* rowData = stbi_load_from_memory(texBuffer, texelLength, &width, &height, &channel, 0);
+			const unsigned char* rowData = stbi_load_from_memory(reinterpret_cast<unsigned char*>(texBuffer), texelLength, &width, &height, &channel, 0);
 
 			std::shared_ptr<Texture2D> texture = std::make_shared<Texture2D>();
 			texture->loadFromData(width, height, rowData, 4, TextureInternalFormat::RGBA8, TextureDataFormat::RGBA, GL_UNSIGNED_BYTE);

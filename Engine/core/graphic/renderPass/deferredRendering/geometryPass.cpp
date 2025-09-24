@@ -81,7 +81,9 @@ GeometryPass::GeometryPass(const RenderState& state)
 
 void GeometryPass::beginPass()
 {
-	RenderPass::beginPass();	
+	RenderPass::beginPass();
+	//blit fbo, copy depth attachment
+	//glBlitNamedFramebuffer(mPreDepthFBO->id(), mFrameBuffer->id(), 0, 0, mSize.x, mSize.y, 0, 0, mSize.x, mSize.y, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 }
 
 void GeometryPass::runPass(Scene* scene)
@@ -93,4 +95,9 @@ void GeometryPass::runPass(Scene* scene)
 		renderObject->draw();
 		renderObject->endDraw(mProgram.get());
 	}
+}
+
+void GeometryPass::setPreDepthFrameBuffer(FrameBuffer* preDepthFBO)
+{
+	mPreDepthFBO = preDepthFBO;
 }

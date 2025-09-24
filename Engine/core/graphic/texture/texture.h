@@ -69,7 +69,7 @@ public:
 	Texture(const TextureSpecification& spec);
 	virtual ~Texture() = default;
 	void bind(uint slot = 0) const;
-	void unBind() const;
+	void unBind(uint slot = 0) const;
 	int width() const;
 	int height() const;
 	uint id() const;

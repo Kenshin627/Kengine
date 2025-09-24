@@ -177,6 +177,9 @@
     <ClCompile Include="core\graphic\renderPass\cascadeShadowMapPass\cascadeShadowMapPass.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\graphic\renderPass\preDepthPass\preDepthPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -351,6 +354,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="core\graphic\renderPass\cascadeShadowMapPass\cascadeShadowMapPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\preDepthPass\preDepthPass.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

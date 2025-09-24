@@ -81,6 +81,7 @@ void PhongMaterial::setUniforms(Program* p) const
 	p->setUniform("isEmissive", mIsEmissive);
 	p->setUniform("hasHeightTex", mhasHeighTex);
 	p->setUniform("hasAlphaTex", mHasAlphaTex);
+	p->setUniform("hasAlphaTest", mHasAlphaTest);
 }
 
 void PhongMaterial::initProgram()
@@ -100,5 +101,39 @@ void PhongMaterial::setDiffuseColor(const glm::vec3& col)
 void PhongMaterial::setEmissiveColor(const glm::vec3& col)
 {
 	mEmissiveColor = col;
+}
+
+void PhongMaterial::endDraw()
+{
+	if (mHasDiffuseTex)
+	{
+		mDiffuseMap->unBind(0);
+	}
+
+	if (mHasSpecularTex)
+	{
+		mSpecularMap->unBind(1);
+	}
+
+
+	if (mHasNormalTex)
+	{
+		mNormalMap->unBind(2);
+	}
+
+	if (mHasShinessTex)
+	{
+		mShinessMap->unBind(3);
+	}
+
+	if (mhasHeighTex)
+	{
+		mHeightMap->unBind(4);
+	}
+
+	if (mHasAlphaTex)
+	{
+		mAlphaMap->unBind(5);
+	}
 }
 

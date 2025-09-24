@@ -142,7 +142,7 @@ Application::Application(uint width, uint height, const char* title)
 	box2->setPosition(5, 0.5, -4);
 	box2->setRotation(0, 25, 0);
 	box2->setScale(0.5);
-	scene->addRenderObject({ ground, wall, /*sphere1, sphere2, sphere3,sphere4, sphere5, sphere6, box1, box2*/ });
+	scene->addRenderObject({ ground, wall, sphere1, sphere2, sphere3,sphere4, sphere5, sphere6, box1, box2 });
 	
 	//model
 	/*Model model("models/backpack/backpack.obj");
@@ -177,28 +177,20 @@ Application::Application(uint width, uint height, const char* title)
 	//	renderObject->setScale(0.2);
 	//}
 	
-	Model tree("models/oaktree.gltf");
-	for (auto& renderObject : tree.getRenderList())
+	//Oops.glb
+	Model model5("models/Oops.glb");
+	for (auto& renderObject : model5.getRenderList())
 	{
-		//renderObject->setPosition(-1, 0.5, 0);
-		renderObject->setScale(10.0);
-		renderObject->setRotation({ 0, 0, 90 });
+		renderObject->setPosition(-1, 0.5, 0);
+		renderObject->setScale(0.08);
 	}
-	scene->addRenderObject(tree.getRenderList());
-	////Oops.glb
-	//Model model5("models/Oops.glb");
-	//for (auto& renderObject : model5.getRenderList())
-	//{
-	//	renderObject->setPosition(-1, 0.5, 0);
-	//	renderObject->setScale(0.08);
-	//}
 
 	
 	//scene->addRenderObject(model.getRenderList());
 	//scene->addRenderObject(model2.getRenderList());
 	//scene->addRenderObject(model3.getRenderList());
 	//scene->addRenderObject(model4.getRenderList());
-	//scene->addRenderObject(model5.getRenderList());
+	scene->addRenderObject(model5.getRenderList());
 	
 	//camera
 	auto camera = std::make_shared<Camera>(glm::vec3(4, 6, 5), 54.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.01f, 100);

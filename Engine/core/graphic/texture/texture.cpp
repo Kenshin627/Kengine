@@ -24,9 +24,9 @@ void Texture::bind(uint slot) const
 	GLCALL(glBindTextureUnit(slot, mRendererID));
 }
 
-void Texture::unBind() const
+void Texture::unBind(uint slot) const
 {
-	GLCALL(glBindTexture(GL_TEXTURE_2D, 0));
+	GLCALL(glBindTextureUnit(slot, 0));
 }
 
 int Texture::width() const

@@ -23,7 +23,7 @@ struct RenderState
 	bool		 depthTest       { true                                      };
 	GLenum		 depthFunc		 { GL_LESS									 };
 	GLenum	     depthMask		 { GL_TRUE									 };
-	bool		 cullFace        { true                                     };
+	bool		 cullFace        { true                                      };
 	GLenum		 cullFaceMode    { GL_BACK                                   };	
 	GLenum		 frontFace       { GL_CCW                                    };
 	bool		 blend           { false                                     };

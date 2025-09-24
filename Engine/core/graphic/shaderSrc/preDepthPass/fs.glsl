@@ -6,8 +6,8 @@ in vec2 vTexcoord;
 
 void main()
 {
-	float alpha = texture(diffuseMap, vTexcoord).r;
-	if(alpha <= 0.0f)
+	float alpha = texture(diffuseMap, vTexcoord).a;
+	if(alpha < 0.1f)
 	{
 		discard;
 	}

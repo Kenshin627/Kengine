@@ -14,6 +14,7 @@ struct BlinnPhongMaterialSpecification
 	glm::vec3				   specularColor	{ 1.0, 1.0, 1.0 };
 	glm::vec3				   emissiveColor    { 0, 0, 0		};
 	float					   shiness			{ 128.0f		};
+	bool					   hassAlphaTest	{ false			};
 };
 class PhongMaterial : public Material
 {
@@ -27,6 +28,7 @@ public:
 	virtual void initProgram() override;
 	void setDiffuseColor(const glm::vec3& col);
 	void setEmissiveColor(const glm::vec3& col);
+	virtual void endDraw() override;
 private:
 	std::shared_ptr<Texture2D> mDiffuseMap;
 	std::shared_ptr<Texture2D> mSpecularMap;
@@ -45,4 +47,5 @@ private:
 	bool					   mhasHeighTex   { false };
 	bool					   mIsEmissive    { false };
 	bool					   mHasAlphaTex   { false };
+	bool					   mHasAlphaTest  { false };
 };
