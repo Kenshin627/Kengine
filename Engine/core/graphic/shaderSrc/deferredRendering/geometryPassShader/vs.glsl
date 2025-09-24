@@ -25,6 +25,8 @@ out vec3 vNormal;
 out vec2 vTexcoord;
 out mat3 vTBN;
 
+uniform bool      enablePOM;
+
 //only has value in heightMap
 out vec3 tangentSpaceViewPos;
 out vec3 tangentSpaceFragPos;
@@ -41,8 +43,11 @@ void main()
 		t = normalize(t - n * dot(t, n));
 		vec3 b = cross(n, t);
 		mat3 tbn = transpose(mat3(t, b, n));
-		tangentSpaceViewPos = tbn * cameraBuffer.position.xyz;
-		tangentSpaceFragPos = tbn * pos;
+		if(enablePOM)
+		{
+			tangentSpaceViewPos = tbn * cameraBuffer.position.xyz;
+			tangentSpaceFragPos = tbn * pos;
+		}
 	}
 
 	if(hasNormalTex)

@@ -339,11 +339,6 @@ void Scene::updateSceneUI()
 		ImGui::PopID();
 	}
 	ImGui::End();
-
-	ImGui::Begin("Scene Settings");
-	//remove to parallax occlusion map pass
-	ImGui::DragFloat("heightMap Scale", &mHeightMapScale, 0.01);
-	ImGui::End();
 }
 
 //TODO: setting in ui

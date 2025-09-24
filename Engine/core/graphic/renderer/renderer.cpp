@@ -10,25 +10,30 @@
 #include "graphic/renderPass/deferredRendering/lightingPass.h"
 #include "graphic/renderPass/toneMapping/toneMapping.h"
 #include "graphic/renderPass/passFactory.h"
+#include "imgui.h"
 
 Renderer::Renderer(uint width, uint height)
 	:mWidth(width),
 	 mHeight(height),
 	 mViewport(0, 0, width, height)
 {
-
+	if (mRenderPasses.empty())
+	{
+		setDefaultRenderPass();
+	}
 }
 
 Renderer::~Renderer() {}
 
 void Renderer::render()
 {
-	mCurrentScene->beginScene();
 	if (mRenderPasses.empty())
 	{
-		setDefaultRenderPass();
+		return;
 	}
 
+	renderUI();
+	mCurrentScene->beginScene();	
 	//run pass loop
 	for (auto& pass : mRenderPasses)
 	{
@@ -36,8 +41,7 @@ void Renderer::render()
 		pass.second->beginPass();
 		pass.second->runPass(mCurrentScene.get());
 		pass.second->endPass();
-	}
-	
+	}	
 	mCurrentScene->endScene();
 }
 
@@ -72,7 +76,7 @@ uint Renderer::getLastFrameBufferTexture() const
 	return mRenderPasses.rbegin()->second->getCurrentFrameBuffer()->getColorAttachment(0)->id();
 }
 
-//TODO:PASS KEY
+//TODO REMOVE
 int Renderer::getPassBufferTexture(RenderPassKey key)
 {
 	//TODO blurPass->getCurrentFrameBuffer()
@@ -105,6 +109,29 @@ RenderPass* Renderer::getRenderPass(RenderPassKey key) const
 		return iter->second;
 	}
 	return nullptr;
+}
+
+void Renderer::enableParallexOcclusion(bool enable)
+{
+	if (mRenderPipeLine.enableParallaxOcclusion != enable)
+	{
+		mRenderPipeLine.enableParallaxOcclusion = enable;
+	}
+}
+
+bool Renderer::getParallaxOcclusion() const
+{
+	return mRenderPipeLine.enableParallaxOcclusion;
+}
+
+float Renderer::getPOMScale() const
+{
+	return mRenderPipeLine.parallaxOcclusionScale;
+}
+
+void Renderer::setPOMScale(float scale)
+{
+	mRenderPipeLine.parallaxOcclusionScale = scale;
 }
 
 void Renderer::setDefaultRenderPass()
@@ -149,4 +176,27 @@ void Renderer::addRenderPass(RenderPassKey key, const RenderState& state)
 			mRenderPasses.insert({ key, currentPass });
 		}
 	}
+}
+
+void Renderer::renderUI()
+{
+	ImGui::Begin("Graphic Settings");
+
+	bool pomChecked = mRenderPipeLine.enableParallaxOcclusion;
+	if (ImGui::Checkbox("Parallax Occlusion", &pomChecked))
+	{
+		mRenderPipeLine.enableParallaxOcclusion = pomChecked;
+	}
+	if (pomChecked)
+	{
+		float pomScale = mRenderPipeLine.parallaxOcclusionScale;
+		if (ImGui::DragFloat("Parallax Occlusion Scale", &pomScale, 0.001, 0.0, 0.05))
+		{
+			mRenderPipeLine.parallaxOcclusionScale = pomScale;
+		}
+	}
+	ImGui::Separator();
+
+
+	ImGui::End();
 }

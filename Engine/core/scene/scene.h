@@ -34,7 +34,6 @@ public:
 	ScreenQuad* getScreenQuad() const;
 	void updateLightBuffer();
 	void updateSceneUI();
-	float getHeightMapScale() const { return mHeightMapScale; }
 	uint getShadowLightIndex() const;
 	private:
 		void updateCameraBuffer();
@@ -46,5 +45,4 @@ private:
 	std::unique_ptr<UniformBuffer>			   mLightBuffer;
 	uint									   mLightCount;
 	std::unique_ptr<ScreenQuad>				   mScreenQuad;
-	float									   mHeightMapScale { 0.02 };
 };

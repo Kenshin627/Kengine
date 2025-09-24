@@ -25,7 +25,8 @@ uniform sampler2D shinessMap;       //shiness or roughness
 uniform sampler2D heightMap;        //displace mapping
 uniform int		  materialType; 
 uniform bool	  hasHeightTex;
-uniform float	  heightMapScale = 0.05;
+uniform float	  pomScale;
+uniform bool      enablePOM;
 
 //////////////////BLINN PHONG////////////////////////////
 uniform vec3	  diffuseColor;
@@ -56,7 +57,7 @@ vec2 ParallaxOcclusionMap(vec2 texCoord, vec3 tangentSpaceViewDir)
 	vec2  currentTexcoord   = texCoord;
 	//load heightmap need covert to displace map
 	float currentMapDepth   = 1.0 - texture(heightMap, currentTexcoord).r;
-	vec2 deltaTexcoord = tangentSpaceViewDir.xy / tangentSpaceViewDir.z * heightMapScale;
+	vec2 deltaTexcoord = tangentSpaceViewDir.xy / tangentSpaceViewDir.z * pomScale;
 	deltaTexcoord /= numLayers;
 	
 	while(currentLayerDepth < currentMapDepth)
@@ -77,7 +78,7 @@ void main()
 	gPosition.xyz = vPos;
 	gMaterialType = materialType;
 	vec2 texCoord = vTexcoord;
-	if(hasHeightTex)
+	if(hasHeightTex && enablePOM)
 	{
 		vec3 tangentSpaceViewDir = normalize(tangentSpaceViewPos - tangentSpaceFragPos);
 		texCoord = ParallaxOcclusionMap(vTexcoord, tangentSpaceViewDir);

@@ -4,6 +4,7 @@
 #include "scene/scene.h"
 #include "scene/renderObject.h"
 #include "material/material.h"
+#include "graphic/renderer/renderer.h"
 
 GeometryPass::GeometryPass(Renderer* r, const RenderState& state)
 	:RenderPass(r, state)
@@ -88,8 +89,8 @@ void GeometryPass::beginPass()
 
 void GeometryPass::runPass(Scene* scene)
 {
-	//TODO
-	mProgram->setUniform("heightMapScale", scene->getHeightMapScale());
+	mProgram->setUniform("pomScale", mOwner->getPOMScale());
+	mProgram->setUniform("enablePOM", mOwner->getParallaxOcclusion());
 	for (auto& renderObject : scene->getRenderList())
 	{
 		renderObject->beginDraw(mProgram.get());
