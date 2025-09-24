@@ -208,6 +208,93 @@ void Renderer::setBloomBlur(uint blur)
 	}
 }
 
+void Renderer::enableSSAO(bool enable)
+{
+	if (mRenderPipeLine.enableSSao != enable)
+	{
+		mRenderPipeLine.enableSSao = enable;
+		if (enable)
+		{
+			auto lastPass1 = *(--(--mCurrentRenderPassGroup.end()));
+			addRenderPass(RenderPassKey::SSAO, RenderState{ mViewport }, lastPass1);
+
+			auto lastPass2 = *(--(--mCurrentRenderPassGroup.end()));
+			addRenderPass(RenderPassKey::SSAOBLUR, RenderState{ mViewport }, lastPass2);
+		}
+		else
+		{
+			RenderPass* prev{ nullptr };
+			RenderPass* next{ nullptr };
+			RenderPass* ssaoPass{ nullptr };
+			RenderPass* ssaoBlurPass{ nullptr };
+			auto ssaoIter = mPassCache.find(RenderPassKey::SSAO);
+			if (ssaoIter != mPassCache.end())
+			{
+				ssaoIter->second.pass->deActive();
+				ssaoPass = ssaoIter->second.pass.get();
+				if (ssaoPass)
+				{
+					prev = ssaoPass->prev();
+				}
+			}
+
+			auto ssaoBlurIter = mPassCache.find(RenderPassKey::SSAOBLUR);
+			if (ssaoBlurIter != mPassCache.end())
+			{
+				ssaoBlurIter->second.pass->deActive();
+				ssaoBlurPass = ssaoBlurIter->second.pass.get();
+				if (ssaoBlurPass)
+				{
+					next = ssaoBlurPass->next();
+				}
+			}
+
+			if (prev && next)
+			{
+				prev->setNext(next);
+				next->setPrev(prev);
+				mCurrentRenderPassGroup.remove(ssaoPass);
+				mCurrentRenderPassGroup.remove(ssaoBlurPass);
+			}
+		}
+	}
+}
+
+bool Renderer::getEnableSSAO() const
+{
+	return mRenderPipeLine.enableSSao;
+}
+
+uint Renderer::getSSAOKernelSize() const
+{
+	return mRenderPipeLine.ssaoSpec.kernelSize;
+}
+
+void Renderer::setSSAOKernelSize(uint kernelSize)
+{
+	mRenderPipeLine.ssaoSpec.kernelSize = kernelSize;
+}
+
+uint Renderer::getSSAOBlurRadius() const
+{
+	return mRenderPipeLine.ssaoSpec.blurRadius;
+}
+
+void Renderer::setSSAOBlurRadius(float blurRadius)
+{
+	mRenderPipeLine.ssaoSpec.blurRadius = blurRadius;
+}
+
+uint Renderer::getSSAOSamplerRadius() const
+{
+	return mRenderPipeLine.ssaoSpec.samplerRadius;
+}
+
+void Renderer::setSSAOSamplerRadius(float samplerRadius)
+{
+	mRenderPipeLine.ssaoSpec.samplerRadius = samplerRadius;
+}
+
 void Renderer::setDefaultRenderPass()
 {
 	//TODO: default renderpass forwardShading + toneMapping

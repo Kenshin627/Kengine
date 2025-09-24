@@ -30,9 +30,9 @@ enum class BlurType
 
 struct SSAOSpecification
 {
-	uint kernelSize;
-	float samplerRadius;
-	float blurRadius;
+	uint	 kernelSize;
+	float	 samplerRadius;
+	float	 blurRadius;
 	BlurType blurType;
 };
 
@@ -71,14 +71,26 @@ public:
 	FrameBuffer* getFrameBuffer(RenderPassKey key) const;
 	RenderPass* getRenderPass(RenderPassKey key) const;
 public:
+	//POM
 	void enableParallexOcclusion(bool enable);
 	bool getParallaxOcclusion() const;
 	float getPOMScale() const;
 	void setPOMScale(float scale);
+	//BLOOM
 	void setEnableBloom(bool enable);
 	bool getEnableBloom() const;
 	uint getBloomBlur() const;
 	void setBloomBlur(uint blur);
+	//SSAO
+	//TODO:BLURTYPE
+	void enableSSAO(bool enable);
+	bool getEnableSSAO() const;
+	uint getSSAOKernelSize() const;
+	void setSSAOKernelSize(uint kernelSize);
+	uint getSSAOBlurRadius() const;
+	void setSSAOBlurRadius(float blurRadius);
+	uint getSSAOSamplerRadius() const;
+	void setSSAOSamplerRadius(float samplerRadius);
 private:
 	void setDefaultRenderPass();
 	RenderPass* addRenderPass(RenderPassKey key, const RenderState& state, RenderPass* where);
