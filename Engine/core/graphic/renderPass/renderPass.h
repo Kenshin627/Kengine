@@ -78,6 +78,11 @@ public:
 	virtual void renderUI() {};
 	void setPrev(RenderPass* pass);
 	void setNext(RenderPass* pass);
+	RenderPass* prev() const;
+	RenderPass* next() const;
+	void active();
+	void deActive();
+	bool isActive() const;
 protected:
 	std::shared_ptr<Program>					 mProgram;
 	std::shared_ptr<FrameBuffer>				 mFrameBuffer;
@@ -87,4 +92,5 @@ protected:
 	RenderPass*									 mPrevPass{ nullptr };
 	RenderPass*									 mNextPass{ nullptr };
 	Renderer*									 mOwner   { nullptr };
+	bool										 mIsActive{ true    };
 };

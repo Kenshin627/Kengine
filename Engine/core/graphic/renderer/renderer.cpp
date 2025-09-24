@@ -17,7 +17,7 @@ Renderer::Renderer(uint width, uint height)
 	 mHeight(height),
 	 mViewport(0, 0, width, height)
 {
-	if (mRenderPasses.empty())
+	if (mCurrentRenderPassGroup.empty())
 	{
 		setDefaultRenderPass();
 	}
@@ -27,20 +27,19 @@ Renderer::~Renderer() {}
 
 void Renderer::render()
 {
-	if (mRenderPasses.empty())
+	if (mCurrentRenderPassGroup.empty())
 	{
 		return;
 	}
 
 	renderUI();
 	mCurrentScene->beginScene();	
-	//run pass loop
-	for (auto& pass : mRenderPasses)
+	for (auto& pass : mCurrentRenderPassGroup)
 	{
-		pass.second->renderUI();
-		pass.second->beginPass();
-		pass.second->runPass(mCurrentScene.get());
-		pass.second->endPass();
+		pass->renderUI();
+		pass->beginPass();
+		pass->runPass(mCurrentScene.get());
+		pass->endPass();
 	}	
 	mCurrentScene->endScene();
 }
@@ -65,15 +64,16 @@ void Renderer::onWindowSizeChanged(uint width, uint height)
 		}
 	}
 	//update renderPass, because renderPass maybe include fbo & viewport resize 
-	for (auto& pass : mRenderPasses)
+	for (auto& pass : mCurrentRenderPassGroup)
 	{
-		pass.second->resize(width, height);
+		pass->resize(width, height);
 	}
 }
 
+//TODO:REMOVE
 uint Renderer::getLastFrameBufferTexture() const
 {
-	return mRenderPasses.rbegin()->second->getCurrentFrameBuffer()->getColorAttachment(0)->id();
+	return mCurrentRenderPassGroup.back()->getCurrentFrameBuffer()->getColorAttachment(0)->id();
 }
 
 //TODO REMOVE
@@ -81,19 +81,19 @@ int Renderer::getPassBufferTexture(RenderPassKey key)
 {
 	//TODO blurPass->getCurrentFrameBuffer()
 	auto iter = mPassCache.find(key);
-	if (iter != mPassCache.end())
+	if (iter != mPassCache.end() && iter->second.pass->isActive())
 	{
-		return iter->second->getCurrentFrameBuffer()->getColorAttachment(0)->id();
+		return iter->second.pass->getCurrentFrameBuffer()->getColorAttachment(0)->id();
 	}
 	return -1;
 }
 
 FrameBuffer* Renderer::getFrameBuffer(RenderPassKey key) const
 {
-	auto iter = mRenderPasses.find(key);
-	if (iter != mRenderPasses.end())
+	auto iter = mPassCache.find(key);
+	if (iter != mPassCache.end() && iter->second.pass->isActive())
 	{
-		return iter->second->getCurrentFrameBuffer();
+		return iter->second.pass->getCurrentFrameBuffer();
 	}
 	else
 	{
@@ -103,10 +103,10 @@ FrameBuffer* Renderer::getFrameBuffer(RenderPassKey key) const
 
 RenderPass* Renderer::getRenderPass(RenderPassKey key) const
 {
-	auto iter = mRenderPasses.find(key);
-	if (iter != mRenderPasses.end())
+	auto iter = mPassCache.find(key);
+	if (iter != mPassCache.end())
 	{
-		return iter->second;
+		return iter->second.pass.get();
 	}
 	return nullptr;
 }
@@ -134,69 +134,171 @@ void Renderer::setPOMScale(float scale)
 	mRenderPipeLine.parallaxOcclusionScale = scale;
 }
 
+void Renderer::setEnableBloom(bool enable)
+{	
+	if (mRenderPipeLine.enableBloom != enable)
+	{
+		mRenderPipeLine.enableBloom = enable;
+		//add or remove bloom pass and gaussian pass
+		if (enable)
+		{
+			auto lastPass1 = *(--(--mCurrentRenderPassGroup.end()));
+			addRenderPass(RenderPassKey::BLOOM, RenderState{ mViewport }, lastPass1);
+
+			auto lastPass2 = *(--(--mCurrentRenderPassGroup.end()));
+			addRenderPass(RenderPassKey::BLOOMBLUR, RenderState{ mViewport }, lastPass2);
+		}
+		else
+		{
+			RenderPass* prev{nullptr};
+			RenderPass* next{nullptr};
+			RenderPass* bloomPass{nullptr};
+			RenderPass* bloomBlurPass{nullptr};
+			auto bloomIter = mPassCache.find(RenderPassKey::BLOOM);
+			if (bloomIter != mPassCache.end())
+			{
+				bloomIter->second.pass->deActive();
+				bloomPass = bloomIter->second.pass.get();
+				if (bloomPass)
+				{					
+					prev = bloomPass->prev();
+				}
+			}
+
+			auto bloomBlurIter = mPassCache.find(RenderPassKey::BLOOMBLUR);
+			if (bloomBlurIter != mPassCache.end())
+			{
+				bloomBlurIter->second.pass->deActive();
+				bloomBlurPass = bloomBlurIter->second.pass.get();
+				if (bloomBlurPass)
+				{
+					next = bloomBlurPass->next();
+				}
+			}
+
+			if (prev && next)
+			{
+				prev->setNext(next);
+				next->setPrev(prev);
+				mCurrentRenderPassGroup.remove(bloomPass);
+				mCurrentRenderPassGroup.remove(bloomBlurPass);
+			}
+		}
+	}
+}
+
+bool Renderer::getEnableBloom() const
+{
+	return mRenderPipeLine.enableBloom;
+}
+
+uint Renderer::getBloomBlur() const
+{
+	return mRenderPipeLine.bloomBlur;
+}
+
+void Renderer::setBloomBlur(uint blur)
+{
+	if (mRenderPipeLine.bloomBlur != blur)
+	{
+		mRenderPipeLine.bloomBlur = blur;
+		auto Pass = mPassCache.find(RenderPassKey::BLOOMBLUR);
+		GaussianBlur* blurPass = static_cast<GaussianBlur*>(Pass->second.pass.get());
+		blurPass->setBloomBlur(blur);
+	}
+}
+
 void Renderer::setDefaultRenderPass()
 {
 	//TODO: default renderpass forwardShading + toneMapping
-	addRenderPass(RenderPassKey::GEOMETRY, RenderState{ mViewport });
-	addRenderPass(RenderPassKey::DEFFEREDSHADING, RenderState{ mViewport });
-	addRenderPass(RenderPassKey::TONEMAPPING, RenderState{ mViewport });
+	auto gPass = addRenderPass(RenderPassKey::GEOMETRY, RenderState{ mViewport }, nullptr);
+	auto lightingPass =addRenderPass(RenderPassKey::DEFFEREDSHADING, RenderState{ mViewport }, gPass);
+	auto toneMappingPass = addRenderPass(RenderPassKey::TONEMAPPING, RenderState{ mViewport }, lightingPass);
 }
 
-void Renderer::addRenderPass(RenderPassKey key, const RenderState& state)
+RenderPass* Renderer::addRenderPass(RenderPassKey key, const RenderState& state, RenderPass* where)
 {
 	auto passCacheIter = mPassCache.find(key);
+	std::shared_ptr<RenderPass> currentPass;
 	if (passCacheIter == mPassCache.cend())
 	{
-		auto currentPass = PassFactory::ceate(this, key, state);
-		if (!mRenderPasses.empty())
-		{
-			RenderPass* lastPass = mRenderPasses.rbegin()->second;
-			if (lastPass)
-			{
-				lastPass->setNext(currentPass.get());
-				currentPass->setPrev(lastPass);
-			}
-		}
-		
-		mRenderPasses.insert({ key, currentPass.get() });
-		mPassCache.insert({ key, std::move(currentPass) });
+		currentPass = PassFactory::ceate(this, key, state);	
+		mPassCache.insert({ key, RenderKeyPass{key, currentPass} });
 	}
-	if (passCacheIter != mPassCache.cend())
+	else if (passCacheIter != mPassCache.cend())
 	{
-		RenderPass* currentPass = passCacheIter->second.get();
-		auto currentPassIter = mRenderPasses.find(key);
-		if (currentPassIter == mRenderPasses.cend())
-		{
-			RenderPass* lastPass = mRenderPasses.rbegin()->second;
-			if (!lastPass)
-			{
-				lastPass->setNext(currentPass);
-				currentPass->setPrev(lastPass);
-			}
-			mRenderPasses.insert({ key, currentPass });
-		}
+		currentPass = passCacheIter->second.pass;
+		passCacheIter->second.pass->active();
 	}
+	
+	auto currentPassIter = std::find(mCurrentRenderPassGroup.begin(), mCurrentRenderPassGroup.end(), currentPass.get());
+	
+	if (currentPassIter == mCurrentRenderPassGroup.end())
+	{
+		if (where)
+		{
+			auto next = where->next();
+			if (next)
+			{
+				next->setPrev(currentPass.get());
+				currentPass->setNext(next);
+			}
+
+			auto whereIter = std::find(mCurrentRenderPassGroup.begin(), mCurrentRenderPassGroup.end(), where);
+			currentPass->setPrev(where);
+			where->setNext(currentPass.get());
+			
+			mCurrentRenderPassGroup.insert(++whereIter, currentPass.get());
+		}
+		else 
+		{
+			mCurrentRenderPassGroup.push_back(currentPass.get());
+		}
+		return currentPass.get();
+	}
+	return nullptr;
+}
+
+void Renderer::removePass(RenderPassKey key)
+{
 }
 
 void Renderer::renderUI()
 {
 	ImGui::Begin("Graphic Settings");
 
+	//POM
 	bool pomChecked = mRenderPipeLine.enableParallaxOcclusion;
 	if (ImGui::Checkbox("Parallax Occlusion", &pomChecked))
 	{
-		mRenderPipeLine.enableParallaxOcclusion = pomChecked;
+		enableParallexOcclusion(pomChecked);
 	}
 	if (pomChecked)
 	{
 		float pomScale = mRenderPipeLine.parallaxOcclusionScale;
 		if (ImGui::DragFloat("Parallax Occlusion Scale", &pomScale, 0.001, 0.0, 0.05))
 		{
-			mRenderPipeLine.parallaxOcclusionScale = pomScale;
+			setPOMScale(pomScale);
 		}
 	}
 	ImGui::Separator();
 
+	//BLOOM
+	bool bloomChecked = mRenderPipeLine.enableBloom;
+	if (ImGui::Checkbox("Bloom", &bloomChecked))
+	{
+		setEnableBloom(bloomChecked);
+	}
+
+	if (bloomChecked)
+	{
+		int bloomBlur = mRenderPipeLine.bloomBlur;
+		if (ImGui::DragInt("Bloom Blur", &bloomBlur, 1, 0, 12))
+		{
+			setBloomBlur(bloomBlur);
+		}
+	}
+	ImGui::Separator();
 
 	ImGui::End();
 }

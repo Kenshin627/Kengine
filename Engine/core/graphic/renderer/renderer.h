@@ -3,7 +3,7 @@
 #include <memory>
 #include <glm.hpp>
 #include <unordered_map>
-#include <map>
+#include <list>
 #include "graphic/renderPass/cascadeShadowMapPass/cascadeShadowMapPass.h"
 
 class Scene;
@@ -41,7 +41,7 @@ struct RenderPipeLine
 {
 	RenderMode                        renderMode{ RenderMode::DefferedShading};
 	bool	                          enableBloom{false};
-	uint                              bloomDegree{6};
+	uint                              bloomBlur{6};
 	bool                              enableParallaxOcclusion{ false };
 	float                             parallaxOcclusionScale{0.01f};
 	bool                              enableCascadedShadowMap{false};
@@ -51,6 +51,11 @@ struct RenderPipeLine
 	PostProcessEffect				  postProcess;
 };
 
+struct RenderKeyPass
+{
+	RenderPassKey				  key;
+	std::shared_ptr<RenderPass>   pass;
+};
 
 class Renderer
 {
@@ -70,16 +75,21 @@ public:
 	bool getParallaxOcclusion() const;
 	float getPOMScale() const;
 	void setPOMScale(float scale);
+	void setEnableBloom(bool enable);
+	bool getEnableBloom() const;
+	uint getBloomBlur() const;
+	void setBloomBlur(uint blur);
 private:
 	void setDefaultRenderPass();
-	void addRenderPass(RenderPassKey key, const RenderState& state);
+	RenderPass* addRenderPass(RenderPassKey key, const RenderState& state, RenderPass* where);
+	void removePass(RenderPassKey key);
 	void renderUI();
 private:	
 	std::shared_ptr<Scene>										   mCurrentScene;
-	std::map<RenderPassKey,RenderPass*>					           mRenderPasses;
+	std::list<RenderPass*>										   mCurrentRenderPassGroup;
 	uint														   mWidth;
 	uint														   mHeight;
 	glm::vec4													   mViewport;
-	std::unordered_map<RenderPassKey, std::unique_ptr<RenderPass>> mPassCache;
+	std::unordered_map<RenderPassKey, RenderKeyPass>			   mPassCache;
 	RenderPipeLine												   mRenderPipeLine;
 };

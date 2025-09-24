@@ -82,7 +82,6 @@ void Texture2D::loadFromFile(const char* path, bool flipY, bool SRGB)
 		default:
 			break;
 	}
-	//TODO:采取更严格的判断SRGB的方式
 	if (SRGB)
 	{
 		if (channels == 4)

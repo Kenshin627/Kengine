@@ -81,7 +81,7 @@ void SSAOPass::beginPass()
 	//upload gPositionTexture + gNormalTexture
 	//TODO
 	Texture* gPosDepth = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(0);
-	Texture* gNormal = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(1);
+	Texture* gNormal   = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(1);
 	gPosDepth->bind(0);
 	gNormal->bind(1);
 	mProgram->setUniform("gPosition", 0);

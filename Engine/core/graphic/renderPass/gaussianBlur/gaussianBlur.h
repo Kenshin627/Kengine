@@ -11,7 +11,8 @@ public:
 	virtual void endPass() override;
 	FrameBuffer* getOutputFrameBuffer();
 	virtual void resize(uint width, uint height) override;
+	void setBloomBlur(uint amount);
 private:
 	std::vector<std::shared_ptr<FrameBuffer>> mDoubleBuffers;
-	uint mAmount;
+	uint mBloomBlur;
 };

@@ -8,7 +8,7 @@
 
 GaussianBlur::GaussianBlur(uint amount, Renderer* r, const RenderState& state)
 	:RenderPass(r, state),
-	 mAmount(amount)
+	 mBloomBlur(amount)
 {
 	//program
 	mProgram = std::make_shared<Program>();
@@ -58,7 +58,7 @@ void GaussianBlur::runPass(Scene* scene)
 	mProgram->bind();
 
 	Texture* tex;
-	for (int i = 0; i < mAmount; i++)
+	for (int i = 0; i < mBloomBlur; i++)
 	{
 		mDoubleBuffers[!isHorizontal]->bind();
 		updateRenderState();
@@ -98,4 +98,9 @@ void GaussianBlur::resize(uint width, uint height)
 	{
 		fbo->resize(width, height);
 	}
+}
+
+void GaussianBlur::setBloomBlur(uint amount)
+{
+	mBloomBlur = amount;
 }

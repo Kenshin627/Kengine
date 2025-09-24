@@ -7,6 +7,7 @@
 #include "toneMapping.h"
 #include "scene/scene.h"
 #include "core.h"
+#include <graphic/renderPass/gaussianBlur/gaussianBlur.h>
 
 ToneMapping::ToneMapping(float exposure, Renderer* r, const RenderState& state)
 	:RenderPass(r, state),
@@ -43,18 +44,30 @@ void ToneMapping::beginPass()
 {
 	RenderPass::beginPass();
 	mProgram->setUniform("exposure", mExposure);
-	Texture* prevLightingTex = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(0);
-	prevLightingTex->bind(0);
-	mProgram->setUniform("prevLightingMap", 0);	
+	
 	auto pass = mOwner->getRenderPass(RenderPassKey::BLOOM);
-	mProgram->setUniform("enableBloom", pass != nullptr);
-	if (pass)
+	bool enableBloom = pass && (pass->isActive());
+	mProgram->setUniform("enableBloom", enableBloom);
+	Texture* ldrMap = nullptr;
+	if (enableBloom)
 	{	
+		auto gaussianPass = static_cast<GaussianBlur*>(mOwner->getRenderPass(RenderPassKey::BLOOMBLUR));
+		Texture* hdrBlurTex = gaussianPass->getOutputFrameBuffer()->getColorAttachment(0);
+		hdrBlurTex->bind(1);
+		mProgram->setUniform("hDRBlurMap", 1);
 		auto bloomPass = static_cast<BloomPass*>(pass);
-		Texture* ldrMap = bloomPass->getLDRTexture();
-		ldrMap->bind(1);
-		mProgram->setUniform("lDRMap", 1);
-	}	
+		ldrMap = bloomPass->getLDRTexture();		
+	}
+	else
+	{
+		auto ldrPass = mOwner->getRenderPass(RenderPassKey::DEFFEREDSHADING);
+		ldrMap = ldrPass->getCurrentFrameBuffer()->getColorAttachment(0);
+	}
+	if (ldrMap)
+	{
+		ldrMap->bind(0);
+		mProgram->setUniform("lDRMap", 0);
+	}
 }
 
 void ToneMapping::runPass(Scene* scene)

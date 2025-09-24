@@ -136,11 +136,6 @@ bool RenderPass::checkPassReady()
 	return true;
 }
 
-//void RenderPass::`(const std::initializer_list<FrameBuffer*>& fbo)
-//{
-//	mlastPassFrameBuffer = fbo;
-//}
-
 FrameBuffer* RenderPass::getCurrentFrameBuffer() const
 {
 	return mFrameBuffer.get();
@@ -154,4 +149,29 @@ void RenderPass::setPrev(RenderPass* pass)
 void RenderPass::setNext(RenderPass* pass)
 {
 	mNextPass = pass;
+}
+
+RenderPass* RenderPass::prev() const
+{
+	return mPrevPass;
+}
+
+RenderPass* RenderPass::next() const
+{
+	return mNextPass;
+}
+
+void RenderPass::active()
+{
+	mIsActive = true;
+}
+
+void RenderPass::deActive()
+{
+	mIsActive = false;
+}
+
+bool RenderPass::isActive() const
+{
+	return mIsActive;
 }

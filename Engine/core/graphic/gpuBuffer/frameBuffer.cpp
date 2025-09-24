@@ -220,6 +220,7 @@ Texture* FrameBuffer::getColorAttachment(uint index) const
 	if (index >= mColorAttachments.size())
 	{
 		KS_CORE_ERROR("Color attachment index out of range");
+		return nullptr;
 	}
 	return mColorAttachments[index].get();
 }
