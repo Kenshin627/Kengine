@@ -10,11 +10,12 @@ constexpr int MAX_LIGHTS = 16;
 class RenderObject;
 class Camera;
 class Light;
+class Renderer;
 
 class Scene
 {
 public:
-	Scene();
+	Scene(Renderer* r);
 	~Scene() = default;
 	void addRenderObject(std::shared_ptr<RenderObject> object);
 	void addRenderObject(const std::initializer_list<std::shared_ptr<RenderObject>>& objects);
@@ -45,4 +46,5 @@ private:
 	std::unique_ptr<UniformBuffer>			   mLightBuffer;
 	uint									   mLightCount;
 	std::unique_ptr<ScreenQuad>				   mScreenQuad;
+	Renderer*								   mRenderer;
 };

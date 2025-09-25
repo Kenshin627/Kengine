@@ -37,7 +37,7 @@ Application::Application(uint width, uint height, const char* title)
 	////////SCENE//////////////////////////////////////////////
 
 	//GEOMETRY
-	std::shared_ptr<Scene> scene = std::make_shared<Scene>();
+	std::shared_ptr<Scene> scene = std::make_shared<Scene>(renderer.get());
 	renderer->setCurrentScene(scene);
 	std::shared_ptr<Rectangle> groundGeom = std::make_shared<Rectangle>(100.0f, 100.0f, glm::vec2(0.1, 0.1));
 	std::shared_ptr<Rectangle> wallGeom = std::make_shared<Rectangle>(100.0f, 100.0f, glm::vec2{0.5, 0.5});

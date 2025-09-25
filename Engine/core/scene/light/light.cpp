@@ -156,7 +156,10 @@ void Light::castShadow(CascadeShadowMapPass* csmPass)
 {
 	mCsmPass = csmPass;
 	mCastShadow = true;
-	mCsmPass->cascadedSplit();
+	if (csmPass)
+	{
+		mCsmPass->cascadedSplit();
+	}
 }
 
 

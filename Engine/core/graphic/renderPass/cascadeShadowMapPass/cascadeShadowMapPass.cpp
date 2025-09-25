@@ -96,6 +96,11 @@ void CascadeShadowMapPass::setSplitLambda(float lambda)
 	}
 }
 
+float CascadeShadowMapPass::getSplitLambda() const
+{
+	return mSplitLambda;
+}
+
 void CascadeShadowMapPass::setPcfSize(int size)
 {
 	mPcfSize = size;
@@ -283,49 +288,6 @@ void CascadeShadowMapPass::updateLightMatricesBuffer()
 	}
 }
 
-void CascadeShadowMapPass::renderUI()
-{
-	//set Split Method
-	ImGui::Begin("Cascaded Shadow Mapping Settings");
-
-	int currentSplitMethodIndx = static_cast<int>(mSplitMethod);
-	if (ImGui::Combo(splitMethods[currentSplitMethodIndx], &currentSplitMethodIndx, splitMethods, IM_ARRAYSIZE(splitMethods))) {
-		selectSplitMethod(static_cast<FrustumSplitMethod>(currentSplitMethodIndx));
-	}
-	//display cascaded color
-	bool showCsmColor = mDisplayCacadedColor;
-	if (ImGui::Checkbox("display Cascaded Color", &showCsmColor))
-	{
-		setDisplayCacadedColor(showCsmColor);
-	}
-	//splitLambda
-	float splitLambda = mSplitLambda;
-	if (ImGui::DragFloat("splitLambda", &splitLambda, 0.001, 0.0, 1.0))
-	{
-		setSplitLambda(splitLambda);
-	}
-
-	//enable pcf or not
-	bool enablePcf = mEnablePcf;
-	if (ImGui::Checkbox("PCF", &enablePcf))
-	{
-		setEnablePCF(enablePcf);
-	}
-
-	//pcfSize
-	if (enablePcf)
-	{
-		int pcfSize = mPcfSize;
-		if (ImGui::DragInt("PCFSize", &pcfSize, 1, 1, 16))
-		{
-			setPcfSize(pcfSize);
-		}
-	}
-
-	//show depthMap in another viewport
-	ImGui::End();
-}
-
 void CascadeShadowMapPass::setDisplayCacadedColor(bool show)
 {
 	mDisplayCacadedColor = show;
@@ -363,4 +325,9 @@ void CascadeShadowMapPass::selectSplitMethod(FrustumSplitMethod method)
 		mSplitMethod = method;
 		cascadedSplit();
 	}
+}
+
+FrustumSplitMethod CascadeShadowMapPass::getSplitMethod() const
+{
+	return mSplitMethod;
 }

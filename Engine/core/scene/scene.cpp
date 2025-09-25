@@ -4,14 +4,16 @@
 #include "light/spotLight/spotLight.h"
 #include "scene.h"
 #include "core.h"
-
+#include "graphic/renderer/renderer.h"
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "scene/light/spotLight/spotLight.h"
+#include "graphic/renderPass/cascadeShadowMapPass/cascadeShadowMapPass.h"
 
-Scene::Scene()
-	  :mLightCount(0)
+Scene::Scene(Renderer* r)
+	  :mLightCount(0),
+	   mRenderer(r)
 {
 	/////////////////////////////////INIT UNIFORM BUFFER ////////////////////////////////////
 	
@@ -287,8 +289,14 @@ void Scene::updateSceneUI()
 			{
 				spot->setInner(inner);
 			}
+			//cast shadow
+			bool castShadow = spot->isCastShadow();
+			if (ImGui::Checkbox("CastShadow", &castShadow))
+			{
+				auto csm = static_cast<CascadeShadowMapPass*>(mRenderer->getRenderPass(RenderPassKey::CSM));
+				spot->castShadow(csm);
+			}
 		}
-
 
 		ImGui::PopID();
 	}

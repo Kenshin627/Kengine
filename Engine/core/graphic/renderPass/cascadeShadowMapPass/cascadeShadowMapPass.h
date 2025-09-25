@@ -33,10 +33,11 @@ public:
 	int getShadowLightIndex() const;
 	int getPcfSize() const;
 	void selectSplitMethod(FrustumSplitMethod method);
+	FrustumSplitMethod getSplitMethod() const;
 	void setSplitLambda(float lambda);
+	float getSplitLambda() const;
 	void setPcfSize(int size);
 	void updateLightMatricesBuffer();
-	virtual void renderUI() override;
 	void setDisplayCacadedColor(bool show);
 	bool getDisplayCacadedColor() const { return mDisplayCacadedColor; };
 	void setEnablePCF(bool enable);

@@ -20,8 +20,8 @@ enum class RenderTarget
 struct RenderState
 {
 	glm::vec4	 viewport		 { 0, 0, 800, 600						     };
-	RenderTarget target			 { RenderTarget::FRAMEBUFFER				 };
 	bool		 depthTest       { true                                      };
+	RenderTarget target			 { RenderTarget::FRAMEBUFFER				 };
 	GLenum		 depthFunc		 { GL_LESS									 };
 	GLenum	     depthMask		 { GL_TRUE									 };
 	bool		 cullFace        { true                                      };
@@ -75,7 +75,6 @@ public:
 	bool checkPassReady();
 	//void setLastPassFBOs(const std::initializer_list<FrameBuffer*>& fbo);
 	FrameBuffer* getCurrentFrameBuffer() const;
-	virtual void renderUI() {};
 	void setPrev(RenderPass* pass);
 	void setNext(RenderPass* pass);
 	RenderPass* prev() const;

@@ -36,7 +36,6 @@ void Renderer::render()
 	mCurrentScene->beginScene();	
 	for (auto& pass : mCurrentRenderPassGroup)
 	{
-		pass->renderUI();
 		pass->beginPass();
 		pass->runPass(mCurrentScene.get());
 		pass->endPass();
@@ -131,10 +130,10 @@ void Renderer::setEnableBloom(bool enable)
 		if (enable)
 		{
 			auto lastPass1 = *(--(--mCurrentRenderPassGroup.end()));
-			addRenderPass(RenderPassKey::BLOOM, RenderState{ mViewport }, lastPass1);
+			addRenderPass(RenderPassKey::BLOOM, RenderState{ mViewport, false }, lastPass1);
 
 			auto lastPass2 = *(--(--mCurrentRenderPassGroup.end()));
-			addRenderPass(RenderPassKey::BLOOMBLUR, RenderState{ mViewport }, lastPass2);
+			addRenderPass(RenderPassKey::BLOOMBLUR, RenderState{ mViewport, false }, lastPass2);
 		}
 		else
 		{
@@ -239,10 +238,10 @@ void Renderer::enableSSAO(bool enable)
 		if (enable)
 		{
 			auto lastPass1 = *(--(--mCurrentRenderPassGroup.end()));
-			addRenderPass(RenderPassKey::SSAO, RenderState{ mViewport }, lastPass1);
+			addRenderPass(RenderPassKey::SSAO, RenderState{ mViewport, false }, lastPass1);
 
 			auto lastPass2 = *(--(--mCurrentRenderPassGroup.end()));
-			addRenderPass(RenderPassKey::SSAOBLUR, RenderState{ mViewport }, lastPass2);
+			addRenderPass(RenderPassKey::SSAOBLUR, RenderState{ mViewport, false }, lastPass2);
 		}
 		else
 		{
@@ -349,12 +348,65 @@ const DebugView& Renderer::getDebugView() const
 	return mDebugView;
 }
 
+void Renderer::enableCSM(bool enable)
+{
+	if (mRenderPipeLine.enableCascadedShadowMap != enable)
+	{
+		mRenderPipeLine.enableCascadedShadowMap = enable;
+		if (enable)
+		{
+			addRenderPass(RenderPassKey::CSM, RenderState{ mViewport, true }, nullptr);
+		}
+		else
+		{
+			//RenderPass* prev{ nullptr };
+			//RenderPass* next{ nullptr };
+			//RenderPass* ssaoPass{ nullptr };
+			//RenderPass* ssaoBlurPass{ nullptr };
+			//auto ssaoIter = mPassCache.find(RenderPassKey::SSAO);
+			//if (ssaoIter != mPassCache.end())
+			//{
+			//	ssaoIter->second.pass->deActive();
+			//	ssaoPass = ssaoIter->second.pass.get();
+			//	if (ssaoPass)
+			//	{
+			//		prev = ssaoPass->prev();
+			//	}
+			//}
+			//
+			//auto ssaoBlurIter = mPassCache.find(RenderPassKey::SSAOBLUR);
+			//if (ssaoBlurIter != mPassCache.end())
+			//{
+			//	ssaoBlurIter->second.pass->deActive();
+			//	ssaoBlurPass = ssaoBlurIter->second.pass.get();
+			//	if (ssaoBlurPass)
+			//	{
+			//		next = ssaoBlurPass->next();
+			//	}
+			//}
+			//
+			//if (prev && next)
+			//{
+			//	prev->setNext(next);
+			//	next->setPrev(prev);
+			//	mCurrentRenderPassGroup.remove(ssaoPass);
+			//	mCurrentRenderPassGroup.remove(ssaoBlurPass);
+			//}
+		}
+	}
+}
+
+bool Renderer::getEnableCSM() const
+{
+	return mRenderPipeLine.enableCascadedShadowMap;
+}
+
 void Renderer::setDefaultRenderPass()
 {
 	//TODO: default renderpass forwardShading + toneMapping
 	auto gPass = addRenderPass(RenderPassKey::GEOMETRY, RenderState{ mViewport }, nullptr);
-	auto lightingPass =addRenderPass(RenderPassKey::DEFFEREDSHADING, RenderState{ mViewport }, gPass);
-	auto toneMappingPass = addRenderPass(RenderPassKey::TONEMAPPING, RenderState{ mViewport }, lightingPass);
+	auto lightingPass =addRenderPass(RenderPassKey::DEFFEREDSHADING, RenderState{ mViewport, false }, gPass);
+	auto toneMappingPass = addRenderPass(RenderPassKey::TONEMAPPING, RenderState{ mViewport, false }, lightingPass);
 }
 
 RenderPass* Renderer::addRenderPass(RenderPassKey key, const RenderState& state, RenderPass* where)
@@ -393,7 +445,7 @@ RenderPass* Renderer::addRenderPass(RenderPassKey key, const RenderState& state,
 		}
 		else 
 		{
-			mCurrentRenderPassGroup.push_back(currentPass.get());
+			mCurrentRenderPassGroup.push_front(currentPass.get());
 		}
 		return currentPass.get();
 	}
@@ -544,6 +596,49 @@ void Renderer::renderUI()
 		}
 	}
 
+	//CSM
+	bool csmChecked = mRenderPipeLine.enableCascadedShadowMap;
+	if (ImGui::Checkbox("Csm", &csmChecked))
+	{
+		enableCSM(csmChecked);
+	}
+	if (csmChecked)
+	{
+		auto csm = static_cast<CascadeShadowMapPass*>(getRenderPass(RenderPassKey::CSM));
+		int currentSplitMethodIndx = static_cast<int>(csm->getSplitMethod());
+		if (ImGui::Combo(splitMethods[currentSplitMethodIndx], &currentSplitMethodIndx, splitMethods, IM_ARRAYSIZE(splitMethods))) {
+			csm->selectSplitMethod(static_cast<FrustumSplitMethod>(currentSplitMethodIndx));
+		}
+		//display cascaded color
+		bool showCsmColor = csm->getDisplayCacadedColor();
+		if (ImGui::Checkbox("display Cascaded Color", &showCsmColor))
+		{
+			csm->setDisplayCacadedColor(showCsmColor);
+		}
+		//splitLambda
+		float splitLambda = csm->getSplitLambda();
+		if (ImGui::DragFloat("splitLambda", &splitLambda, 0.001, 0.0, 1.0))
+		{
+			csm->setSplitLambda(splitLambda);
+		}
+
+		//enable pcf or not
+		bool enablePcf = csm->getEnablePCF();
+		if (ImGui::Checkbox("PCF", &enablePcf))
+		{
+			csm->setEnablePCF(enablePcf);
+		}
+
+		//pcfSize
+		if (enablePcf)
+		{
+			int pcfSize = csm->getPcfSize();
+			if (ImGui::DragInt("PCFSize", &pcfSize, 1, 1, 16))
+			{
+				csm->setPcfSize(pcfSize);
+			}
+		}
+	}
 	ImGui::End();
 }
 

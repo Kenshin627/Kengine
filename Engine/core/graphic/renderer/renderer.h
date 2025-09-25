@@ -24,15 +24,15 @@ enum class PostProcessEffect
 
 struct RenderPipeLine
 {
-	RenderMode                        renderMode { RenderMode::DefferedShading};
-	bool	                          enableBloom{ false					  };
-	bool							  debugBloom { false					  };
-	bool						      enableSSao { false					  };
-	bool							  debugSSAO  { false					  };
-	bool                              enableParallaxOcclusion{ false		  };
-	float                             parallaxOcclusionScale { 0.01f          };
-	bool                              enableCascadedShadowMap{ false          };
-	CascadeShadowMapPassSpecification csmSpec;
+	RenderMode                        renderMode			 { RenderMode::DefferedShading};
+	bool	                          enableBloom			 { false					  };
+	bool							  debugBloom			 { false					  };
+	bool						      enableSSao			 { false					  };
+	bool							  debugSSAO				 { false					  };
+	bool                              enableParallaxOcclusion{ false					  };
+	float                             parallaxOcclusionScale { 0.01f					  };
+	bool                              enableCascadedShadowMap{ false					  };
+	bool							  debugCSM	             { false					  };
 	PostProcessEffect				  postProcess;
 };
 
@@ -74,6 +74,7 @@ public:
 	bool getParallaxOcclusion() const;
 	float getPOMScale() const;
 	void setPOMScale(float scale);
+
 	//BLOOM
 	void setEnableBloom(bool enable);
 	bool getEnableBloom() const;
@@ -97,6 +98,10 @@ public:
 	uint getSSAOSamplerRadius() const;
 	void setSSAOSamplerRadius(float samplerRadius);
 	const DebugView& getDebugView() const;
+
+	//CSM
+	void enableCSM(bool enable);
+	bool getEnableCSM() const;
 private:
 	void setDefaultRenderPass();
 	RenderPass* addRenderPass(RenderPassKey key, const RenderState& state, RenderPass* where);
