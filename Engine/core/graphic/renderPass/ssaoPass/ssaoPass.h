@@ -2,16 +2,32 @@
 #include <vector>
 #include "../renderPass.h"
 
+enum class BlurType
+{
+	Uniform,
+	Gaussian
+};
+
+struct SSAOSpecification
+{
+	uint	 kernelSize		{ 64				};
+	float	 samplerRadius	{ 1.0f				};
+	BlurType blurType		{ BlurType::Uniform };
+	float	 bias			{ 0.1f				};
+};
+
 class Texture2D;
 class SSAOPass :public RenderPass
 {
 public:
-	SSAOPass(Renderer* r, const RenderState& state, uint kernelSize, float radius);
+	SSAOPass(const SSAOSpecification& spec, Renderer* r, const RenderState& state);
 	~SSAOPass() = default;
 	void setKernelSize(uint kernelSize);
 	uint getKernelSize() const;
-	void setRadius(uint radius);
-	uint getRadius() const;
+	void setSamplerRadius(uint radius);
+	float getSamplerRadius() const;
+	void setBias(float bias);
+	float getBias() const;
 	virtual void beginPass() override;
 	virtual void runPass(Scene* scene) override;
 private:
@@ -22,8 +38,7 @@ private:
 		return a + (b - a) * c;
 	}
 private:
-	uint					   mKernelSize;
-	float					   mRadius;
+	SSAOSpecification		   mSpec;
 	std::vector<glm::vec4>	   mKernelSamplers;
 	std::unique_ptr<Texture2D> mNoiseTexture;
 };

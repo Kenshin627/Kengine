@@ -302,32 +302,58 @@ bool Renderer::getEnableSSAO() const
 
 uint Renderer::getSSAOKernelSize() const
 {
-	return mRenderPipeLine.ssaoSpec.kernelSize;
+	RenderPass* pass = getRenderPass(RenderPassKey::SSAO);
+	SSAOPass* ssao = static_cast<SSAOPass*>(pass);
+	return ssao->getKernelSize();
 }
 
 void Renderer::setSSAOKernelSize(uint kernelSize)
 {
-	mRenderPipeLine.ssaoSpec.kernelSize = kernelSize;
+	RenderPass* pass = getRenderPass(RenderPassKey::SSAO);
+	SSAOPass* ssao = static_cast<SSAOPass*>(pass);
+	ssao->setKernelSize(kernelSize);
+}
+
+float Renderer::getSSAOBias() const
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::SSAO);
+	SSAOPass* ssao = static_cast<SSAOPass*>(pass);
+	return getSSAOBias();
+}
+
+void Renderer::setSSAOBias(float bias)
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::SSAO);
+	SSAOPass* ssao = static_cast<SSAOPass*>(pass);
+	ssao->setBias(bias);
 }
 
 uint Renderer::getSSAOBlurRadius() const
 {
-	return mRenderPipeLine.ssaoSpec.blurRadius;
+	RenderPass* pass = getRenderPass(RenderPassKey::SSAOBLUR);
+	BlurPass* blurPass = static_cast<BlurPass*>(pass);
+	return blurPass->getBlurRadius();
 }
 
 void Renderer::setSSAOBlurRadius(float blurRadius)
 {
-	mRenderPipeLine.ssaoSpec.blurRadius = blurRadius;
+	RenderPass* pass = getRenderPass(RenderPassKey::SSAOBLUR);
+	BlurPass* blurPass = static_cast<BlurPass*>(pass);
+	blurPass->setBlurRadius(blurRadius);
 }
 
 uint Renderer::getSSAOSamplerRadius() const
 {
-	return mRenderPipeLine.ssaoSpec.samplerRadius;
+	RenderPass* pass = getRenderPass(RenderPassKey::SSAO);
+	SSAOPass* ssao = static_cast<SSAOPass*>(pass);
+	return ssao->getSamplerRadius();
 }
 
 void Renderer::setSSAOSamplerRadius(float samplerRadius)
 {
-	mRenderPipeLine.ssaoSpec.samplerRadius = samplerRadius;
+	RenderPass* pass = getRenderPass(RenderPassKey::SSAO);
+	SSAOPass* ssao = static_cast<SSAOPass*>(pass);
+	ssao->setSamplerRadius(samplerRadius);
 }
 
 void Renderer::setDefaultRenderPass()
@@ -433,6 +459,48 @@ void Renderer::renderUI()
 		}
 	}
 	ImGui::Separator();
+
+	//SSAO
+
+	bool ssaoChecked = mRenderPipeLine.enableSSao;
+	if (ImGui::Checkbox("SSAO", &ssaoChecked))
+	{
+		enableSSAO(ssaoChecked);
+	}
+
+	if (ssaoChecked)
+	{
+		SSAOPass* ssao = static_cast<SSAOPass*>(getRenderPass(RenderPassKey::SSAO));
+		BlurPass* ssaoBlur = static_cast<BlurPass*>(getRenderPass(RenderPassKey::SSAOBLUR));
+
+		//kernelSize
+		int kernelSize = ssao->getKernelSize();
+		if (ImGui::DragInt("KernelSize", &kernelSize, 1, 2, 1024))
+		{
+			ssao->setKernelSize(kernelSize);
+		}
+
+		//samplerRadius
+		float samplerRadius = ssao->getSamplerRadius();
+		if (ImGui::DragFloat("Sampler Radius", &samplerRadius, 0.01f, 0.01f, 12.0f))
+		{
+			ssao->setSamplerRadius(samplerRadius);
+		}
+
+		//bias
+		float bias = ssao->getBias();
+		if (ImGui::DragFloat("Bias", &bias, 0.001f, 0.001f, 1.0f))
+		{
+			ssao->setBias(bias);
+		}
+
+		//blurRadius
+		int blurRadius = ssaoBlur->getBlurRadius();
+		if (ImGui::DragInt("Blur Radius", &blurRadius, 1, 2, 64))
+		{
+			ssaoBlur->setBlurRadius(blurRadius);
+		}
+	}
 
 	ImGui::End();
 }

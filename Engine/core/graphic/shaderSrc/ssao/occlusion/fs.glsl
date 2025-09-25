@@ -1,8 +1,6 @@
 #version 460 core
 #define MAX_SAMPLER_COUNT 128
 
-const float bias = 0.6f;
-
 out vec4 FragColor;
 
 in vec2 vTexcoord;
@@ -23,6 +21,7 @@ uniform sampler2D gNormal;
 uniform sampler2D noise; //4x4
 uniform vec3	  samplers[MAX_SAMPLER_COUNT];
 uniform vec2	  frameBufferSize;
+uniform float     bias;
 
 float rangeCheck(float samplerDepth, float targetDepth)
 {

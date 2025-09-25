@@ -20,7 +20,7 @@ public:
 		switch (key)
 		{
 		case RenderPassKey::SSAO:
-			return std::make_unique<SSAOPass>(r, state, 128, 1.0);
+			return std::make_unique<SSAOPass>(SSAOSpecification{}, r, state);
 		case RenderPassKey::SSAOBLUR:
 			return std::make_unique<BlurPass>(4, r, state);
 		case RenderPassKey::CSM:

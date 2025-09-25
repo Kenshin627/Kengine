@@ -22,21 +22,6 @@ enum class PostProcessEffect
 	RGBSplit
 };
 
-enum class BlurType
-{
-	Uniform,
-	Gaussian
-};
-
-struct SSAOSpecification
-{
-	uint	 kernelSize;
-	float	 samplerRadius;
-	float	 blurRadius;
-	BlurType blurType;
-};
-
-
 struct RenderPipeLine
 {
 	RenderMode                        renderMode{ RenderMode::DefferedShading};
@@ -46,7 +31,7 @@ struct RenderPipeLine
 	bool                              enableCascadedShadowMap{false};
 	CascadeShadowMapPassSpecification csmSpec;
 	bool						      enableSSao{false};
-	SSAOSpecification				  ssaoSpec;
+	//SSAOSpecification				  ssaoSpec;
 	PostProcessEffect				  postProcess;
 };
 
@@ -91,6 +76,8 @@ public:
 	bool getEnableSSAO() const;
 	uint getSSAOKernelSize() const;
 	void setSSAOKernelSize(uint kernelSize);
+	float getSSAOBias() const;
+	void setSSAOBias(float bias);
 	uint getSSAOBlurRadius() const;
 	void setSSAOBlurRadius(float blurRadius);
 	uint getSSAOSamplerRadius() const;

@@ -6,11 +6,12 @@
 #include "graphic/gpuBuffer/frameBuffer.h"
 #include "geometry/screenQuad.h"
 #include "graphic/texture/texture2D/texture2D.h"
+#include "graphic/renderer/renderer.h"
+#include "../deferredRendering/geometryPass.h"
 
-SSAOPass::SSAOPass(Renderer* r, const RenderState& state, uint kernelSize, float radius)
+SSAOPass::SSAOPass(const SSAOSpecification& spec, Renderer* r, const RenderState& state)
 	:RenderPass(r, state),
-	 mKernelSize(kernelSize),
-	 mRadius(radius)
+	 mSpec(spec)
 {
 	//buildSampler
 	buildSamplers();
@@ -44,44 +45,56 @@ SSAOPass::SSAOPass(Renderer* r, const RenderState& state, uint kernelSize, float
 
 void SSAOPass::setKernelSize(uint kernelSize)
 {
-	if (mKernelSize != kernelSize)
+	if (mSpec.kernelSize != kernelSize)
 	{
-		mKernelSize = kernelSize;
+		mSpec.kernelSize = kernelSize;
 		buildSamplers();
 	}
 }
 
 uint SSAOPass::getKernelSize() const
 {
-	return mKernelSize;
+	return mSpec.kernelSize;
 }
 
-void SSAOPass::setRadius(uint radius)
+void SSAOPass::setSamplerRadius(uint radius)
 {
-	mRadius = radius;
+	mSpec.samplerRadius = radius;
 }
 
-uint SSAOPass::getRadius() const
+float SSAOPass::getSamplerRadius() const
 {
-	return mRadius;
+	return mSpec.samplerRadius;
+}
+
+void SSAOPass::setBias(float bias)
+{
+	mSpec.bias = bias;
+}
+
+float SSAOPass::getBias() const
+{
+	return mSpec.bias;
 }
 
 void SSAOPass::beginPass()
 {
 	RenderPass::beginPass();
 	//send kernelSampler array to GPU use uniform
-	for (GLuint i = 0; i < 64; ++i)
+	for (GLuint i = 0; i < mSpec.kernelSize; ++i)
 	{
 		glUniform3fv(glGetUniformLocation(mProgram->id(), ("samplers[" + std::to_string(i) + "]").c_str()), 1, &mKernelSamplers[i][0]);
 	}
 	//send radius to GPU use uniform
-	mProgram->setUniform("samperRadius", mRadius);
+	mProgram->setUniform("samperRadius", mSpec.samplerRadius);
 	//send kernelSize to GPU use uniform
-	mProgram->setUniform("kernelSize", mKernelSize);
+	mProgram->setUniform("kernelSize", mSpec.kernelSize);
+	mProgram->setUniform("bias", mSpec.bias);
 	//upload gPositionTexture + gNormalTexture
 	//TODO
-	Texture* gPosDepth = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(0);
-	Texture* gNormal   = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(1);
+	GeometryPass* gPass = static_cast<GeometryPass*>(mOwner->getRenderPass(RenderPassKey::GEOMETRY));
+	Texture* gPosDepth = gPass->getCurrentFrameBuffer()->getColorAttachment(0);
+	Texture* gNormal   = gPass->getCurrentFrameBuffer()->getColorAttachment(1);
 	gPosDepth->bind(0);
 	gNormal->bind(1);
 	mProgram->setUniform("gPosition", 0);
@@ -113,8 +126,8 @@ void SSAOPass::buildSamplers()
 	std::uniform_real_distribution<float> randomFloats(0.0f, 1.0f);
 	std::default_random_engine engine;
 	mKernelSamplers.clear();
-	mKernelSamplers.reserve(mKernelSize);
-	for (size_t i = 0; i < mKernelSize; i++)
+	mKernelSamplers.reserve(mSpec.kernelSize);
+	for (size_t i = 0; i < mSpec.kernelSize; i++)
 	{
 		glm::vec4 sampler
 		{
@@ -125,7 +138,7 @@ void SSAOPass::buildSamplers()
 		};
 		sampler = glm::normalize(sampler);
 		sampler *= randomFloats(engine);
-		float scale = i / static_cast<float>(mKernelSize);
+		float scale = i / static_cast<float>(mSpec.kernelSize);
 		scale = lerp(0.1f, 1.0f, scale * scale);
 		sampler *= scale;
 		mKernelSamplers.push_back(sampler);
