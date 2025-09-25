@@ -41,7 +41,6 @@ struct RenderPipeLine
 {
 	RenderMode                        renderMode{ RenderMode::DefferedShading};
 	bool	                          enableBloom{false};
-	uint                              bloomBlur{6};
 	bool                              enableParallaxOcclusion{ false };
 	float                             parallaxOcclusionScale{0.01f};
 	bool                              enableCascadedShadowMap{false};
@@ -81,6 +80,11 @@ public:
 	bool getEnableBloom() const;
 	uint getBloomBlur() const;
 	void setBloomBlur(uint blur);
+	float getBloomBlurScale();
+	void setBloomBlurScale(float s);
+	float getBloomBlurStrength();
+	void setBloomBlurStrength(float s);
+	
 	//SSAO
 	//TODO:BLURTYPE
 	void enableSSAO(bool enable);

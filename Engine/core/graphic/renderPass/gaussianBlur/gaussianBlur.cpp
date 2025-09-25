@@ -6,9 +6,9 @@
 #include "scene/scene.h"
 #include "core.h"
 
-GaussianBlur::GaussianBlur(uint amount, Renderer* r, const RenderState& state)
+GaussianBlur::GaussianBlur(const GaussianBlurSpecification& spec, Renderer* r, const RenderState& state)
 	:RenderPass(r, state),
-	 mBloomBlur(amount)
+	 mSpec(spec)
 {
 	//program
 	mProgram = std::make_shared<Program>();
@@ -20,7 +20,7 @@ GaussianBlur::GaussianBlur(uint amount, Renderer* r, const RenderState& state)
 	mProgram->buildFromFiles(files);
 	//quad
 	//2 * frambuffer
-	std::initializer_list<FrameBufferSpecification> spec =
+	std::initializer_list<FrameBufferSpecification> fboSpec =
 	{
 		{
 			AttachmentType::Color,
@@ -32,8 +32,8 @@ GaussianBlur::GaussianBlur(uint amount, Renderer* r, const RenderState& state)
 			TextureFilter::LINEAR
 		}
 	};
-	mDoubleBuffers.push_back(std::make_shared<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, spec));
-	mDoubleBuffers.push_back(std::make_shared<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, spec));
+	mDoubleBuffers.push_back(std::make_shared<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, fboSpec));
+	mDoubleBuffers.push_back(std::make_shared<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, fboSpec));
 }
 
 GaussianBlur::~GaussianBlur()
@@ -42,6 +42,9 @@ GaussianBlur::~GaussianBlur()
 
 void GaussianBlur::beginPass()
 {
+	RenderPass::beginPass();
+	mProgram->setUniform("scale", mSpec.Scale);
+	mProgram->setUniform("strength", mSpec.Strength);
 }
 
 void GaussianBlur::runPass(Scene* scene)
@@ -58,7 +61,7 @@ void GaussianBlur::runPass(Scene* scene)
 	mProgram->bind();
 
 	Texture* tex;
-	for (int i = 0; i < mBloomBlur; i++)
+	for (int i = 0; i < mSpec.Amount; i++)
 	{
 		mDoubleBuffers[!isHorizontal]->bind();
 		updateRenderState();
@@ -100,7 +103,32 @@ void GaussianBlur::resize(uint width, uint height)
 	}
 }
 
-void GaussianBlur::setBloomBlur(uint amount)
+void GaussianBlur::setGaussianBlurAmount(uint amount)
 {
-	mBloomBlur = amount;
+	mSpec.Amount = amount;
+}
+
+uint GaussianBlur::getGussianBlurAmount() const
+{
+	return mSpec.Amount;
+}
+
+void GaussianBlur::setGaussianBlurScale(float s)
+{
+	mSpec.Scale = s;
+}
+
+float GaussianBlur::getGussianBlurScale() const
+{
+	return mSpec.Scale;
+}
+
+void GaussianBlur::setGaussianBlurStrength(float strength)
+{
+	mSpec.Strength = strength;
+}
+
+float GaussianBlur::getGussianBlurStrength() const
+{
+	return mSpec.Strength;
 }

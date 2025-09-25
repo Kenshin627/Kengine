@@ -1,6 +1,7 @@
 #pragma once
 #include "../renderPass.h"
 
+
 class Texture;
 class BloomPass :public RenderPass
 {
@@ -11,5 +12,4 @@ public:
 	virtual void runPass(Scene* scene) override;
 	Texture* getHDRTexture() const;
 	Texture* getLDRTexture() const;
-private:
 };

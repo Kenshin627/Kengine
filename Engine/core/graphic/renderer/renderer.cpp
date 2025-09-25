@@ -194,17 +194,52 @@ bool Renderer::getEnableBloom() const
 
 uint Renderer::getBloomBlur() const
 {
-	return mRenderPipeLine.bloomBlur;
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
+	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
+	return gaussianPass->getGussianBlurAmount();
 }
 
 void Renderer::setBloomBlur(uint blur)
 {
-	if (mRenderPipeLine.bloomBlur != blur)
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
+	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
+	if (gaussianPass->getGussianBlurAmount() != blur)
 	{
-		mRenderPipeLine.bloomBlur = blur;
-		auto Pass = mPassCache.find(RenderPassKey::BLOOMBLUR);
-		GaussianBlur* blurPass = static_cast<GaussianBlur*>(Pass->second.pass.get());
-		blurPass->setBloomBlur(blur);
+		gaussianPass->setGaussianBlurAmount(blur);
+	}
+}
+
+float Renderer::getBloomBlurScale()
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
+	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
+	return gaussianPass->getGussianBlurScale();
+}
+
+void Renderer::setBloomBlurScale(float s)
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
+	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
+	if (gaussianPass->getGussianBlurScale() != s)
+	{
+		gaussianPass->setGaussianBlurScale(s);
+	}
+}
+
+float Renderer::getBloomBlurStrength()
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
+	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
+	return gaussianPass->getGussianBlurStrength();
+}
+
+void Renderer::setBloomBlurStrength(float s)
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
+	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
+	if (gaussianPass->getGussianBlurStrength() != s)
+	{
+		gaussianPass->setGaussianBlurStrength(s);
 	}
 }
 
@@ -379,10 +414,22 @@ void Renderer::renderUI()
 
 	if (bloomChecked)
 	{
-		int bloomBlur = mRenderPipeLine.bloomBlur;
+		int bloomBlur = getBloomBlur();
 		if (ImGui::DragInt("Bloom Blur", &bloomBlur, 1, 0, 12))
 		{
 			setBloomBlur(bloomBlur);
+		}
+
+		float scale = getBloomBlurScale();
+		if (ImGui::DragFloat("Bloom Scale", &scale, 0.01f, 0.1f, 6.0f))
+		{
+			setBloomBlurScale(scale);
+		}
+
+		float strength = getBloomBlurStrength();
+		if (ImGui::DragFloat("Bloom Strength", &strength, 0.01f, 0.0f, 5.0f))
+		{
+			setBloomBlurStrength(strength);
 		}
 	}
 	ImGui::Separator();

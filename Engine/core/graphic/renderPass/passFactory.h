@@ -33,7 +33,7 @@ public:
 		case RenderPassKey::BLOOM:
 			return std::make_unique<BloomPass>(r, state);
 		case RenderPassKey::BLOOMBLUR:
-			return std::make_unique<GaussianBlur>(6, r, state);
+			return std::make_unique<GaussianBlur>(GaussianBlurSpecification{}, r, state);
 		case RenderPassKey::GEOMETRY:
 			return std::make_unique<GeometryPass>(r, state);
 		case RenderPassKey::DEFFEREDSHADING:

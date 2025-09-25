@@ -7,6 +7,8 @@ uniform sampler2D screenMap;
 uniform int isHorizontal;
 uniform float offset[3] = float[](0.0, 1.3846153846, 3.2307692308);
 uniform float weight[3] = float[](0.2270270270, 0.3162162162, 0.0702702703);
+uniform float scale;
+uniform float strength;
 
 void main()
 {
@@ -16,18 +18,18 @@ void main()
     {       
         for(int i = 1; i < 3; ++i)
         {
-            float texelXOffset = tex_offset.x * i * offset[i];
-            result += texture(screenMap, vTexcoord + vec2(texelXOffset, 0.0)).rgb * weight[i];
-            result += texture(screenMap, vTexcoord - vec2(texelXOffset, 0.0)).rgb * weight[i];
+            float texelXOffset = tex_offset.x * i * offset[i] * scale;
+            result += texture(screenMap, vTexcoord + vec2(texelXOffset, 0.0)).rgb * weight[i] * strength;
+            result += texture(screenMap, vTexcoord - vec2(texelXOffset, 0.0)).rgb * weight[i] * strength;
         }
     }
     else
     {
         for(int i = 1; i < 3; ++i)
         {
-            float texelXOffset = tex_offset.y * i * offset[i];
-            result += texture(screenMap, vTexcoord + vec2(0.0, texelXOffset)).rgb * weight[i];
-            result += texture(screenMap, vTexcoord - vec2(0.0, texelXOffset)).rgb * weight[i];
+            float texelXOffset = tex_offset.y * i * offset[i] * scale;
+            result += texture(screenMap, vTexcoord + vec2(0.0, texelXOffset)).rgb * weight[i] * strength;
+            result += texture(screenMap, vTexcoord - vec2(0.0, texelXOffset)).rgb * weight[i] * strength;
         }
     }
     FragColor = vec4(result, 1.0);

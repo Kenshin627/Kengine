@@ -10,19 +10,18 @@ BloomPass::BloomPass(Renderer* r, const RenderState& state)
 	:RenderPass(r, state)
 {
 	mProgram = std::make_shared<Program>();
-	std::initializer_list<ShaderFile> shaders =
-	{
+
+	mProgram->buildFromFiles({
 		{ "core/graphic/shaderSrc/bloom/vs.glsl", ShaderType::Vertex },
 		{ "core/graphic/shaderSrc/bloom/fs.glsl", ShaderType::Fragment }
-	};
-	mProgram->buildFromFiles(shaders);
+		});
 	std::initializer_list<FrameBufferSpecification> specs =
 	{
 		//color attachment 0 normal ldr
 		{
 			AttachmentType::Color,
 			TextureInternalFormat::RGBA16F,
-			TextureDataFormat::RGB,
+			TextureDataFormat::RGBA,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureFilter::NEAREST,
@@ -32,7 +31,7 @@ BloomPass::BloomPass(Renderer* r, const RenderState& state)
 		{
 			AttachmentType::Color,
 			TextureInternalFormat::RGBA16F,
-			TextureDataFormat::RGB,
+			TextureDataFormat::RGBA,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureFilter::NEAREST,
