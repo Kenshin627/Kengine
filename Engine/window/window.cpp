@@ -9,6 +9,7 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "scene/light/spotLight/spotLight.h"
+#include "graphic/gpuBuffer/frameBuffer.h"
 
 static void windowSizeChanged(GLFWwindow* window, int width, int height)
 {
@@ -130,7 +131,21 @@ void Window::RunLoop()
 
 		//secondViewport
 		ImGui::Begin("DebugViewport");
-		ImGui::Image((void*)(intptr_t)mRenderer->getPassBufferTexture(RenderPassKey::DEFFEREDSHADING), ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+		const DebugView& debugView =  mRenderer->getDebugView();
+		auto fbo = debugView.fbo;
+		int texId = -1;
+		if (fbo)
+		{
+			if (debugView.type == DebugViewAttachmentType::Color)
+			{
+				texId = fbo->getColorAttachment(debugView.colorAttachmentIndex)->id();
+			}
+			else
+			{
+				texId = fbo->getDepthStencilAttachment()->id();
+			}
+		}
+		ImGui::Image((void*)(intptr_t)texId, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::End();
 
 		auto scene = mRenderer->getCurrentScene();

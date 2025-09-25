@@ -3,9 +3,9 @@
 
 struct GaussianBlurSpecification
 {
-	float Scale		{ 1.0f };
-	float Strength	{ 1.0f };
-	uint  Amount	{ 4    };
+	float Scale		{ 1.0f  };
+	float Strength	{ 1.0f  };
+	uint  Amount	{ 4     };
 };
 class GaussianBlur :public RenderPass
 {

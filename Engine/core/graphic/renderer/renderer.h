@@ -24,14 +24,15 @@ enum class PostProcessEffect
 
 struct RenderPipeLine
 {
-	RenderMode                        renderMode{ RenderMode::DefferedShading};
-	bool	                          enableBloom{false};
-	bool                              enableParallaxOcclusion{ false };
-	float                             parallaxOcclusionScale{0.01f};
-	bool                              enableCascadedShadowMap{false};
+	RenderMode                        renderMode { RenderMode::DefferedShading};
+	bool	                          enableBloom{ false					  };
+	bool							  debugBloom { false					  };
+	bool						      enableSSao { false					  };
+	bool							  debugSSAO  { false					  };
+	bool                              enableParallaxOcclusion{ false		  };
+	float                             parallaxOcclusionScale { 0.01f          };
+	bool                              enableCascadedShadowMap{ false          };
 	CascadeShadowMapPassSpecification csmSpec;
-	bool						      enableSSao{false};
-	//SSAOSpecification				  ssaoSpec;
 	PostProcessEffect				  postProcess;
 };
 
@@ -41,17 +42,30 @@ struct RenderKeyPass
 	std::shared_ptr<RenderPass>   pass;
 };
 
+enum class DebugViewAttachmentType
+{
+	Color = 0,
+	Depth,
+	None
+};
+
+struct DebugView
+{
+	FrameBuffer* fbo{ nullptr };
+	int colorAttachmentIndex{ -1 };
+	DebugViewAttachmentType type{ DebugViewAttachmentType::None };
+};
+
 class Renderer
 {
 public:
 	Renderer(uint width, uint height);
-	~Renderer();	
+	~Renderer();
 	void render();
 	void setCurrentScene(std::shared_ptr<Scene> scene) { mCurrentScene = scene; }
 	Scene* getCurrentScene();
 	void onWindowSizeChanged(uint width, uint height);
 	uint getLastFrameBufferTexture() const;
-	int getPassBufferTexture(RenderPassKey key);
 	FrameBuffer* getFrameBuffer(RenderPassKey key) const;
 	RenderPass* getRenderPass(RenderPassKey key) const;
 public:
@@ -69,7 +83,7 @@ public:
 	void setBloomBlurScale(float s);
 	float getBloomBlurStrength();
 	void setBloomBlurStrength(float s);
-	
+
 	//SSAO
 	//TODO:BLURTYPE
 	void enableSSAO(bool enable);
@@ -82,12 +96,14 @@ public:
 	void setSSAOBlurRadius(float blurRadius);
 	uint getSSAOSamplerRadius() const;
 	void setSSAOSamplerRadius(float samplerRadius);
+	const DebugView& getDebugView() const;
 private:
 	void setDefaultRenderPass();
 	RenderPass* addRenderPass(RenderPassKey key, const RenderState& state, RenderPass* where);
 	void removePass(RenderPassKey key);
 	void renderUI();
-private:	
+	void resetDebugView();
+private:
 	std::shared_ptr<Scene>										   mCurrentScene;
 	std::list<RenderPass*>										   mCurrentRenderPassGroup;
 	uint														   mWidth;
@@ -95,4 +111,5 @@ private:
 	glm::vec4													   mViewport;
 	std::unordered_map<RenderPassKey, RenderKeyPass>			   mPassCache;
 	RenderPipeLine												   mRenderPipeLine;
+	DebugView													   mDebugView;
 };

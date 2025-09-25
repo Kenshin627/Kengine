@@ -76,18 +76,6 @@ uint Renderer::getLastFrameBufferTexture() const
 	return mCurrentRenderPassGroup.back()->getCurrentFrameBuffer()->getColorAttachment(0)->id();
 }
 
-//TODO REMOVE
-int Renderer::getPassBufferTexture(RenderPassKey key)
-{
-	//TODO blurPass->getCurrentFrameBuffer()
-	auto iter = mPassCache.find(key);
-	if (iter != mPassCache.end() && iter->second.pass->isActive())
-	{
-		return iter->second.pass->getCurrentFrameBuffer()->getColorAttachment(0)->id();
-	}
-	return -1;
-}
-
 FrameBuffer* Renderer::getFrameBuffer(RenderPassKey key) const
 {
 	auto iter = mPassCache.find(key);
@@ -356,6 +344,11 @@ void Renderer::setSSAOSamplerRadius(float samplerRadius)
 	ssao->setSamplerRadius(samplerRadius);
 }
 
+const DebugView& Renderer::getDebugView() const
+{
+	return mDebugView;
+}
+
 void Renderer::setDefaultRenderPass()
 {
 	//TODO: default renderpass forwardShading + toneMapping
@@ -457,11 +450,35 @@ void Renderer::renderUI()
 		{
 			setBloomBlurStrength(strength);
 		}
+
+		//debugView
+		bool debugView = mRenderPipeLine.debugBloom;
+		if (ImGui::Checkbox("DebugView", &debugView))
+		{
+			mRenderPipeLine.debugBloom = debugView;
+			if (debugView)
+			{
+				mDebugView.colorAttachmentIndex = 0;
+				mDebugView.fbo = static_cast<GaussianBlur*>(getRenderPass(RenderPassKey::BLOOMBLUR))->getOutputFrameBuffer();
+				mDebugView.type = DebugViewAttachmentType::Color;
+			}
+			else
+			{
+				resetDebugView();
+			}
+		}
+	}
+	else
+	{
+		if (mRenderPipeLine.debugBloom)
+		{
+			mRenderPipeLine.debugBloom = false;
+			resetDebugView();
+		}
 	}
 	ImGui::Separator();
 
 	//SSAO
-
 	bool ssaoChecked = mRenderPipeLine.enableSSao;
 	if (ImGui::Checkbox("SSAO", &ssaoChecked))
 	{
@@ -500,7 +517,39 @@ void Renderer::renderUI()
 		{
 			ssaoBlur->setBlurRadius(blurRadius);
 		}
+
+		// debugView
+		bool debugView = mRenderPipeLine.debugSSAO;
+		if (ImGui::Checkbox("DebugView", &debugView))
+		{
+			mRenderPipeLine.debugSSAO = debugView;
+			if (debugView)
+			{
+				mDebugView.colorAttachmentIndex = 0;
+				mDebugView.fbo = getRenderPass(RenderPassKey::SSAO)->getCurrentFrameBuffer();
+				mDebugView.type = DebugViewAttachmentType::Color;
+			}
+			else
+			{
+				resetDebugView();
+			}
+		}
+	}
+	else
+	{
+		if (mRenderPipeLine.debugSSAO)
+		{
+			resetDebugView();
+			mRenderPipeLine.debugSSAO = false;
+		}
 	}
 
 	ImGui::End();
+}
+
+void Renderer::resetDebugView()
+{
+	mDebugView.colorAttachmentIndex = -1;
+	mDebugView.fbo = nullptr;
+	mDebugView.type = DebugViewAttachmentType::None;
 }
