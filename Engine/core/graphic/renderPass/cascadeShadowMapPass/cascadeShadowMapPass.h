@@ -52,10 +52,11 @@ private:
 private:
 	std::unique_ptr<UniformBuffer> mLightMatricesBuffer;
 	std::vector<float>             mCascadedFrustumSplit;
-	uint						   mPcfSize		  { 2	 };
-	uint						   mCascadedLayer { 4	 };
-	float						   mSplitLambda   { 0.95 };
+	//TODO:REMOVE
+	uint						   mPcfSize				{ 2		};
+	uint						   mCascadedLayer		{ 4		};
+	float						   mSplitLambda			{ 0.95	};
 	FrustumSplitMethod			   mSplitMethod;
-	bool						   mDisplayCacadedColor{ false };
-	bool						   mEnablePcf{ true };
+	bool						   mDisplayCacadedColor { false };
+	bool						   mEnablePcf			{ true  };
 };
