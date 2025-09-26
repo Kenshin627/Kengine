@@ -10,6 +10,7 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "scene/light/spotLight/spotLight.h"
 #include "graphic/gpuBuffer/frameBuffer.h"
+#include "graphic/texture/texture2D/texture2D.h"
 
 static void windowSizeChanged(GLFWwindow* window, int width, int height)
 {
@@ -73,6 +74,9 @@ Window::Window(uint width, uint height, const char* title)
 	//event callbacks
 	glfwSetWindowUserPointer(mWindow, this);
 	glfwSetWindowSizeCallback(mWindow, windowSizeChanged);
+	//default iamge
+	mDefaultImage = std::make_unique<Texture2D>();
+	mDefaultImage->loadFromFile("images/checkboard.png");
 }
 
 Window::~Window()
@@ -130,9 +134,10 @@ void Window::RunLoop()
 
 		//debugViewport
 		ImGui::Begin("DebugViewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+		ImVec2 debugViewportSize = ImGui::GetContentRegionAvail();
 		const DebugView& debugView =  mRenderer->getDebugView();
 		auto fbo = debugView.fbo;
-		int texId = -1;
+		int texId = mDefaultImage->id();
 		if (fbo)
 		{
 			if (debugView.type == DebugViewAttachmentType::Color)
@@ -144,7 +149,7 @@ void Window::RunLoop()
 				texId = fbo->getDepthStencilAttachment()->id();
 			}
 		}
-		ImGui::Image((void*)(intptr_t)texId, viewportSize, ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::Image((void*)(intptr_t)texId, debugViewportSize, ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::End();
 
 		auto scene = mRenderer->getCurrentScene();

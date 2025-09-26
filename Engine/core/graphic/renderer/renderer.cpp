@@ -182,6 +182,10 @@ bool Renderer::getEnableBloom() const
 uint Renderer::getBloomBlur() const
 {
 	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
+	if (!pass)
+	{
+		return 0;
+	}
 	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
 	return gaussianPass->getGussianBlurAmount();
 }
@@ -199,6 +203,10 @@ void Renderer::setBloomBlur(uint blur)
 float Renderer::getBloomBlurScale()
 {
 	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
+	if (!pass)
+	{
+		return 0;
+	}
 	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
 	return gaussianPass->getGussianBlurScale();
 }
@@ -206,6 +214,10 @@ float Renderer::getBloomBlurScale()
 void Renderer::setBloomBlurScale(float s)
 {
 	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
+	if (!pass)
+	{
+		return;
+	}
 	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
 	if (gaussianPass->getGussianBlurScale() != s)
 	{
@@ -216,6 +228,10 @@ void Renderer::setBloomBlurScale(float s)
 float Renderer::getBloomBlurStrength()
 {
 	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
+	if (!pass)
+	{
+		return 0;
+	}
 	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
 	return gaussianPass->getGussianBlurStrength();
 }
@@ -288,6 +304,10 @@ bool Renderer::getEnableSSAO() const
 uint Renderer::getSSAOKernelSize() const
 {
 	RenderPass* pass = getRenderPass(RenderPassKey::SSAO);
+	if (!pass)
+	{
+		return 0;
+	}
 	SSAOPass* ssao = static_cast<SSAOPass*>(pass);
 	return ssao->getKernelSize();
 }
@@ -302,6 +322,10 @@ void Renderer::setSSAOKernelSize(uint kernelSize)
 float Renderer::getSSAOBias() const
 {
 	RenderPass* pass = getRenderPass(RenderPassKey::SSAO);
+	if (!pass)
+	{
+		return 0;
+	}
 	SSAOPass* ssao = static_cast<SSAOPass*>(pass);
 	return getSSAOBias();
 }
@@ -316,6 +340,10 @@ void Renderer::setSSAOBias(float bias)
 uint Renderer::getSSAOBlurRadius() const
 {
 	RenderPass* pass = getRenderPass(RenderPassKey::SSAOBLUR);
+	if (!pass)
+	{
+		return 0;
+	}
 	BlurPass* blurPass = static_cast<BlurPass*>(pass);
 	return blurPass->getBlurRadius();
 }
@@ -330,6 +358,10 @@ void Renderer::setSSAOBlurRadius(float blurRadius)
 uint Renderer::getSSAOSamplerRadius() const
 {
 	RenderPass* pass = getRenderPass(RenderPassKey::SSAO);
+	if (!pass)
+	{
+		return 0;
+	}
 	SSAOPass* ssao = static_cast<SSAOPass*>(pass);
 	return ssao->getSamplerRadius();
 }
@@ -452,13 +484,18 @@ void Renderer::renderUI()
 	{
 		enableParallexOcclusion(pomChecked);
 	}
-	if (pomChecked)
+	if (!pomChecked)
 	{
-		float pomScale = mRenderPipeLine.parallaxOcclusionScale;
-		if (ImGui::DragFloat("Parallax Occlusion Scale", &pomScale, 0.001, 0.0, 0.05))
-		{
-			setPOMScale(pomScale);
-		}
+		ImGui::BeginDisabled();
+	}
+	float pomScale = mRenderPipeLine.parallaxOcclusionScale;
+	if (ImGui::DragFloat("Parallax Occlusion Scale", &pomScale, 0.001, 0.0, 0.05))
+	{
+		setPOMScale(pomScale);
+	}
+	if (!pomChecked)
+	{
+		ImGui::EndDisabled();
 	}
 	ImGui::Separator();
 
@@ -469,46 +506,53 @@ void Renderer::renderUI()
 		setEnableBloom(bloomChecked);
 	}
 
-	if (bloomChecked)
+	if (!bloomChecked)
 	{
-		int bloomBlur = getBloomBlur();
-		if (ImGui::DragInt("Bloom Blur", &bloomBlur, 1, 0, 12))
+		ImGui::BeginDisabled();
+	}
+	int bloomBlur = getBloomBlur();
+	if (ImGui::DragInt("Bloom Blur", &bloomBlur, 1, 0, 12))
 		{
 			setBloomBlur(bloomBlur);
 		}
 
-		float scale = getBloomBlurScale();
-		if (ImGui::DragFloat("Bloom Scale", &scale, 0.01f, 0.1f, 6.0f))
+	float scale = getBloomBlurScale();
+	if (ImGui::DragFloat("Bloom Scale", &scale, 0.01f, 0.1f, 6.0f))
 		{
 			setBloomBlurScale(scale);
 		}
 
-		float strength = getBloomBlurStrength();
-		if (ImGui::DragFloat("Bloom Strength", &strength, 0.01f, 0.0f, 5.0f))
+	float strength = getBloomBlurStrength();
+	if (ImGui::DragFloat("Bloom Strength", &strength, 0.01f, 0.0f, 5.0f))
 		{
 			setBloomBlurStrength(strength);
 		}
 
-		//debugView
-		ImGui::PushID("bloom");
-		bool debugView = mRenderPipeLine.debugBloom;
-		if (ImGui::Checkbox("DebugView", &debugView))
+	//debugView
+	ImGui::PushID("bloom");
+	bool bloomDebugView = mRenderPipeLine.debugBloom;
+	if (ImGui::Checkbox("DebugView", &bloomDebugView))
+	{
+		mRenderPipeLine.debugBloom = bloomDebugView;
+		if (bloomDebugView)
 		{
-			mRenderPipeLine.debugBloom = debugView;
-			if (debugView)
-			{
-				mDebugView.colorAttachmentIndex = 0;
-				mDebugView.fbo = static_cast<GaussianBlur*>(getRenderPass(RenderPassKey::BLOOMBLUR))->getOutputFrameBuffer();
-				mDebugView.type = DebugViewAttachmentType::Color;
-			}
-			else
-			{
-				resetDebugView();
-			}
+			mDebugView.colorAttachmentIndex = 0;
+			mDebugView.fbo = static_cast<GaussianBlur*>(getRenderPass(RenderPassKey::BLOOMBLUR))->getOutputFrameBuffer();
+			mDebugView.type = DebugViewAttachmentType::Color;
 		}
-		ImGui::PopID();
+		else
+		{
+			resetDebugView();
+		}
 	}
-	else
+	ImGui::PopID();
+	if(!bloomChecked)
+	{
+		ImGui::EndDisabled();
+	
+	}
+
+	if(!bloomChecked)
 	{
 		if (mRenderPipeLine.debugBloom)
 		{
@@ -525,59 +569,65 @@ void Renderer::renderUI()
 		enableSSAO(ssaoChecked);
 	}
 
-	if (ssaoChecked)
+	if (!ssaoChecked)
 	{
-		SSAOPass* ssao = static_cast<SSAOPass*>(getRenderPass(RenderPassKey::SSAO));
-		BlurPass* ssaoBlur = static_cast<BlurPass*>(getRenderPass(RenderPassKey::SSAOBLUR));
-
-		//kernelSize
-		int kernelSize = ssao->getKernelSize();
-		if (ImGui::DragInt("KernelSize", &kernelSize, 1, 2, 1024))
-		{
-			ssao->setKernelSize(kernelSize);
-		}
-
-		//samplerRadius
-		float samplerRadius = ssao->getSamplerRadius();
-		if (ImGui::DragFloat("Sampler Radius", &samplerRadius, 0.01f, 0.01f, 12.0f))
-		{
-			ssao->setSamplerRadius(samplerRadius);
-		}
-
-		//bias
-		float bias = ssao->getBias();
-		if (ImGui::DragFloat("Bias", &bias, 0.001f, 0.001f, 1.0f))
-		{
-			ssao->setBias(bias);
-		}
-
-		//blurRadius
-		int blurRadius = ssaoBlur->getBlurRadius();
-		if (ImGui::DragInt("Blur Radius", &blurRadius, 1, 2, 64))
-		{
-			ssaoBlur->setBlurRadius(blurRadius);
-		}
-
-		// debugView
-		ImGui::PushID("ssao");
-		bool debugView = mRenderPipeLine.debugSSAO;
-		if (ImGui::Checkbox("DebugView", &debugView))
-		{
-			mRenderPipeLine.debugSSAO = debugView;
-			if (debugView)
-			{
-				mDebugView.colorAttachmentIndex = 0;
-				mDebugView.fbo = getRenderPass(RenderPassKey::SSAO)->getCurrentFrameBuffer();
-				mDebugView.type = DebugViewAttachmentType::Color;
-			}
-			else
-			{
-				resetDebugView();
-			}
-		}
-		ImGui::PopID();
+		ImGui::BeginDisabled();
 	}
-	else
+	SSAOPass* ssao = static_cast<SSAOPass*>(getRenderPass(RenderPassKey::SSAO));
+	BlurPass* ssaoBlur = static_cast<BlurPass*>(getRenderPass(RenderPassKey::SSAOBLUR));
+	
+	//kernelSize
+	int kernelSize = ssao? ssao->getKernelSize() : 0;
+	if (ImGui::DragInt("KernelSize", &kernelSize, 1, 2, 1024))
+	{
+		ssao->setKernelSize(kernelSize);
+	}
+
+	//samplerRadius
+	float samplerRadius = ssao? ssao->getSamplerRadius(): 0;
+	if (ImGui::DragFloat("Sampler Radius", &samplerRadius, 0.01f, 0.01f, 12.0f))
+	{
+		ssao->setSamplerRadius(samplerRadius);
+	}
+
+	//bias
+	float bias = ssao? ssao->getBias() : 0;
+	if (ImGui::DragFloat("Bias", &bias, 0.001f, 0.001f, 1.0f))
+	{
+		ssao->setBias(bias);
+	}
+
+	//blurRadius
+	int blurRadius = ssaoBlur? ssaoBlur->getBlurRadius():0;
+	if (ImGui::DragInt("Blur Radius", &blurRadius, 1, 2, 64))
+	{
+		ssaoBlur->setBlurRadius(blurRadius);
+	}
+
+	// debugView
+	ImGui::PushID("ssao");
+	bool ssaodebugView = mRenderPipeLine.debugSSAO;
+	if (ImGui::Checkbox("DebugView", &ssaodebugView))
+	{
+		mRenderPipeLine.debugSSAO = ssaodebugView;
+		if (ssaodebugView)
+		{
+			mDebugView.colorAttachmentIndex = 0;
+			mDebugView.fbo = getRenderPass(RenderPassKey::SSAO)->getCurrentFrameBuffer();
+			mDebugView.type = DebugViewAttachmentType::Color;
+		}
+		else
+		{
+			resetDebugView();
+		}
+	}
+	ImGui::PopID();
+	if(!ssaoChecked)
+	{
+		ImGui::EndDisabled();
+	}
+
+	if(!ssaoChecked)
 	{
 		if (mRenderPipeLine.debugSSAO)
 		{
@@ -592,42 +642,53 @@ void Renderer::renderUI()
 	{
 		enableCSM(csmChecked);
 	}
-	if (csmChecked)
+	if (!csmChecked)
 	{
-		auto csm = static_cast<CascadeShadowMapPass*>(getRenderPass(RenderPassKey::CSM));
-		int currentSplitMethodIndx = static_cast<int>(csm->getSplitMethod());
-		if (ImGui::Combo(splitMethods[currentSplitMethodIndx], &currentSplitMethodIndx, splitMethods, IM_ARRAYSIZE(splitMethods))) {
-			csm->selectSplitMethod(static_cast<FrustumSplitMethod>(currentSplitMethodIndx));
-		}
-		//display cascaded color
-		bool showCsmColor = csm->getDisplayCacadedColor();
-		if (ImGui::Checkbox("display Cascaded Color", &showCsmColor))
-		{
-			csm->setDisplayCacadedColor(showCsmColor);
-		}
-		//splitLambda
-		float splitLambda = csm->getSplitLambda();
-		if (ImGui::DragFloat("splitLambda", &splitLambda, 0.001, 0.0, 1.0))
-		{
-			csm->setSplitLambda(splitLambda);
-		}
+		ImGui::BeginDisabled();
+	}
+	auto csm = static_cast<CascadeShadowMapPass*>(getRenderPass(RenderPassKey::CSM));
+	int currentSplitMethodIndx = static_cast<int>(csm? csm->getSplitMethod(): FrustumSplitMethod::Uniform);
+	if (ImGui::Combo(splitMethods[currentSplitMethodIndx], &currentSplitMethodIndx, splitMethods, IM_ARRAYSIZE(splitMethods))) {
+		csm->selectSplitMethod(static_cast<FrustumSplitMethod>(currentSplitMethodIndx));
+	}
+	//display cascaded color
+	bool showCsmColor = csm? csm->getDisplayCacadedColor():false;
+	if (ImGui::Checkbox("display Cascaded Color", &showCsmColor))
+	{
+		csm->setDisplayCacadedColor(showCsmColor);
+	}
+	//splitLambda
+	float splitLambda = csm? csm->getSplitLambda():1.0;
+	if (ImGui::DragFloat("splitLambda", &splitLambda, 0.001, 0.0, 1.0))
+	{
+		csm->setSplitLambda(splitLambda);
+	}
 
-		//enable pcf or not
-		bool enablePcf = csm->getEnablePCF();
-		if (ImGui::Checkbox("PCF", &enablePcf))
-		{
-			csm->setEnablePCF(enablePcf);
-		}
+	//enable pcf or not
+	bool enablePcf =  csm?csm->getEnablePCF():false;
+	if (ImGui::Checkbox("PCF", &enablePcf))
+	{
+		csm->setEnablePCF(enablePcf);
+	}
 
-		//pcfSize
-		if (enablePcf)
-		{
-			int pcfSize = csm->getPcfSize();
-			if (ImGui::DragInt("PCFSize", &pcfSize, 1, 1, 16))
-			{
-				csm->setPcfSize(pcfSize);
-			}
-		}
+	//pcfSize
+	if(!enablePcf)
+	{
+		ImGui::BeginDisabled();
+	}
+	int pcfSize = csm? csm->getPcfSize(): 0;
+	if (ImGui::DragInt("PCFSize", &pcfSize, 1, 1, 16))
+	{
+		csm->setPcfSize(pcfSize);
+	}
+	if(!enablePcf)
+	{
+		ImGui::EndDisabled();
+	}
+	
+	if(!csmChecked)
+	{
+		ImGui::EndDisabled();
 	}
 	ImGui::End();
 }

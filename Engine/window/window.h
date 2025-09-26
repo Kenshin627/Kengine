@@ -3,6 +3,7 @@
 #include "typedef.h"
 
 class Renderer;
+class Texture2D;
 struct GLFWwindow;
 class Window
 {
@@ -26,4 +27,5 @@ private:
 	GLFWwindow*				  mWindow  { nullptr };
 	std::shared_ptr<Renderer> mRenderer;
 	glm::vec2			      mImGuiViewportSize;
+	std::unique_ptr<Texture2D>  mDefaultImage;
 };
