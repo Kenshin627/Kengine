@@ -11,6 +11,9 @@
 #include "graphic/renderPass/toneMapping/toneMapping.h"
 #include "graphic/renderPass/passFactory.h"
 #include "imgui.h"
+#include "implot.h"
+#include "implot_internal.h"
+#include <deque>
 
 Renderer::Renderer(uint width, uint height)
 	:mWidth(width),
@@ -689,6 +692,40 @@ void Renderer::renderUI()
 	if(!csmChecked)
 	{
 		ImGui::EndDisabled();
+	}
+	ImGui::End();
+
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	float current_fps = io.Framerate;
+
+	static const int MAX_DATA_POINTS = 120;
+	static std::deque<float> fps_data;
+
+	// 2. 用于X轴的时间戳（可选，但推荐）
+	// 或者我们可以直接使用数据点的索引作为X值
+	static std::deque<float> time_data;
+	static float elapsed_time = 0.0f;
+	// 更新时间
+	elapsed_time += io.DeltaTime;
+
+	// 将新数据添加到缓冲区末尾
+	fps_data.push_back(current_fps);
+	time_data.push_back(elapsed_time);
+
+	// 如果数据点数量超过最大值，移除最前面的旧数据
+	if (fps_data.size() > MAX_DATA_POINTS) {
+		fps_data.pop_front();
+		time_data.pop_front();
+	}
+
+	ImGui::Begin("RenderStatus");
+	ImPlot::SetNextAxesLimits(0, MAX_DATA_POINTS, 0, 500, ImGuiCond_Always);
+	if (ImPlot::BeginPlot("FPS Curve")) 
+	{
+		ImPlot::SetupAxes("Frame", "FPS");
+		std::vector<float> temp_fps_vector(fps_data.begin(), fps_data.end());
+		ImPlot::PlotLine("FPS", temp_fps_vector.data(), fps_data.size());
+		ImPlot::EndPlot();
 	}
 	ImGui::End();
 }

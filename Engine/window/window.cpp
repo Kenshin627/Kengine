@@ -6,6 +6,7 @@
 #include "scene/light/light.h"
 #include "scene/scene.h"
 #include "imgui.h"
+#include "implot.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "scene/light/spotLight/spotLight.h"
@@ -57,6 +58,7 @@ Window::Window(uint width, uint height, const char* title)
 	//IMGUI////////////////////
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
+	ImPlot::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	// ∆Ù”√º¸≈Ãµº∫Ω
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
