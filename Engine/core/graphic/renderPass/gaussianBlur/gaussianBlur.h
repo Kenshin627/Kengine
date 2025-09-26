@@ -23,6 +23,8 @@ public:
 	float getGussianBlurScale() const;
 	void setGaussianBlurStrength(float strength);
 	float getGussianBlurStrength() const;
+protected:
+	virtual bool checkFrameBuffer() override;
 private:
 	std::vector<std::shared_ptr<FrameBuffer>> mDoubleBuffers;
 	GaussianBlurSpecification mSpec;

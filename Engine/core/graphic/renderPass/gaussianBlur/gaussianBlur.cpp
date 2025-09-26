@@ -132,3 +132,15 @@ float GaussianBlur::getGussianBlurStrength() const
 {
 	return mSpec.Strength;
 }
+
+bool GaussianBlur::checkFrameBuffer()
+{
+	for (auto& fbo : mDoubleBuffers)
+	{
+		if (!fbo || !fbo->isComplete())
+		{
+			return false;
+		}
+	}
+	return true;
+}

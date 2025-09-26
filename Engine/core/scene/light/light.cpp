@@ -162,4 +162,14 @@ void Light::castShadow(CascadeShadowMapPass* csmPass)
 	}
 }
 
+void Light::disableCastShadow()
+{
+	mCastShadow = false;
+	if (mCsmPass)
+	{
+		mCsmPass->updateLightMatricesBuffer();
+		mCsmPass = nullptr;
+	}
+}
+
 

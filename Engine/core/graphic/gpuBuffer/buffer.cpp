@@ -56,7 +56,8 @@ void Buffer::unMap() const
 void Buffer::clearBuffer(uint internalformat, uint size, const void* data, uint format, uint type, uint offset) const
 {
 	checkAllocated();
-	GLCALL(glClearBufferSubData(mRendererID, internalformat, offset, size, format, type, data));
+	//GLuint buffer, GLenum internalformat, GLintptr offset, GLsizeiptr size, GLenum format, GLenum type, const void *data
+	GLCALL(glClearNamedBufferSubData(mRendererID, internalformat, offset, size, format, type, data));
 }
 
 void Buffer::copyBuffer(uint readBuffer, uint writeBuffer, uint readOffset, uint writeOffset, uint size) const

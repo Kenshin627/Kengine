@@ -58,6 +58,7 @@ public:
 	LightType getType() const;
 	void updateLightBuffer();
 	void castShadow(CascadeShadowMapPass* csmPass);
+	void disableCastShadow();
 	bool isCastShadow() const { return mCastShadow; }
 protected:
 	LightType			  mType;

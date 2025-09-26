@@ -128,8 +128,9 @@ void RenderPass::setRenderState(const RenderState& state)
 
 bool RenderPass::checkPassReady()
 {
-	if (mRenderState.target == RenderTarget::FRAMEBUFFER && !mFrameBuffer)
+	if (mRenderState.target == RenderTarget::FRAMEBUFFER)
 	{
+		if(!checkFrameBuffer())
 		KS_CORE_ERROR("RenderPass::checkPassReady: FrameBuffer is null!");
 		return false;
 	}
@@ -174,4 +175,9 @@ void RenderPass::deActive()
 bool RenderPass::isActive() const
 {
 	return mIsActive;
+}
+
+bool RenderPass::checkFrameBuffer()
+{
+	return mFrameBuffer && mFrameBuffer->isComplete();
 }

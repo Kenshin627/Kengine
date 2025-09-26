@@ -237,11 +237,9 @@ void Renderer::enableSSAO(bool enable)
 		mRenderPipeLine.enableSSao = enable;
 		if (enable)
 		{
-			auto lastPass1 = *(--(--mCurrentRenderPassGroup.end()));
-			addRenderPass(RenderPassKey::SSAO, RenderState{ mViewport, false }, lastPass1);
-
-			auto lastPass2 = *(--(--mCurrentRenderPassGroup.end()));
-			addRenderPass(RenderPassKey::SSAOBLUR, RenderState{ mViewport, false }, lastPass2);
+			RenderPass* gPass = getRenderPass(RenderPassKey::GEOMETRY);
+			RenderPass* ssao = addRenderPass(RenderPassKey::SSAO, RenderState{ mViewport, false }, gPass);
+			addRenderPass(RenderPassKey::SSAOBLUR, RenderState{ mViewport, false }, ssao);
 		}
 		else
 		{
@@ -359,39 +357,27 @@ void Renderer::enableCSM(bool enable)
 		}
 		else
 		{
-			//RenderPass* prev{ nullptr };
-			//RenderPass* next{ nullptr };
-			//RenderPass* ssaoPass{ nullptr };
-			//RenderPass* ssaoBlurPass{ nullptr };
-			//auto ssaoIter = mPassCache.find(RenderPassKey::SSAO);
-			//if (ssaoIter != mPassCache.end())
-			//{
-			//	ssaoIter->second.pass->deActive();
-			//	ssaoPass = ssaoIter->second.pass.get();
-			//	if (ssaoPass)
-			//	{
-			//		prev = ssaoPass->prev();
-			//	}
-			//}
-			//
-			//auto ssaoBlurIter = mPassCache.find(RenderPassKey::SSAOBLUR);
-			//if (ssaoBlurIter != mPassCache.end())
-			//{
-			//	ssaoBlurIter->second.pass->deActive();
-			//	ssaoBlurPass = ssaoBlurIter->second.pass.get();
-			//	if (ssaoBlurPass)
-			//	{
-			//		next = ssaoBlurPass->next();
-			//	}
-			//}
-			//
-			//if (prev && next)
-			//{
-			//	prev->setNext(next);
-			//	next->setPrev(prev);
-			//	mCurrentRenderPassGroup.remove(ssaoPass);
-			//	mCurrentRenderPassGroup.remove(ssaoBlurPass);
-			//}
+			RenderPass* prev{ nullptr };
+			RenderPass* next{ nullptr };
+			RenderPass* csmPass{ nullptr };
+			auto csmIter = mPassCache.find(RenderPassKey::CSM);
+			if (csmIter != mPassCache.end())
+			{
+				csmIter->second.pass->deActive();
+				csmPass = csmIter->second.pass.get();
+				if (csmPass)
+				{
+					prev = csmPass->prev();
+					next = csmPass->next();
+				}
+			}			
+			
+			if (prev && next)
+			{
+				prev->setNext(next);
+				next->setPrev(prev);
+			}
+			mCurrentRenderPassGroup.remove(csmPass);
 		}
 	}
 }
@@ -504,6 +490,7 @@ void Renderer::renderUI()
 		}
 
 		//debugView
+		ImGui::PushID("bloom");
 		bool debugView = mRenderPipeLine.debugBloom;
 		if (ImGui::Checkbox("DebugView", &debugView))
 		{
@@ -519,6 +506,7 @@ void Renderer::renderUI()
 				resetDebugView();
 			}
 		}
+		ImGui::PopID();
 	}
 	else
 	{
@@ -571,6 +559,7 @@ void Renderer::renderUI()
 		}
 
 		// debugView
+		ImGui::PushID("ssao");
 		bool debugView = mRenderPipeLine.debugSSAO;
 		if (ImGui::Checkbox("DebugView", &debugView))
 		{
@@ -586,6 +575,7 @@ void Renderer::renderUI()
 				resetDebugView();
 			}
 		}
+		ImGui::PopID();
 	}
 	else
 	{

@@ -83,6 +83,8 @@ public:
 	void deActive();
 	bool isActive() const;
 protected:
+	virtual bool checkFrameBuffer();
+protected:
 	std::shared_ptr<Program>					 mProgram;
 	std::shared_ptr<FrameBuffer>				 mFrameBuffer;
 	//std::vector<FrameBuffer*>			         mlastPassFrameBuffer;

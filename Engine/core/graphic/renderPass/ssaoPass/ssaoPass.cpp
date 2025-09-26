@@ -57,7 +57,7 @@ uint SSAOPass::getKernelSize() const
 	return mSpec.kernelSize;
 }
 
-void SSAOPass::setSamplerRadius(uint radius)
+void SSAOPass::setSamplerRadius(float radius)
 {
 	mSpec.samplerRadius = radius;
 }

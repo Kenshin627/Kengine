@@ -219,6 +219,8 @@ void CascadeShadowMapPass::updateLightMatricesBuffer()
 	if (lightIndex == -1)
 	{
 		//TODO
+		unsigned int clearColor = 0;
+		mLightMatricesBuffer->clearBuffer(GL_R8UI, sizeof(glm::mat4) * mCascadedLayer, &clearColor, GL_RED_INTEGER, GL_UNSIGNED_BYTE, 0);
 		return;
 	}
 	Light* light = mOwner->getCurrentScene()->getLights().at(lightIndex).get();

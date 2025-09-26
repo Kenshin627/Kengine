@@ -118,19 +118,18 @@ void Window::RunLoop()
 		ImGui::End();
 		
 		//check imgui dock viewport windowsize change, then resize fbo and camera aspect ratio, then draw to fbo, blit to imgui image
-		ImGui::Begin("Viewport");
-		ImVec2 viewportSize = ImGui::GetWindowSize();
+		ImGui::Begin("Viewport",nullptr,  ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 		onViewportSizeChanged(viewportSize.x, viewportSize.y);
 		if (mRenderer)
 		{
 			mRenderer->render();
 		}
-		//mainViewport
-		ImGui::Image((void*)(intptr_t)mRenderer->getLastFrameBufferTexture(), ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::Image((void*)(intptr_t)mRenderer->getLastFrameBufferTexture(), viewportSize, ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::End();
 
-		//secondViewport
-		ImGui::Begin("DebugViewport");
+		//debugViewport
+		ImGui::Begin("DebugViewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 		const DebugView& debugView =  mRenderer->getDebugView();
 		auto fbo = debugView.fbo;
 		int texId = -1;
@@ -145,7 +144,7 @@ void Window::RunLoop()
 				texId = fbo->getDepthStencilAttachment()->id();
 			}
 		}
-		ImGui::Image((void*)(intptr_t)texId, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::Image((void*)(intptr_t)texId, viewportSize, ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::End();
 
 		auto scene = mRenderer->getCurrentScene();

@@ -248,7 +248,12 @@ void Scene::updateSceneUI()
 			light->setPosition(pos);
 		}
 		glm::vec3 col = light->getColor();
-		if (ImGui::ColorEdit3("color", &(col.r)))
+		if (ImGui::ColorEdit3("color", &(col.r), 
+			ImGuiColorEditFlags_HDR | 
+			ImGuiColorEditFlags_NoBorder | 
+			ImGuiColorEditFlags_Float | 
+			ImGuiColorEditFlags_PickerHueWheel
+		))
 		{
 			light->setColor(col);
 		}
@@ -293,8 +298,15 @@ void Scene::updateSceneUI()
 			bool castShadow = spot->isCastShadow();
 			if (ImGui::Checkbox("CastShadow", &castShadow))
 			{
-				auto csm = static_cast<CascadeShadowMapPass*>(mRenderer->getRenderPass(RenderPassKey::CSM));
-				spot->castShadow(csm);
+				if (castShadow)
+				{
+					auto csm = static_cast<CascadeShadowMapPass*>(mRenderer->getRenderPass(RenderPassKey::CSM));
+					spot->castShadow(csm);
+				}
+				else
+				{
+					spot->disableCastShadow();
+				}
 			}
 		}
 
@@ -349,8 +361,7 @@ void Scene::updateSceneUI()
 	ImGui::End();
 }
 
-//TODO: setting in ui
-uint Scene::getShadowLightIndex() const
+int Scene::getShadowLightIndex() const
 {	
 	for (size_t i = 0; i < mLights.size(); i++)
 	{

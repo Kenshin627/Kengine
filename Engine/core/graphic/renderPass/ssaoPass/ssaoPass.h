@@ -24,7 +24,7 @@ public:
 	~SSAOPass() = default;
 	void setKernelSize(uint kernelSize);
 	uint getKernelSize() const;
-	void setSamplerRadius(uint radius);
+	void setSamplerRadius(float radius);
 	float getSamplerRadius() const;
 	void setBias(float bias);
 	float getBias() const;

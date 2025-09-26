@@ -35,7 +35,7 @@ public:
 	ScreenQuad* getScreenQuad() const;
 	void updateLightBuffer();
 	void updateSceneUI();
-	uint getShadowLightIndex() const;
+	int getShadowLightIndex() const;
 	private:
 		void updateCameraBuffer();
 private:

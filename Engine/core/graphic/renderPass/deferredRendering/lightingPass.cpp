@@ -7,6 +7,7 @@
 #include "lightingPass.h"
 #include "scene/scene.h"
 #include "core.h"
+#include "geometryPass.h"
 
 LightingPass::LightingPass(Renderer* r, const RenderState& state)
 	:RenderPass(r, state)
@@ -50,7 +51,8 @@ void LightingPass::beginPass()
 	RenderPass::beginPass();
 	//get colorattachment from gpass
 	//set uniform textureSampler2D
- 	auto geometryBuffer = mPrevPass->getCurrentFrameBuffer();
+	auto gPass = static_cast<GeometryPass*>(mOwner->getRenderPass(RenderPassKey::GEOMETRY));
+ 	auto geometryBuffer = gPass->getCurrentFrameBuffer();
 	auto gPos = geometryBuffer->getColorAttachment(0);
 	auto gNormal = geometryBuffer->getColorAttachment(1);
 	auto gDiff = geometryBuffer->getColorAttachment(2);
@@ -78,7 +80,7 @@ void LightingPass::beginPass()
 	}
 
 	auto csmPass = mOwner->getRenderPass(RenderPassKey::CSM);
-	mProgram->setUniform("enableCSM", csmPass != nullptr);
+	mProgram->setUniform("enableCSM", csmPass != nullptr && csmPass->isActive());
 	if (csmPass)
 	{
 		FrameBuffer* csmBuffer = csmPass->getCurrentFrameBuffer();
