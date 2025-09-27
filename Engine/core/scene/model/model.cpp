@@ -7,6 +7,7 @@
 #include "geometry/geometry.h"
 #include "graphic/texture/texture2D/texture2D.h"
 #include "material/phongMaterial.h"
+#include "material/pbrMaterial.h"
 #include "model.h"
 #include "../renderObject.h"
 #include "graphic/texture/textureSystem.h"
@@ -48,7 +49,7 @@ static std::vector<char> convertBGRAtoRGBA(const char* bgraData, int width, int 
 Model::Model(const std::string& path)
 {
 	Assimp::Importer importer;
-	mFileType = path.substr(path.find_last_of("/"));
+	mFileType = path.substr(path.find_last_of("."));
 	uint importFlags = aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace;
 	if (mFileType == "Glb")
 	{
@@ -183,8 +184,124 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene)
 	geometry->setVAO(std::move(vao));
 
 	//material	
-	BlinnPhongMaterialSpecification spec;
 	aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+	std::shared_ptr<Material> material;
+	if (mat)
+	{
+		aiShadingMode shadingMode;
+		aiReturn res = mat->Get(AI_MATKEY_SHADING_MODEL, shadingMode);
+		
+		if (res == aiReturn_SUCCESS)
+		{
+			switch (shadingMode)
+			{
+			case aiShadingMode_Flat:
+				break;
+			case aiShadingMode_Gouraud:
+				break;
+			case aiShadingMode_Phong:
+				break;
+			case aiShadingMode_Blinn:
+				material = resolveBlinnPhongMaterial(scene, mat);
+				break;
+			case aiShadingMode_Toon:
+				break;
+			case aiShadingMode_OrenNayar:
+				break;
+			case aiShadingMode_Minnaert:
+				break;
+			case aiShadingMode_CookTorrance:
+				break;
+			case aiShadingMode_NoShading:
+				break;
+			case aiShadingMode_Fresnel:
+				break;
+			case aiShadingMode_PBR_BRDF:
+				material = reslovePBRMaterial(scene, mat);
+				break;
+			case _aiShadingMode_Force32Bit:
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	
+	mRenderObjectList.push_back(std::make_shared<RenderObject>("", geometry, material));
+}
+
+std::shared_ptr<Texture2D> Model::processTexture(const aiScene* scene, aiMaterial* mat, aiTextureType texType)
+{
+		
+		TextureSystem& ts = TextureSystem::getInstance();;
+		aiString texFileName;
+		mat->GetTexture(texType, 0, &texFileName);
+		if (texFileName.Empty())
+		{
+			return nullptr;
+		}
+		else if (texFileName.C_Str()[0] == '*')
+		{
+			uint tex = atoi(&texFileName.C_Str()[1]);
+			//row puxeL Data need convert using stb_image
+			aiTexture* texData = scene->mTextures[tex];
+			auto texBuffer	 = texData->pcData;
+			auto texelLength = texData->mWidth;
+			int width;
+			int height;
+			int channel;
+			const unsigned char* rowData = stbi_load_from_memory(reinterpret_cast<unsigned char*>(texBuffer), texelLength, &width, &height, &channel, 0);
+			TextureInternalFormat internalFormat;
+			TextureDataFormat format;
+			std::shared_ptr<Texture2D> texture = std::make_shared<Texture2D>();
+			getFormatByChannel(channel, texType, internalFormat, format);
+			texture->loadFromData(width, height, rowData, channel, internalFormat, format, GL_UNSIGNED_BYTE);
+			return texture;
+		}
+		else 
+		{
+			
+			std::string texFilePath = (mTextureDirectory + "/" + std::string(texFileName.C_Str())).c_str();
+			bool Srgb = texType == aiTextureType::aiTextureType_DIFFUSE;
+			return ts.getTexture(texFilePath, true, Srgb);
+		}
+		
+}
+
+void Model::getFormatByChannel(int channel, aiTextureType type, TextureInternalFormat& internelFormat, TextureDataFormat& format)
+{
+	if (channel == 4)
+	{
+		if (type == aiTextureType::aiTextureType_DIFFUSE || type == aiTextureType_BASE_COLOR)
+		{
+			internelFormat = TextureInternalFormat::SRGB8ALPHA8;
+			format = TextureDataFormat::RGBA;
+		}
+		else
+		{
+			internelFormat = TextureInternalFormat::RGBA8;
+			format = TextureDataFormat::RGBA;
+		}
+	}
+	else if (channel == 3)
+	{
+		if (type == aiTextureType::aiTextureType_DIFFUSE || type == aiTextureType_BASE_COLOR)
+		{
+			internelFormat = TextureInternalFormat::SRGB8;
+			format = TextureDataFormat::RGB;
+		}
+		else
+		{
+			internelFormat = TextureInternalFormat::RGB8;
+			format = TextureDataFormat::RGB;
+		}
+	}
+
+}
+
+std::shared_ptr<PhongMaterial> Model::resolveBlinnPhongMaterial(const aiScene* scene, aiMaterial* mat)
+{
+	BlinnPhongMaterialSpecification spec;
 	if (mat)
 	{
 		//texs
@@ -193,7 +310,7 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		spec.normalMap = processTexture(scene, mat, aiTextureType_HEIGHT);
 		spec.shinessMap = processTexture(scene, mat, aiTextureType_SHININESS);
 		spec.alphaMap = processTexture(scene, mat, aiTextureType_OPACITY);
-		
+
 
 		//colors
 		aiColor3D diffColor;
@@ -221,49 +338,45 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene)
 			spec.shiness = shiness;
 		}
 	}
-	std::shared_ptr<PhongMaterial> material = std::make_shared<PhongMaterial>(spec);
-	mRenderObjectList.push_back(std::make_shared<RenderObject>("", geometry, material));
+	return std::make_shared<PhongMaterial>(spec);
 }
 
-std::shared_ptr<Texture2D> Model::processTexture(const aiScene* scene, aiMaterial* mat, aiTextureType texType)
+std::shared_ptr<PBRMaterial> Model::reslovePBRMaterial(const aiScene* scene, aiMaterial* mat)
 {
-		
-		TextureSystem& ts = TextureSystem::getInstance();;
-		aiString texFileName;
-		mat->GetTexture(texType, 0, &texFileName);
-		if (texFileName.Empty())
-		{
-			return nullptr;
-		}
-		else if (texFileName.C_Str()[0] == '*')
-		{
-			uint tex = atoi(&texFileName.C_Str()[1]);
-			//row puxeL Data need convert using stb_image
-			aiTexture* texData = scene->mTextures[tex];
-			auto texBuffer	 = texData->pcData;
-			auto texelLength = texData->mWidth;
-			int width;
-			int height;
-			int channel;
-			const unsigned char* rowData = stbi_load_from_memory(reinterpret_cast<unsigned char*>(texBuffer), texelLength, &width, &height, &channel, 0);
+	PBRMaterialSpecification spec;
+	if (mat)
+	{
+		//texs
+		spec.albedoMap = processTexture(scene, mat, aiTextureType_BASE_COLOR);
+		spec.metallicMap = processTexture(scene, mat, aiTextureType_METALNESS);
+		spec.roughnessMap = processTexture(scene, mat, aiTextureType_DIFFUSE_ROUGHNESS);
+		spec.normalMap = processTexture(scene, mat, aiTextureType_NORMAL_CAMERA);
+		spec.heightMap = processTexture(scene, mat, aiTextureType_HEIGHT);
 
-			std::shared_ptr<Texture2D> texture = std::make_shared<Texture2D>();
-			if (texType == aiTextureType::aiTextureType_DIFFUSE)
-			{
-				texture->loadFromData(width, height, rowData, 4, TextureInternalFormat::SRGB8ALPHA8, TextureDataFormat::RGBA, GL_UNSIGNED_BYTE);
-			}
-			else
-			{
-				texture->loadFromData(width, height, rowData, 4, TextureInternalFormat::RGBA8, TextureDataFormat::RGBA, GL_UNSIGNED_BYTE);
-			}
-			return texture;
-		}
-		else 
+
+		//colors
+		aiColor3D albedo;
+		aiReturn diffRes = mat->Get(AI_MATKEY_BASE_COLOR, albedo);
+		if (diffRes == aiReturn_SUCCESS)
 		{
-			
-			std::string texFilePath = (mTextureDirectory + "/" + std::string(texFileName.C_Str())).c_str();
-			bool Srgb = texType == aiTextureType::aiTextureType_DIFFUSE;
-			return ts.getTexture(texFilePath, true, Srgb);
+			spec.albedoColor.r = albedo.r;
+			spec.albedoColor.g = albedo.g;
+			spec.albedoColor.b = albedo.b;
 		}
-		
+
+		float metallic;
+		aiReturn metalRes = mat->Get(AI_MATKEY_METALLIC_FACTOR, metallic);
+		if (metalRes == aiReturn_SUCCESS)
+		{
+			spec.metallic = metallic;
+		}
+
+		float roughness;
+		aiReturn roughnessRes = mat->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness);
+		if (roughnessRes == aiReturn_SUCCESS)
+		{
+			spec.roughness = roughnessRes;
+		}
+	}
+	return std::make_shared<PBRMaterial>(spec);
 }

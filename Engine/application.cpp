@@ -177,19 +177,21 @@ Application::Application(uint width, uint height, const char* title)
 	//}
 	
 	//Oops.glb
-	Model model5("models/Oops.glb");
-	for (auto& renderObject : model5.getRenderList())
-	{
-		renderObject->setPosition(-1, 0.5, 0);
-		renderObject->setScale(0.08);
-	}
+	//Model model5("models/Oops.glb");
+	//for (auto& renderObject : model5.getRenderList())
+	//{
+	//	renderObject->setPosition(-1, 0.5, 0);
+	//	renderObject->setScale(0.08);
+	//}
 
+	Model model6("models/stygimoloch/source/minghelong.glb");
+	scene->addRenderObject(model6.getRenderList());
 	
 	//scene->addRenderObject(model.getRenderList());
 	//scene->addRenderObject(model2.getRenderList());
 	//scene->addRenderObject(model3.getRenderList());
 	//scene->addRenderObject(model4.getRenderList());
-	scene->addRenderObject(model5.getRenderList());
+	//scene->addRenderObject(model5.getRenderList());
 	
 	//camera
 	auto camera = std::make_shared<Camera>(glm::vec3(4, 6, 5), 54.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.01f, 100);

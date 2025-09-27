@@ -15,10 +15,20 @@ PBRMaterial::PBRMaterial(const PBRMaterialSpecification& spec)
 		mAlbedoMap = ts.getTexture(spec.albedoMapPath, true, true);
 		mHasAlbedoTex = true;
 	}
+	else if (spec.albedoMap)
+	{
+		mAlbedoMap = spec.albedoMap;
+		mHasAlbedoTex = true;
+	}
 
 	if (spec.metallicMapPath)
 	{
 		mMetallicMap = ts.getTexture(spec.metallicMapPath);
+		mHasMetallicTex = true;
+	}
+	else if (spec.metallicMap)
+	{
+		mMetallicMap = spec.metallicMap;
 		mHasMetallicTex = true;
 	}
 
@@ -27,16 +37,31 @@ PBRMaterial::PBRMaterial(const PBRMaterialSpecification& spec)
 		mRoughnessMap = ts.getTexture(spec.roughnessMapPath);
 		mHasRoughnessTex = true;
 	}
+	else if (spec.roughnessMap)
+	{
+		mRoughnessMap = spec.roughnessMap;
+		mHasRoughnessTex = true;
+	}
 
 	if (spec.normalMapPath)
 	{
 		mNormalMap = ts.getTexture(spec.normalMapPath);
 		mHasNormalTex = true;
 	}
+	else if (spec.normalMap)
+	{
+		mNormalMap = spec.normalMap;
+		mHasNormalTex = true;
+	}
 
 	if (spec.heightMapPath)
 	{
 		mHeightMap = ts.getTexture(spec.heightMapPath);
+		mhasHeightTex = true;
+	}
+	else if (spec.heightMap)
+	{
+		mHeightMap = spec.heightMap;
 		mhasHeightTex = true;
 	}
 }

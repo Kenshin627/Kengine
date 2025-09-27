@@ -4,14 +4,19 @@
 class Texture2D;
 struct PBRMaterialSpecification
 {
-	glm::vec3	albedoColor			{ 0.2, 0.2, 0.2 };
-	float		metallic			{ 0.0			};
-	float		roughness			{ 0.5			};
-	const char* albedoMapPath		{ nullptr		};
-	const char* metallicMapPath		{ nullptr		};
-	const char* roughnessMapPath	{ nullptr		};
-	const char* normalMapPath		{ nullptr		};
-	const char* heightMapPath		{ nullptr		};
+	glm::vec3	albedoColor					{ 0.2, 0.2, 0.2 };
+	float		metallic					{ 0.0			};
+	float		roughness					{ 0.5			};
+	const char* albedoMapPath				{ nullptr		};
+	const char* metallicMapPath				{ nullptr		};
+	const char* roughnessMapPath			{ nullptr		};
+	const char* normalMapPath				{ nullptr		};
+	const char* heightMapPath				{ nullptr		};
+	std::shared_ptr<Texture2D> albedoMap	{ nullptr		};
+	std::shared_ptr<Texture2D> metallicMap	{ nullptr		};
+	std::shared_ptr<Texture2D> roughnessMap { nullptr		};
+	std::shared_ptr<Texture2D> normalMap	{ nullptr		};
+	std::shared_ptr<Texture2D> heightMap	{ nullptr		};
 };
 
 class PBRMaterial :public Material
