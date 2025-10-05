@@ -9,6 +9,9 @@ uniform sampler2D screenMap;
 void main()
 {
 	vec3 c = texture(screenMap, vTexcoord).rgb;
-	float grayVal= 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
-	FragColor = vec4(vec3(grayVal), 1.0);
+	//float grayVal= 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
+	//FragColor = vec4(vec3(grayVal), 1.0);
+	//faster computation (2*R + 5*G + B) / 8
+	float luminance = (c.r * 2 + c.g * 5 + c.b) / 8;
+	FragColor = vec4(vec3(luminance), 1.0);
 }

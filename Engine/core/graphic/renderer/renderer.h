@@ -102,9 +102,10 @@ public:
 	//CSM
 	void enableCSM(bool enable);
 	bool getEnableCSM() const;
+
+	RenderPass* addRenderPass(RenderPassKey key, const RenderState& state, RenderPass* where);
 private:
 	void setDefaultRenderPass();
-	RenderPass* addRenderPass(RenderPassKey key, const RenderState& state, RenderPass* where);
 	void removePass(RenderPassKey key);
 	void renderUI();
 	void resetDebugView();

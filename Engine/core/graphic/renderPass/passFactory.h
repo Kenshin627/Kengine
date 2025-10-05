@@ -10,6 +10,7 @@
 #include "forwardShading/forwardShadingPass.h"
 #include "toneMapping/toneMapping.h"
 #include "gaussianBlur/gaussianBlur.h"
+#include "postProcess/grayScaleEffect/grayScaleEffect.h"
 #include "graphic/renderer/renderer.h"
 
 class PassFactory
@@ -42,6 +43,8 @@ public:
 			return std::make_unique<ForwardShadingPass>(r, state);
 		case RenderPassKey::TONEMAPPING:
 			return std::make_unique<ToneMapping>(1.0, r, state);
+		case RenderPassKey::GRAYSCALER:
+			return std::make_unique<GrayScaleEffect>(r, state);
 		default:
 			break;
 		}

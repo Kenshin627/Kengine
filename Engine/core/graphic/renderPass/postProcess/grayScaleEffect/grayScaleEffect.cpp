@@ -13,6 +13,19 @@ GrayScaleEffect::GrayScaleEffect(Renderer* r, const RenderState& state)
 		{ "core/graphic/shaderSrc/postProcess/grayScale/vs.glsl", ShaderType::Vertex },
 		{ "core/graphic/shaderSrc/postProcess/grayScale/fs.glsl", ShaderType::Fragment }
 	});
+	std::initializer_list<FrameBufferSpecification> spec =
+	{
+		{
+			AttachmentType::Color,
+			TextureInternalFormat::RGB8,
+			TextureDataFormat::RGB,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureFilter::NEAREST,
+			TextureFilter::NEAREST
+		}
+	};
+	mFrameBuffer = std::make_shared<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, spec);
 }
 
 void GrayScaleEffect::runPass(Scene* scene)
@@ -21,7 +34,7 @@ void GrayScaleEffect::runPass(Scene* scene)
 	if (!mPrevPass)
 	{
 		//TODO
-		Texture* tex = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(0);
+		Texture* tex = prev()->getCurrentFrameBuffer()->getColorAttachment(0);
 		if (!tex)
 		{
 			KS_CORE_ERROR("framebuffer attachment at index {0} is null", 0);

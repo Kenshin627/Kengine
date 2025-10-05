@@ -34,7 +34,11 @@ Application::Application(uint width, uint height, const char* title)
 	//renderer
 	std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(width, height);
 	mWindow->attachRenderer(renderer);
-
+	RenderPass* toneMapping = renderer->getRenderPass(RenderPassKey::TONEMAPPING);
+	if (toneMapping) 
+	{
+		renderer->addRenderPass(RenderPassKey::GRAYSCALER, RenderState{}, toneMapping);
+	}
 	////////SCENE//////////////////////////////////////////////
 
 	//GEOMETRY
