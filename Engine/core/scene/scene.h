@@ -11,6 +11,9 @@ class RenderObject;
 class Camera;
 class Light;
 class Renderer;
+class Animator;
+class Animation;
+class Model;
 
 class Scene
 {
@@ -20,6 +23,7 @@ public:
 	void addRenderObject(std::shared_ptr<RenderObject> object);
 	void addRenderObject(const std::initializer_list<std::shared_ptr<RenderObject>>& objects);
 	void addRenderObject(const std::vector<std::shared_ptr<RenderObject>>& objects);
+	void addModel(const std::shared_ptr<Model> model);
 	void addLight(std::shared_ptr<Light> light);
 	void addLights(const std::initializer_list<std::shared_ptr<Light>>& lights);
 	std::vector<std::shared_ptr<Light>> getLights();
@@ -27,7 +31,7 @@ public:
 	std::shared_ptr<Camera> getCurrentCamera() const;
 	const std::vector<std::shared_ptr<RenderObject>>& getRenderList() const;
 	const std::vector<std::shared_ptr<Light>>& getLights() const;
-	void beginScene();
+	void beginScene(double deltaTime);
 	void endScene();
 	void draw();
 	void checkSceneReady() const;
@@ -36,15 +40,20 @@ public:
 	void updateLightBuffer();
 	void updateSceneUI();
 	int getShadowLightIndex() const;
+	void playAnimation(Animation* animation);
 	private:
 		void updateCameraBuffer();
+		void updateAnimationBuffer();
 private:
 	std::vector<std::shared_ptr<RenderObject>> mRenderList;
 	std::vector<std::shared_ptr<Light>>		   mLights;
 	std::shared_ptr<Camera>					   mMainCamera;
 	std::unique_ptr<UniformBuffer>			   mCameraBuffer;
 	std::unique_ptr<UniformBuffer>			   mLightBuffer;
+	std::unique_ptr<UniformBuffer> 			   mBoneMatrixBuffer;
 	uint									   mLightCount;
 	std::unique_ptr<ScreenQuad>				   mScreenQuad;
 	Renderer*								   mRenderer;
+	std::unique_ptr<Animator>		           mAnimator;
+	std::vector<std::shared_ptr<Model>>        mModelList;
 };

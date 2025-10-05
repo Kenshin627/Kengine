@@ -24,6 +24,7 @@
 #include "graphic/renderPass/gaussianBlur/gaussianBlur.h"
 #include "graphic/renderPass/toneMapping/toneMapping.h"
 #include "graphic/texture/textureSystem.h"
+#include "scene/animation/animator.h"
 
 constexpr int shadowMapResolution = 4096;
 
@@ -184,9 +185,18 @@ Application::Application(uint width, uint height, const char* title)
 	//	renderObject->setScale(0.08);
 	//}
 
-	Model model6("models/stygimoloch/source/minghelong.glb");
-	scene->addRenderObject(model6.getRenderList());
-	
+	std::shared_ptr<Model> model6 = std::make_shared<Model>("models/stygimoloch/source/minghelong.glb");
+	scene->addRenderObject(model6->getRenderList());
+	//TODO:REMOVE
+	scene->addModel(model6);
+	scene->playAnimation(model6->getAnimation());
+
+	//std::shared_ptr<Model> model7 = std::make_shared<Model>("models/dancing_stormtrooper.glb");
+	//
+	//scene->addRenderObject(model7->getRenderList());
+	////TODO:REMOVE
+	//scene->addModel(model7);
+	//scene->playAnimation(model7->getAnimation());
 	//scene->addRenderObject(model.getRenderList());
 	//scene->addRenderObject(model2.getRenderList());
 	//scene->addRenderObject(model3.getRenderList());
@@ -194,7 +204,7 @@ Application::Application(uint width, uint height, const char* title)
 	//scene->addRenderObject(model5.getRenderList());
 	
 	//camera
-	auto camera = std::make_shared<Camera>(glm::vec3(4, 6, 5), 54.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.01f, 100);
+	auto camera = std::make_shared<Camera>(glm::vec3(4, 6, 5), 54.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.01, 100);
 	scene->setMainCamera(camera);
 
 	//light

@@ -33,7 +33,17 @@ void VertexArray::addAttribute(const AttributeLayout& layout)
 {
 	GLCALL(glVertexArrayAttribBinding(mRendererID, layout.attributeIndex, layout.bindingPoint));
 	GLCALL(glVertexArrayVertexBuffer(mRendererID, layout.bindingPoint, layout.bufferId, layout.offset, layout.stride));
-	GLCALL(glVertexArrayAttribFormat(mRendererID, layout.attributeIndex, layout.components, layout.type, layout.normalized, layout.relativeOffset));
+	if (layout.type == GL_INT   || layout.type == GL_UNSIGNED_INT  || 
+		layout.type == GL_BYTE  || layout.type == GL_UNSIGNED_BYTE || 
+		layout.type == GL_SHORT || layout.type == GL_UNSIGNED_SHORT)
+	{
+		GLCALL(glVertexArrayAttribIFormat(mRendererID, layout.attributeIndex, layout.components, layout.type, layout.relativeOffset));
+	}
+	else
+	{
+		GLCALL(glVertexArrayAttribFormat(mRendererID, layout.attributeIndex, layout.components, layout.type, layout.normalized, layout.relativeOffset));
+	}
+
 	if (layout.divisor > 0)
 	{
 		GLCALL(glVertexArrayBindingDivisor(mRendererID, layout.bindingPoint, layout.divisor));

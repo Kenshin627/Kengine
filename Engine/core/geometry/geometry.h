@@ -3,12 +3,16 @@
 #include <glm.hpp>
 #include "../graphic/gpuBuffer/vertexArray.h"
 
+#define MAX_BONE_INFLUENCE 4
+
 struct Vertex
 {
 	glm::vec3 Position;
 	glm::vec3 Normal;
 	glm::vec2 Texcoord;
-	glm::vec3 tangent;
+	glm::vec3 Tangent;
+	int		  BoneIds[MAX_BONE_INFLUENCE];
+	float	  Weights[MAX_BONE_INFLUENCE];
 };
 
 struct ScreenQuadVertex

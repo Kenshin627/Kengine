@@ -193,6 +193,9 @@
     <ClCompile Include="core\material\material.cpp" />
     <ClCompile Include="core\material\pbrMaterial.cpp" />
     <ClCompile Include="core\material\phongMaterial.cpp" />
+    <ClCompile Include="core\scene\animation\animation.cpp" />
+    <ClCompile Include="core\scene\animation\animator.cpp" />
+    <ClCompile Include="core\scene\animation\bone.cpp" />
     <ClCompile Include="core\scene\light\light.cpp" />
     <ClCompile Include="core\scene\light\spotLight\spotLight.cpp" />
     <ClCompile Include="core\scene\model\model.cpp" />
@@ -256,6 +259,10 @@
     <ClInclude Include="core\material\material.h" />
     <ClInclude Include="core\material\pbrMaterial.h" />
     <ClInclude Include="core\material\phongMaterial.h" />
+    <ClInclude Include="core\scene\animation\animation.h" />
+    <ClInclude Include="core\scene\animation\animator.h" />
+    <ClInclude Include="core\scene\animation\bone.h" />
+    <ClInclude Include="core\scene\assimpGlmHelper.h" />
     <ClInclude Include="core\scene\light\light.h" />
     <ClInclude Include="core\scene\light\spotLight\spotLight.h" />
     <ClInclude Include="core\scene\model\model.h" />

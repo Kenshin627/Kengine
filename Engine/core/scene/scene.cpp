@@ -10,6 +10,8 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "scene/light/spotLight/spotLight.h"
 #include "graphic/renderPass/cascadeShadowMapPass/cascadeShadowMapPass.h"
+#include "animation/animator.h"
+#include "model/model.h"
 
 Scene::Scene(Renderer* r)
 	  :mLightCount(0),
@@ -39,6 +41,9 @@ Scene::Scene(Renderer* r)
 	// | LIGHTCOUNT float + padding + 3										        |
 	mLightBuffer = std::make_unique<UniformBuffer>(MAX_LIGHTS * sizeof(GPULightBufferData), 1);
 	mScreenQuad = std::make_unique<ScreenQuad>();
+
+	mBoneMatrixBuffer = std::make_unique<UniformBuffer>(sizeof(glm::mat4) * 100, 4);
+	mAnimator = std::make_unique<Animator>();
 }
 
 void Scene::addRenderObject(std::shared_ptr<RenderObject> object)
@@ -71,6 +76,11 @@ void Scene::addRenderObject(const std::vector<std::shared_ptr<RenderObject>>& ob
 	{
 		renderOject->setOwner(this);
 	}
+}
+
+void Scene::addModel(const std::shared_ptr<Model> model)
+{
+	mModelList.push_back(model);
 }
 
 void Scene::addLight(std::shared_ptr<Light> light)
@@ -130,18 +140,20 @@ const std::vector<std::shared_ptr<Light>>& Scene::getLights() const
 	return mLights;
 }
 
-void Scene::beginScene()
+void Scene::beginScene(double deltaTime)
 {
 	checkSceneReady();
 	mCameraBuffer->bind();
 	mLightBuffer->bind();
+	mBoneMatrixBuffer->bind();
 	//update cameraBuffer if nessesary
 	if (mMainCamera && mMainCamera->isCameraUniformDirty())
 	{
 		updateCameraBuffer();
 	}
 	//update lightCount
-
+	mAnimator->updateAnimation(deltaTime);
+	updateAnimationBuffer();
 }
 
 void Scene::endScene()
@@ -374,6 +386,11 @@ int Scene::getShadowLightIndex() const
 	return -1;
 }
 
+void Scene::playAnimation(Animation* animation)
+{
+	mAnimator->playAnimation(animation);
+}
+
 void Scene::updateCameraBuffer()
 {
 	const glm::mat4& viewProj = mMainCamera->getViewProjectionMatrix();
@@ -388,5 +405,19 @@ void Scene::updateCameraBuffer()
 	mCameraBuffer->setData(sizeof(glm::mat4), &view, sizeof(glm::mat4) * 2);
 	mCameraBuffer->setData(sizeof(glm::vec4), &camPos, sizeof(glm::mat4) * 3);
 	mCameraBuffer->setData(sizeof(glm::vec4), &clipRnage, sizeof(glm::mat4) * 3 + sizeof(glm::vec4));
+}
+
+void Scene::updateAnimationBuffer()
+{
+	if (!mAnimator)
+	{
+		return;
+	}
+	auto boneMatrices = mAnimator->getBoneMatrices();
+	if (boneMatrices.size() == 0)
+	{
+		return;
+	}
+	mBoneMatrixBuffer->setData(boneMatrices.size() * sizeof(glm::mat4), boneMatrices.data());
 }
 

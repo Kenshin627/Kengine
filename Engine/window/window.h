@@ -21,11 +21,12 @@ private:
 	void onWindowSizeChanged(GLFWwindow* window, int width, int height);
 	void onViewportSizeChanged(int width, int height);
 private:
-	uint					  mWidth;
-	uint					  mHeight;
-	const char*				  mTitle;
-	GLFWwindow*				  mWindow  { nullptr };
-	std::shared_ptr<Renderer> mRenderer;
-	glm::vec2			      mImGuiViewportSize;
+	uint						mWidth;
+	uint						mHeight;
+	const char*					mTitle;
+	GLFWwindow*					mWindow  { nullptr };
+	std::shared_ptr<Renderer>	mRenderer;
+	glm::vec2					mImGuiViewportSize;
 	std::unique_ptr<Texture2D>  mDefaultImage;
+	double						mlastTime{ 0.0 };
 };

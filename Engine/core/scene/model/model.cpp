@@ -11,6 +11,8 @@
 #include "model.h"
 #include "../renderObject.h"
 #include "graphic/texture/textureSystem.h"
+#include "scene/assimpGlmHelper.h"
+#include "../animation/animation.h"
 
 static std::vector<char> convertBGRAtoRGBA(const char* bgraData, int width, int height) {
 	// 检查输入合法性
@@ -60,14 +62,15 @@ Model::Model(const std::string& path)
 		importFlags |= aiProcess_FlipUVs;
 	}
 	
-	const aiScene* scene =  importer.ReadFile(path, importFlags);
-	if (!scene || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) || !scene->mRootNode)
+	mAIScene =  importer.ReadFile(path, importFlags);
+	if (!mAIScene || (mAIScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) || !mAIScene->mRootNode)
 	{
 		KS_CORE_ERROR("parse model error");
 		return;
 	}
 	mTextureDirectory = path.substr(0, path.find_last_of("/"));
-	processNode(scene->mRootNode, scene);
+	processNode(mAIScene->mRootNode, mAIScene);
+	mAnimation = std::make_unique<Animation>(this);
 }
 
 Model::~Model()
@@ -137,6 +140,7 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene)
 	for (int i = 0; i < vertexNum; i++)
 	{
 		Vertex vertex;
+		setVertexBoneDefaultData(vertex);
 		aiVector3D pos = mesh->mVertices[i];
 		vertex.Position.x = pos.x;
 		vertex.Position.y = pos.y;
@@ -148,15 +152,14 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		auto texCoord = mesh->mTextureCoords[0][i];
 		vertex.Texcoord.s = texCoord.x;
 		vertex.Texcoord.t = texCoord.y;
-
 		aiVector3D tangent = mesh->mTangents[i];
-		vertex.tangent.x = tangent.x;
-		vertex.tangent.y = tangent.y;
-		vertex.tangent.z = tangent.z;
+		vertex.Tangent.x = tangent.x;
+		vertex.Tangent.y = tangent.y;
+		vertex.Tangent.z = tangent.z;
 
 		vertices.push_back(vertex);
 	}
-
+	processBones(scene, mesh, vertices);
 	//indices
 	std::vector<uint> indices;
 	uint faceNum = mesh->mNumFaces;
@@ -178,7 +181,9 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		{0, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, Position), 0},
 		{1, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, Normal), 0},
 		{2, vboId, 0, 0, stride, 2, GL_FLOAT, false, offsetof(Vertex, Texcoord), 0},
-		{3, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, tangent),0}
+		{3, vboId, 0, 0, stride, 3, GL_FLOAT, false, offsetof(Vertex, Tangent),0},
+		{4, vboId, 0, 0, stride, 4, GL_INT, false, offsetof(Vertex, BoneIds),0},
+		{5, vboId, 0, 0, stride, 4, GL_FLOAT, false, offsetof(Vertex, Weights),0}
 	};
 	vao->addAttributes(layouts);
 	geometry->setVAO(std::move(vao));
@@ -228,6 +233,52 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene)
 	}
 	
 	mRenderObjectList.push_back(std::make_shared<RenderObject>("", geometry, material));
+}
+
+void Model::processBones(const aiScene* scene, aiMesh* mesh, std::vector<Vertex>& vertices)
+{
+	if (!mesh->HasBones())
+	{
+		return;
+	}
+	uint boneNum = mesh->mNumBones;
+	for (int i = 0; i < boneNum; i++)
+	{
+		aiBone* bone = mesh->mBones[i];
+		std::string boneName(bone->mName.C_Str());
+		int boneId = -1;
+		auto boneInfoIter = mBoneInfoMap.find(boneName);
+		if (boneInfoIter == mBoneInfoMap.end())
+		{
+			BoneInfo boneInfo;
+			boneId = mBoneCount;
+			boneInfo.id = mBoneCount;
+			boneInfo.offset = AssimpGLMHelpers::ConvertMatrixToGLMFormat(bone->mOffsetMatrix);
+			mBoneInfoMap[boneName] = boneInfo;
+			mBoneCount++;
+		}
+		else
+		{
+			boneId = boneInfoIter->second.id;
+		}
+		KS_CORE_ASSERT(boneId != -1, "boneId is -1");
+		uint weightNum = bone->mNumWeights;
+		for (int j = 0; j < weightNum; j++)
+		{
+			aiVertexWeight weight = bone->mWeights[j];
+			uint vertexId = weight.mVertexId;
+			float vertexWeight = weight.mWeight;
+			for (int k = 0; k < MAX_BONE_INFLUENCE; k++)
+			{
+				if (vertices[vertexId].BoneIds[k] < 0)
+				{
+					vertices[vertexId].BoneIds[k] = boneId;
+					vertices[vertexId].Weights[k] = vertexWeight;
+					break;
+				}
+			}
+		}
+	}
 }
 
 std::shared_ptr<Texture2D> Model::processTexture(const aiScene* scene, aiMaterial* mat, aiTextureType texType)
@@ -379,4 +430,13 @@ std::shared_ptr<PBRMaterial> Model::reslovePBRMaterial(const aiScene* scene, aiM
 		}
 	}
 	return std::make_shared<PBRMaterial>(spec);
+}
+
+void Model::setVertexBoneDefaultData(Vertex& v)
+{
+	for (int i = 0; i < MAX_BONE_INFLUENCE; i++)
+	{
+		v.BoneIds[i] = -1;
+		v.Weights[i] = 0.0f;
+	}
 }

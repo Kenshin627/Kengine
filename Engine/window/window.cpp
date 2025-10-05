@@ -95,7 +95,11 @@ void Window::RunLoop()
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		
+
+		//deltaTime
+		double currentFrame = glfwGetTime();
+		double deltaTime = currentFrame - mlastTime;
+		mlastTime = currentFrame;
 		//docking//////
 		// 5. 创建Dock Space（关键步骤）
 		// 覆盖整个窗口的dock空间
@@ -129,7 +133,7 @@ void Window::RunLoop()
 		onViewportSizeChanged(viewportSize.x, viewportSize.y);
 		if (mRenderer)
 		{
-			mRenderer->render();
+			mRenderer->render(deltaTime);
 		}
 		ImGui::Image((void*)(intptr_t)mRenderer->getLastFrameBufferTexture(), viewportSize, ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::End();

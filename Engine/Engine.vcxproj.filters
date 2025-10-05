@@ -186,6 +186,15 @@
     <ClCompile Include="imgui\implot_items.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\scene\animation\bone.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\scene\animation\animation.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\scene\animation\animator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -372,6 +381,18 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="imgui\implot_internal.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\scene\assimpGlmHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\scene\animation\bone.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\scene\animation\animation.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\scene\animation\animator.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

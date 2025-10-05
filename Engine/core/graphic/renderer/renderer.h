@@ -61,7 +61,7 @@ class Renderer
 public:
 	Renderer(uint width, uint height);
 	~Renderer();
-	void render();
+	void render(double deltaTime);
 	void setCurrentScene(std::shared_ptr<Scene> scene) { mCurrentScene = scene; }
 	Scene* getCurrentScene();
 	void onWindowSizeChanged(uint width, uint height);

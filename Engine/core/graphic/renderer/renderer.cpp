@@ -28,7 +28,7 @@ Renderer::Renderer(uint width, uint height)
 
 Renderer::~Renderer() {}
 
-void Renderer::render()
+void Renderer::render(double deltaTime)
 {
 	if (mCurrentRenderPassGroup.empty())
 	{
@@ -36,7 +36,7 @@ void Renderer::render()
 	}
 
 	renderUI();
-	mCurrentScene->beginScene();	
+	mCurrentScene->beginScene(deltaTime);
 	for (auto& pass : mCurrentRenderPassGroup)
 	{
 		pass->beginPass();

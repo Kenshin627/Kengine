@@ -1,9 +1,14 @@
 #version 460 core
 
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTexcoord;
-layout (location = 3) in vec3 aTangent;
+#define MAX_BONE_COUNT 100
+#define MAX_BONE_INFLUENCE 4
+
+layout (location = 0) in vec3  aPos;
+layout (location = 1) in vec3  aNormal;
+layout (location = 2) in vec2  aTexcoord;
+layout (location = 3) in vec3  aTangent;
+layout (location = 4) in ivec4 aBoneIds;
+layout (location = 5) in vec4  aWeights;
 
 layout (std140, binding = 0) uniform CameraBuffer
 {
@@ -16,6 +21,11 @@ layout (std140, binding = 0) uniform CameraBuffer
 
 uniform mat4 modelMatrix;
 uniform mat4 modelMatrixInvertTranspose;
+
+layout (std140, binding = 4) uniform AnimationBuffer
+{
+	mat4 boneMatrices[MAX_BONE_COUNT];
+} animationBuffer;
 
 uniform bool hasNormalTex;
 uniform bool hasHeightTex;
@@ -64,7 +74,23 @@ void main()
 		
 		vNormal = normalize((vec3(modelViewMatrixInverseTranspose * vec4(aNormal, 0.0))));
 	}
-	vec4 viewPos = modelViewMatrix * vec4(aPos, 1.0);
+	vec4 animatedPos = vec4(0.0);
+	for(int i = 0; i < MAX_BONE_INFLUENCE; i++)
+	{
+		if(aBoneIds[i] < 0)
+		{
+			continue;
+		}
+		if(aBoneIds[i] >= MAX_BONE_COUNT)
+		{
+			animatedPos = vec4(aPos, 1.0);
+			break;
+		}
+		mat4 boneMat = animationBuffer.boneMatrices[aBoneIds[i]];
+		vec4 localPos = boneMat * vec4(aPos, 1.0);
+		animatedPos += localPos * aWeights[i];
+	}
+	vec4 viewPos = modelViewMatrix * animatedPos;
 	vPos = viewPos.xyz / viewPos.w;
 	vTexcoord = aTexcoord;
 	gl_Position =  cameraBuffer.projectionMatrix * viewPos;
