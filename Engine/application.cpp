@@ -34,11 +34,11 @@ Application::Application(uint width, uint height, const char* title)
 	//renderer
 	std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(width, height);
 	mWindow->attachRenderer(renderer);
-	RenderPass* toneMapping = renderer->getRenderPass(RenderPassKey::TONEMAPPING);
+	/*RenderPass* toneMapping = renderer->getRenderPass(RenderPassKey::TONEMAPPING);
 	if (toneMapping) 
 	{
 		renderer->addRenderPass(RenderPassKey::GRAYSCALER, RenderState{}, toneMapping);
-	}
+	}*/
 	////////SCENE//////////////////////////////////////////////
 
 	//GEOMETRY
@@ -189,18 +189,18 @@ Application::Application(uint width, uint height, const char* title)
 	//	renderObject->setScale(0.08);
 	//}
 
-	std::shared_ptr<Model> model6 = std::make_shared<Model>("models/stygimoloch/source/minghelong.glb");
-	scene->addRenderObject(model6->getRenderList());
-	//TODO:REMOVE
-	scene->addModel(model6);
-	scene->playAnimation(model6->getAnimation());
-
-	//std::shared_ptr<Model> model7 = std::make_shared<Model>("models/dancing_stormtrooper.glb");
-	//
-	//scene->addRenderObject(model7->getRenderList());
+	//std::shared_ptr<Model> model6 = std::make_shared<Model>("models/stygimoloch/source/minghelong.glb");
+	//scene->addRenderObject(model6->getRenderList());
 	////TODO:REMOVE
-	//scene->addModel(model7);
-	//scene->playAnimation(model7->getAnimation());
+	//scene->addModel(model6);
+	//scene->playAnimation(model6->getAnimation());
+
+	std::shared_ptr<Model> model7 = std::make_shared<Model>("models/dancing_stormtrooper.glb");
+	
+	scene->addRenderObject(model7->getRenderList());
+	//TODO:REMOVE
+	scene->addModel(model7);
+	scene->playAnimation(model7->getAnimation());
 	//scene->addRenderObject(model.getRenderList());
 	//scene->addRenderObject(model2.getRenderList());
 	//scene->addRenderObject(model3.getRenderList());

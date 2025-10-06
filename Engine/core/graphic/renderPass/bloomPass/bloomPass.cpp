@@ -24,8 +24,8 @@ BloomPass::BloomPass(Renderer* r, const RenderState& state)
 			TextureDataFormat::RGBA,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,
-			TextureFilter::NEAREST,
-			TextureFilter::NEAREST
+			TextureFilter::LINEAR,
+			TextureFilter::LINEAR
 		},
 		//color attachmeng 1 hdr
 		{
@@ -34,8 +34,8 @@ BloomPass::BloomPass(Renderer* r, const RenderState& state)
 			TextureDataFormat::RGBA,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,
-			TextureFilter::NEAREST,
-			TextureFilter::NEAREST
+			TextureFilter::LINEAR,
+			TextureFilter::LINEAR
 		}
 	};
 	mFrameBuffer = std::make_shared<FrameBuffer>(glm::vec3{ mSize.x, mSize.y, 0 }, specs);
