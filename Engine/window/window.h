@@ -24,9 +24,11 @@ private:
 	uint						mWidth;
 	uint						mHeight;
 	const char*					mTitle;
-	GLFWwindow*					mWindow  { nullptr };
+	GLFWwindow*					mWindow			{ nullptr };
 	std::shared_ptr<Renderer>	mRenderer;
 	glm::vec2					mImGuiViewportSize;
 	std::unique_ptr<Texture2D>  mDefaultImage;
-	double						mlastTime{ 0.0 };
+	double						mlastTime		{ 0.0	  };
+	double						mResizeDelay	{ 0.2	  };
+	double						mLastImGuiRenderTime{ 0.0 };
 };

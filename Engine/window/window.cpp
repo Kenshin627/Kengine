@@ -130,7 +130,12 @@ void Window::RunLoop()
 		//check imgui dock viewport windowsize change, then resize fbo and camera aspect ratio, then draw to fbo, blit to imgui image
 		ImGui::Begin("Viewport",nullptr,  ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-		onViewportSizeChanged(viewportSize.x, viewportSize.y);
+		double imguiCurrentTime = ImGui::GetTime();
+		if (imguiCurrentTime - mLastImGuiRenderTime > mResizeDelay)
+		{
+			mLastImGuiRenderTime = imguiCurrentTime;
+			onViewportSizeChanged(viewportSize.x, viewportSize.y);
+		}
 		if (mRenderer)
 		{
 			mRenderer->render(deltaTime);
