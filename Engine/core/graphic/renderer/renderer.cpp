@@ -422,6 +422,68 @@ bool Renderer::getEnableCSM() const
 	return mRenderPipeLine.enableCascadedShadowMap;
 }
 
+void Renderer::enableCannyEdgeDetection(bool enable)
+{
+	if (mRenderPipeLine.enableCannyEdgeDetection != enable)
+	{
+		mRenderPipeLine.enableCannyEdgeDetection = enable;
+		if (enable)
+		{
+			RenderPass* toneMapping = getRenderPass(RenderPassKey::TONEMAPPING);
+			if (toneMapping)
+			{
+				auto gaussianBlur = addRenderPass(RenderPassKey::BLOOMBLUR, RenderState{}, toneMapping);
+				auto sobel = addRenderPass(RenderPassKey::SOBEL, RenderState{}, gaussianBlur);
+				auto nms = addRenderPass(RenderPassKey::NMS, RenderState{}, sobel);
+				auto doubleThreshold = addRenderPass(RenderPassKey::DOUBLETHRESHOLD, RenderState{}, nms);
+			}
+		}
+	}
+}
+
+void Renderer::setLowEdgeTrheshold(float low)
+{
+	RenderPass* threshold = static_cast<DoubleThreshold*>(getRenderPass(RenderPassKey::DOUBLETHRESHOLD));
+	if (threshold)
+	{
+		DoubleThreshold* dt = static_cast<DoubleThreshold*>(threshold);
+		dt->setLowThreshold(low);
+	}
+
+}
+
+float Renderer::getLowEdgeThreshold() const
+{
+	RenderPass* threshold = static_cast<DoubleThreshold*>(getRenderPass(RenderPassKey::DOUBLETHRESHOLD));
+	if (threshold)
+	{
+		DoubleThreshold* dt = static_cast<DoubleThreshold*>(threshold);
+		return dt->getLowThreshold();
+	}
+	return 0.0f;
+}
+
+void Renderer::setHighEdgeTrheshold(float high)
+{
+	RenderPass* threshold = static_cast<DoubleThreshold*>(getRenderPass(RenderPassKey::DOUBLETHRESHOLD));
+	if (threshold)
+	{
+		DoubleThreshold* dt = static_cast<DoubleThreshold*>(threshold);
+		dt->setHighThreshold(high);
+	}
+}
+
+float Renderer::getHighEdgeThreshold() const
+{
+	RenderPass* threshold = static_cast<DoubleThreshold*>(getRenderPass(RenderPassKey::DOUBLETHRESHOLD));
+	if (threshold)
+	{
+		DoubleThreshold* dt = static_cast<DoubleThreshold*>(threshold);
+		return dt->getHighThreshold();
+	}
+	return 0.0f;
+}
+
 void Renderer::setDefaultRenderPass()
 {
 	//TODO: default renderpass forwardShading + toneMapping
@@ -693,6 +755,34 @@ void Renderer::renderUI()
 	{
 		ImGui::EndDisabled();
 	}
+
+	//Canny Edge Detection	
+	bool ceeChecked = mRenderPipeLine.enableCannyEdgeDetection;
+	if (ImGui::Checkbox("Canny Edge Detection", &ceeChecked))
+	{
+		enableCannyEdgeDetection(ceeChecked);
+	}
+	if (!ceeChecked)
+	{
+		ImGui::BeginDisabled();
+	}
+
+	float lowThreshold = getLowEdgeThreshold();
+	if (ImGui::DragFloat("Low Threshold", &lowThreshold, 0.001f, 0.0f, 1.0f))
+	{
+		setLowEdgeTrheshold(lowThreshold);
+	}
+
+	float highThreshold = getHighEdgeThreshold();
+	if (ImGui::DragFloat("High Threshold", &highThreshold, 0.001f, 0.0f, 1.0f))
+	{
+		setHighEdgeTrheshold(highThreshold);
+	}
+
+	if (!ceeChecked)
+	{
+		ImGui::EndDisabled();
+	}
 	ImGui::End();
 
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -728,6 +818,8 @@ void Renderer::renderUI()
 		ImPlot::EndPlot();
 	}
 	ImGui::End();
+
+	
 }
 
 void Renderer::resetDebugView()

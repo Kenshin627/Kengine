@@ -68,7 +68,7 @@ void GaussianBlur::runPass(Scene* scene)
 		if (isFirstIteration)
 		{
 			//TODO
-			tex = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(1);
+			tex = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(0);
 			isFirstIteration = false;
 		}
 		else

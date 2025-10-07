@@ -4,8 +4,8 @@ uniform sampler2D screenMap;
 
 in vec2 vTexcoord;
 
-layout (location = 0) out vec4 FragLDRColor;
-layout (location = 1) out vec4 FragHDRColor;
+layout (location = 0) out vec4 FragHDRColor;
+layout (location = 1) out vec4 FragLDRColor;
 
 void main()
 {

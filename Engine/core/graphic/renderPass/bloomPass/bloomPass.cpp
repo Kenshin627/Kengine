@@ -17,7 +17,7 @@ BloomPass::BloomPass(Renderer* r, const RenderState& state)
 		});
 	std::initializer_list<FrameBufferSpecification> specs =
 	{
-		//color attachment 0 normal ldr
+		//color attachmeng 1 hdr
 		{
 			AttachmentType::Color,
 			TextureInternalFormat::RGBA16F,
@@ -27,7 +27,7 @@ BloomPass::BloomPass(Renderer* r, const RenderState& state)
 			TextureFilter::LINEAR,
 			TextureFilter::LINEAR
 		},
-		//color attachmeng 1 hdr
+		//color attachment 0 normal ldr 
 		{
 			AttachmentType::Color,
 			TextureInternalFormat::RGBA16F,

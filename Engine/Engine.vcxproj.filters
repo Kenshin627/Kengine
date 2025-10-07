@@ -195,6 +195,15 @@
     <ClCompile Include="core\scene\animation\animator.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\graphic\renderPass\cannyEdgeDetection\sobel\sobelPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\graphic\renderPass\cannyEdgeDetection\nms\nonMaxSuppression.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\graphic\renderPass\cannyEdgeDetection\doubleThreshold\doubleThreshold.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -395,6 +404,15 @@
     <ClInclude Include="core\scene\animation\animator.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\cannyEdgeDetection\sobel\sobelPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\cannyEdgeDetection\nms\nonMaxSuppression.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\cannyEdgeDetection\doubleThreshold\doubleThreshold.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="core\graphic\shaderSrc\blinnPhong\vs.glsl" />
@@ -420,5 +438,11 @@
     <None Include="core\graphic\shaderSrc\cascadeShadowMap\fs.glsl" />
     <None Include="core\graphic\shaderSrc\preDepthPass\vs.glsl" />
     <None Include="core\graphic\shaderSrc\preDepthPass\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\cannyEdgeDetection\sobel\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\cannyEdgeDetection\sobel\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\cannyEdgeDetection\nms\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\cannyEdgeDetection\nms\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\cannyEdgeDetection\doubleThreshold\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\cannyEdgeDetection\doubleThreshold\fs.glsl" />
   </ItemGroup>
 </Project>

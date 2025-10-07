@@ -34,6 +34,7 @@ struct RenderPipeLine
 	bool                              enableCascadedShadowMap{ false					  };
 	bool							  debugCSM	             { false					  };
 	PostProcessEffect				  postProcess;
+	bool							  enableCannyEdgeDetection{ false };
 };
 
 struct RenderKeyPass
@@ -102,6 +103,13 @@ public:
 	//CSM
 	void enableCSM(bool enable);
 	bool getEnableCSM() const;
+
+	//canny edge detection
+	void enableCannyEdgeDetection(bool enable);
+	void setLowEdgeTrheshold(float low);
+	float getLowEdgeThreshold() const;
+	void setHighEdgeTrheshold(float high);
+	float getHighEdgeThreshold() const;
 
 	RenderPass* addRenderPass(RenderPassKey key, const RenderState& state, RenderPass* where);
 private:

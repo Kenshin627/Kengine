@@ -12,6 +12,9 @@
 #include "gaussianBlur/gaussianBlur.h"
 #include "postProcess/grayScaleEffect/grayScaleEffect.h"
 #include "graphic/renderer/renderer.h"
+#include "cannyEdgeDetection/sobel/sobelPass.h"
+#include "cannyEdgeDetection/nms/nonMaxSuppression.h"
+#include "cannyEdgeDetection/doubleThreshold/doubleThreshold.h"
 
 class PassFactory
 {
@@ -45,6 +48,12 @@ public:
 			return std::make_unique<ToneMapping>(1.0, r, state);
 		case RenderPassKey::GRAYSCALER:
 			return std::make_unique<GrayScaleEffect>(r, state);
+		case RenderPassKey::SOBEL:
+			return std::make_unique<SobelPass>(r, state);
+		case RenderPassKey::NMS:
+			return std::make_unique<NonMaxSuppression>(r, state);
+		case RenderPassKey::DOUBLETHRESHOLD:
+			return std::make_unique<DoubleThreshold>(r, state);
 		default:
 			break;
 		}
