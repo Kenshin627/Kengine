@@ -68,10 +68,10 @@ void BloomPass::runPass(Scene* scene)
 
 Texture* BloomPass::getHDRTexture() const
 {
-	return mFrameBuffer->getColorAttachment(1);
+	return mFrameBuffer->getColorAttachment(0);
 }
 
 Texture* BloomPass::getLDRTexture() const
 {
-	return mFrameBuffer->getColorAttachment(0);
+	return mFrameBuffer->getColorAttachment(1);
 }

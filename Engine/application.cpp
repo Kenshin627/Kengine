@@ -120,8 +120,16 @@ Application::Application(uint width, uint height, const char* title)
 	pbrSpec6.normalMapPath = "images/peeling-painted-metal-bl/normal.png";
 	std::shared_ptr<PBRMaterial> pbrMat6 = std::make_shared<PBRMaterial>(pbrSpec6);
 
+	PBRMaterialSpecification pbrSpec7;
+	pbrSpec7.albedoMapPath = "images/loakflooralbedo.png";
+	//pbrSpec7.metallicMapPath = "images/oakfloor/metallic.png";
+	pbrSpec7.roughnessMapPath = "images/oakfloor/roughness.png";
+	pbrSpec7.normalMapPath = "images/oakfloor/normal.png";
+	pbrSpec7.heightMapPath = "images/oakfloor/height.png";
+	std::shared_ptr<PBRMaterial> pbrMat7 = std::make_shared<PBRMaterial>(pbrSpec7);
+
 	//RENDER OBJECT
-	std::shared_ptr<RenderObject> ground = std::make_shared<RenderObject>("ground", groundGeom, ground3Mat);
+	std::shared_ptr<RenderObject> ground = std::make_shared<RenderObject>("ground", groundGeom, pbrMat7);
 	std::shared_ptr<RenderObject> wall = std::make_shared<RenderObject>("wall", wallGeom, wall2Mat);
 	wall->setRotation(90, 0, 0);
 	wall->setPosition(0, 0, -10);
@@ -145,7 +153,7 @@ Application::Application(uint width, uint height, const char* title)
 	box2->setPosition(5, 0.5, -4);
 	box2->setRotation(0, 25, 0);
 	box2->setScale(0.5);
-	//scene->addRenderObject({ ground, wall, sphere1, sphere2, sphere3,sphere4, sphere5, sphere6, box1, box2 });
+	scene->addRenderObject({ ground/*, wall, sphere1, sphere2, sphere3,sphere4, sphere5, sphere6, box1, box2*/ });
 	
 	//model
 	/*Model model("models/backpack/backpack.obj");

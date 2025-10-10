@@ -56,6 +56,8 @@ void Renderer::onWindowSizeChanged(uint width, uint height)
 {
 	mWidth = width;
 	mHeight = height;
+	mViewport.z = width;
+	mViewport.w = height;
 	//set camera aspect ratio
 	if (mCurrentScene)
 	{
