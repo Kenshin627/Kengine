@@ -8,6 +8,7 @@
 #include "graphic/renderPass/gaussianBlur/gaussianBlur.h"
 #include "graphic/renderPass/deferredRendering/geometryPass.h"
 #include "graphic/renderPass/deferredRendering/lightingPass.h"
+#include "graphic/renderPass/postProcess/grayScaleEffect/grayScaleEffect.h"
 #include "graphic/renderPass/toneMapping/toneMapping.h"
 #include "graphic/renderPass/passFactory.h"
 #include "imgui.h"
@@ -432,7 +433,8 @@ void Renderer::enableCannyEdgeDetection(bool enable)
 			RenderPass* toneMapping = getRenderPass(RenderPassKey::TONEMAPPING);
 			if (toneMapping)
 			{
-				auto gaussianBlur = addRenderPass(RenderPassKey::BLOOMBLUR, RenderState{}, toneMapping);
+				auto gray = addRenderPass(RenderPassKey::GRAYSCALER, RenderState{}, toneMapping);
+				auto gaussianBlur = addRenderPass(RenderPassKey::BLOOMBLUR, RenderState{}, gray);
 				auto sobel = addRenderPass(RenderPassKey::SOBEL, RenderState{}, gaussianBlur);
 				auto nms = addRenderPass(RenderPassKey::NMS, RenderState{}, sobel);
 				auto doubleThreshold = addRenderPass(RenderPassKey::DOUBLETHRESHOLD, RenderState{}, nms);
