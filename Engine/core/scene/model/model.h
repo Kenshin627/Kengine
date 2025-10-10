@@ -7,7 +7,7 @@
 struct BoneInfo
 {
 	int		  id;
-	glm::mat4 offset;
+	glm::mat4 offset{1.0};
 };
 
 struct Vertex;

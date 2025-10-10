@@ -8,18 +8,30 @@
 
 struct PosKeyFrame
 {
+	PosKeyFrame(const glm::vec3& pos, double time)
+		:position(pos), timeStamp(time)
+	{
+	}
 	glm::vec3 position;
 	double	  timeStamp;
 };
 
 struct RotKeyFrame
 {
+	RotKeyFrame(const glm::quat& quat, double time)
+		:rotationQuaternion(quat), timeStamp(time)
+	{
+	}
 	glm::quat rotationQuaternion;
 	double	  timeStamp;
 };
 
 struct ScaleKeyFrame
 {
+	ScaleKeyFrame(const glm::vec3& s, double time)
+		:scale(s), timeStamp(time)
+	{
+	}
 	glm::vec3 scale;
 	double	  timeStamp;
 };

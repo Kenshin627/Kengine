@@ -1,6 +1,6 @@
 #version 460 core
 
-#define MAX_BONE_COUNT 100
+#define MAX_BONE_COUNT 1000
 #define MAX_BONE_INFLUENCE 4
 
 layout (location = 0) in vec3  aPos;

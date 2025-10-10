@@ -42,7 +42,7 @@ Scene::Scene(Renderer* r)
 	mLightBuffer = std::make_unique<UniformBuffer>(MAX_LIGHTS * sizeof(GPULightBufferData), 1);
 	mScreenQuad = std::make_unique<ScreenQuad>();
 
-	mBoneMatrixBuffer = std::make_unique<UniformBuffer>(sizeof(glm::mat4) * 100, 4);
+	mBoneMatrixBuffer = std::make_unique<UniformBuffer>(sizeof(glm::mat4) * 1000, 4);
 	mAnimator = std::make_unique<Animator>();
 }
 

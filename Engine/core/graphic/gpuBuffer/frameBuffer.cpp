@@ -229,3 +229,10 @@ Texture* FrameBuffer::getDepthStencilAttachment() const
 {
 	return mDepthStencilAttachment.get();
 }
+
+void* FrameBuffer::getPixelValue(const glm::uvec2& screenPos)
+{
+	unsigned char pixel[3]{ 0 };
+	glReadPixels(screenPos.x, screenPos.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
+	return pixel;
+}

@@ -41,6 +41,7 @@ public:
 	void checkMaxColorAttachment();
 	Texture* getColorAttachment(uint index) const;
 	Texture* getDepthStencilAttachment() const;
+	void* getPixelValue(const glm::uvec2& screenPos);
 private:
 	void buildAttachment(const FrameBufferSpecification& attachmentSpec);
 	void buildAttachments();

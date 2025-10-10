@@ -52,4 +52,20 @@ void SelectionPass::runPass(Scene* scene)
 		}
 	}
 }
-~
+
+glm::vec3& SelectionPass::getColor(uint index) const
+{
+	glm::vec3 res;
+	res.r = index & 0XFF;
+	res.g = (index >> 8) & 0XFF;
+	res.b = (index >> 16) & 0XFF;
+	res /= 255.0f;
+	return res;
+}
+
+uint SelectionPass::getObjectIndex(const glm::vec2& screenPos) const
+{
+	void* pixelVal = mFrameBuffer->getPixelValue(screenPos);
+	unsigned char* rgb = static_cast<unsigned char*>(pixelVal);
+	return rgb[0] + rgb[1] << 8 + rgb[2] << 16;
+}

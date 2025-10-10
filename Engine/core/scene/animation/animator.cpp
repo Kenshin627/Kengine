@@ -14,8 +14,8 @@ void Animator::playAnimation(Animation* animation)
 {
 	mCurrentAnimation = animation;
 	mCurrentTime = 0.0;	
-	mBoneMatrices.reserve(100);
-	for (int i = 0; i < 100; i++)
+	mBoneMatrices.reserve(1000);
+	for (int i = 0; i < 1000; i++)
 	{
 		mBoneMatrices.push_back(glm::mat4(1.0f));
 	}

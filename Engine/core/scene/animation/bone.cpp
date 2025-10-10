@@ -19,26 +19,26 @@ Bone::Bone(const std::string& name, int id, aiNodeAnim* boneNode)
 
 	for (int i = 0; i < mPosKeyFrameCount; i++)
 	{
-		PosKeyFrame keyFrame;
-		keyFrame.position = AssimpGLMHelpers::GetGLMVec(boneNode->mPositionKeys[i].mValue);
-		keyFrame.timeStamp = boneNode->mPositionKeys[i].mTime;
-		mPosKeyFrames.push_back(keyFrame);
+		mPosKeyFrames.emplace_back(
+			AssimpGLMHelpers::GetGLMVec(boneNode->mPositionKeys[i].mValue), 
+			boneNode->mPositionKeys[i].mTime
+		);
 	}
 
 	for (int i = 0; i < mRotKeyFrameCount; i++)
 	{
-		RotKeyFrame keyFrame;
-		keyFrame.rotationQuaternion = AssimpGLMHelpers::GetGLMQuat(boneNode->mRotationKeys[i].mValue);
-		keyFrame.timeStamp = boneNode->mRotationKeys[i].mTime;
-		mRotKeyFrames.push_back(keyFrame);
+		mRotKeyFrames.emplace_back(
+			AssimpGLMHelpers::GetGLMQuat(boneNode->mRotationKeys[i].mValue), 
+			boneNode->mRotationKeys[i].mTime
+		);
 	}
 
 	for (int i = 0; i < mScaleKeyFrameCount; i++)
 	{
-		ScaleKeyFrame keyFrame;
-		keyFrame.scale = AssimpGLMHelpers::GetGLMVec(boneNode->mScalingKeys[i].mValue);
-		keyFrame.timeStamp = float(boneNode->mScalingKeys[i].mTime);
-		mScaleKeyFrames.push_back(keyFrame);
+		mScaleKeyFrames.emplace_back(
+			AssimpGLMHelpers::GetGLMVec(boneNode->mScalingKeys[i].mValue), 
+			boneNode->mScalingKeys[i].mTime
+		);
 	}
 }
 

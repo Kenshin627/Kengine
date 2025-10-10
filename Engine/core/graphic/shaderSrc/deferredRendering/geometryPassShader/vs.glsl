@@ -1,6 +1,6 @@
 #version 460 core
 
-#define MAX_BONE_COUNT 100
+#define MAX_BONE_COUNT 1000
 #define MAX_BONE_INFLUENCE 4
 
 layout (location = 0) in vec3  aPos;
@@ -90,6 +90,7 @@ void main()
 		vec4 localPos = boneMat * vec4(aPos, 1.0);
 		animatedPos += localPos * aWeights[i];
 	}
+	
 	vec4 viewPos = modelViewMatrix * animatedPos;
 	vPos = viewPos.xyz / viewPos.w;
 	vTexcoord = aTexcoord;

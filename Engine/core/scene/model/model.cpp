@@ -236,7 +236,7 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene)
 }
 
 void Model::processBones(const aiScene* scene, aiMesh* mesh, std::vector<Vertex>& vertices)
-{
+{/*
 	if (!mesh->HasBones())
 	{
 		return;
@@ -251,21 +251,19 @@ void Model::processBones(const aiScene* scene, aiMesh* mesh, std::vector<Vertex>
 		if (boneInfoIter == mBoneInfoMap.end())
 		{
 			BoneInfo boneInfo;
-			boneId = mBoneCount;
 			boneInfo.id = mBoneCount;
 			boneInfo.offset = AssimpGLMHelpers::ConvertMatrixToGLMFormat(bone->mOffsetMatrix);
-			mBoneInfoMap[boneName] = boneInfo;
+			mBoneInfoMap.insert({ boneName, boneInfo });
 			mBoneCount++;
 		}
-		else
-		{
-			boneId = boneInfoIter->second.id;
-		}
+	
+		boneId = mBoneInfoMap[boneName].id;
+		
 		KS_CORE_ASSERT(boneId != -1, "boneId is -1");
 		uint weightNum = bone->mNumWeights;
 		for (int j = 0; j < weightNum; j++)
 		{
-			aiVertexWeight weight = bone->mWeights[j];
+			const aiVertexWeight& weight = bone->mWeights[j];
 			uint vertexId = weight.mVertexId;
 			float vertexWeight = weight.mWeight;
 			for (int k = 0; k < MAX_BONE_INFLUENCE; k++)
@@ -274,6 +272,47 @@ void Model::processBones(const aiScene* scene, aiMesh* mesh, std::vector<Vertex>
 				{
 					vertices[vertexId].BoneIds[k] = boneId;
 					vertices[vertexId].Weights[k] = vertexWeight;
+					break;
+				}
+			}
+		}
+	}*/
+	auto& boneInfoMap = mBoneInfoMap;
+	uint& boneCount = mBoneCount;
+
+	for (int boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex)
+	{
+		int boneID = -1;
+		std::string boneName = mesh->mBones[boneIndex]->mName.C_Str();
+		if (boneInfoMap.find(boneName) == boneInfoMap.end())
+		{
+			BoneInfo newBoneInfo;
+			newBoneInfo.id = boneCount;
+			newBoneInfo.offset = AssimpGLMHelpers::ConvertMatrixToGLMFormat(mesh->mBones[boneIndex]->mOffsetMatrix);
+			boneInfoMap[boneName] = newBoneInfo;
+			boneID = boneCount;
+			boneCount++;
+		}
+		else
+		{
+			boneID = boneInfoMap[boneName].id;
+		}
+		assert(boneID != -1);
+		auto weights = mesh->mBones[boneIndex]->mWeights;
+		int numWeights = mesh->mBones[boneIndex]->mNumWeights;
+
+		for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
+		{
+			int vertexId = weights[weightIndex].mVertexId;
+			float weight = weights[weightIndex].mWeight;
+			assert(vertexId <= vertices.size());
+			//SetVertexBoneData(vertices[vertexId], boneID, weight);
+			for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
+			{
+				if (vertices[vertexId].BoneIds[i] < 0 && weight != 0.0)
+				{
+					vertices[vertexId].Weights[i] = weight;
+					vertices[vertexId].BoneIds[i] = boneID;
 					break;
 				}
 			}
