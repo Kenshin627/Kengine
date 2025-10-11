@@ -26,7 +26,7 @@ public:
 		case RenderPassKey::SSAO:
 			return std::make_unique<SSAOPass>(SSAOSpecification{}, r, state);
 		case RenderPassKey::SSAOBLUR:
-			return std::make_unique<BlurPass>(4, r, state);
+			return std::make_unique<GaussianBlur>(GaussianBlurSpecification{}, r, state);
 		case RenderPassKey::CSM:
 			CascadeShadowMapPassSpecification spec;
 			spec.cascadedLayer = 4;

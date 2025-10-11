@@ -454,6 +454,106 @@ void Renderer::setSSAOSamplerRadius(float samplerRadius)
 	ssao->setSamplerRadius(samplerRadius);
 }
 
+uint Renderer::getSSAOBlur() const
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::SSAOBLUR);
+	if (!pass)
+	{
+		return 0;
+	}
+	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
+	return gaussianPass->getGussianBlurAmount();
+}
+
+void Renderer::setSSAOBlur(uint blur)
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::SSAOBLUR);
+	if (!pass)
+	{
+		return;
+	}
+	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
+	if (gaussianPass->getGussianBlurAmount() != blur)
+	{
+		gaussianPass->setGaussianBlurAmount(blur);
+	}
+}
+
+float Renderer::getSSAOBlurScale()
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::SSAOBLUR);
+	if (!pass)
+	{
+		return 0.0f;
+	}
+	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
+	return gaussianPass->getGussianBlurScale();
+}
+
+void Renderer::setSSAOBlurScale(float s)
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::SSAOBLUR);
+	if (!pass)
+	{
+		return;
+	}
+	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
+	if (gaussianPass->getGussianBlurScale() != s)
+	{
+		gaussianPass->setGaussianBlurScale(s);
+	}
+}
+
+float Renderer::getSSAOBlurStrength()
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::SSAOBLUR);
+	if (!pass)
+	{
+		return 0.0f;
+	}
+	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
+	return gaussianPass->getGussianBlurStrength();
+}
+
+void Renderer::setSSAOBlurStrength(float s)
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::SSAOBLUR);
+	if (!pass)
+	{
+		return;
+	}
+	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
+	if (gaussianPass->getGussianBlurStrength() != s)
+	{
+		gaussianPass->setGaussianBlurStrength(s);
+	}
+}
+
+float Renderer::getSSAOSigma() const
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::SSAOBLUR);
+	if (!pass)
+	{
+		return 0.0f;
+	}
+	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
+	return gaussianPass->getSigma();
+}
+
+void Renderer::setSSAOSigma(float s)
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::SSAOBLUR);
+	if (!pass)
+	{
+		return;
+	}
+	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
+	if (gaussianPass->getSigma() != s)
+	{
+		gaussianPass->setSigma(s);
+	}
+}
+
 const DebugView& Renderer::getDebugView() const
 {
 	return mDebugView;
@@ -738,7 +838,7 @@ void Renderer::renderUI()
 		ImGui::BeginDisabled();
 	}
 	SSAOPass* ssao = static_cast<SSAOPass*>(getRenderPass(RenderPassKey::SSAO));
-	BlurPass* ssaoBlur = static_cast<BlurPass*>(getRenderPass(RenderPassKey::SSAOBLUR));
+	GaussianBlur* ssaoBlur = static_cast<GaussianBlur*>(getRenderPass(RenderPassKey::SSAOBLUR));
 	
 	//kernelSize
 	int kernelSize = ssao? ssao->getKernelSize() : 0;
@@ -761,11 +861,32 @@ void Renderer::renderUI()
 		ssao->setBias(bias);
 	}
 
-	//blurRadius
-	int blurRadius = ssaoBlur? ssaoBlur->getBlurRadius():0;
-	if (ImGui::DragInt("Blur Radius", &blurRadius, 1, 2, 64))
 	{
-		ssaoBlur->setBlurRadius(blurRadius);
+		ImGui::PushID("ssao");
+		int bloomBlur = getSSAOBlur();
+		if (ImGui::DragInt("SSAO Blur", &bloomBlur, 1, 0, 12))
+		{
+			setSSAOBlur(bloomBlur);
+		}
+
+		float scale = getSSAOBlurScale();
+		if (ImGui::DragFloat("SSAO Scale", &scale, 0.01f, 0.1f, 6.0f))
+		{
+			setSSAOBlurScale(scale);
+		}
+
+		float strength = getSSAOBlurStrength();
+		if (ImGui::DragFloat("SSAO Strength", &strength, 0.01f, 0.0f, 5.0f))
+		{
+			setSSAOBlurStrength(strength);
+		}
+
+		float sigma = getSSAOSigma();
+		if (ImGui::DragFloat("SSAO Sigma", &sigma, 0.1f, 0.0f, 10.0f))
+		{
+			setSSAOSigma(sigma);
+		}
+		ImGui::PopID();
 	}
 
 	// debugView

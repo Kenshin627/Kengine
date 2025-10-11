@@ -104,6 +104,16 @@ public:
 	void setSSAOBlurRadius(float blurRadius);
 	uint getSSAOSamplerRadius() const;
 	void setSSAOSamplerRadius(float samplerRadius);
+	uint getSSAOBlur() const;
+	void setSSAOBlur(uint blur);
+	float getSSAOBlurScale();
+	void setSSAOBlurScale(float s);
+	float getSSAOBlurStrength();
+	void setSSAOBlurStrength(float s);
+	float getSSAOSigma() const;
+	void setSSAOSigma(float s);
+
+
 	const DebugView& getDebugView() const;
 
 	//CSM
