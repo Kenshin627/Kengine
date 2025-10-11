@@ -51,6 +51,8 @@ void BloomPass::beginPass()
 	Texture* tex = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(0);
 	tex->bind();
 	mProgram->setUniform("screenMap", 0);
+	mProgram->setUniform("thresholdMin", mThresholdMin);
+	mProgram->setUniform("thresholdMax", mThresholdMax);
 }
 
 void BloomPass::runPass(Scene* scene)

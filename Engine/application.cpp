@@ -121,7 +121,7 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<PBRMaterial> pbrMat6 = std::make_shared<PBRMaterial>(pbrSpec6);
 
 	PBRMaterialSpecification pbrSpec7;
-	pbrSpec7.albedoMapPath = "images/loakflooralbedo.png";
+	pbrSpec7.albedoMapPath = "images/oakfloor/albedo.png";
 	//pbrSpec7.metallicMapPath = "images/oakfloor/metallic.png";
 	pbrSpec7.roughnessMapPath = "images/oakfloor/roughness.png";
 	pbrSpec7.normalMapPath = "images/oakfloor/normal.png";

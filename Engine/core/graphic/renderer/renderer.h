@@ -85,6 +85,12 @@ public:
 	void setBloomBlurScale(float s);
 	float getBloomBlurStrength();
 	void setBloomBlurStrength(float s);
+	float getGaussianSigma() const;
+	void setGaussianSigma(float s);
+	void setThresholdMin(float t);
+	float getThresholdMin() const;
+	void setThresholdMax(float t);
+	float getThresholdMax() const;
 
 	//SSAO
 	//TODO:BLURTYPE

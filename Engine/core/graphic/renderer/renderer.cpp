@@ -252,6 +252,81 @@ void Renderer::setBloomBlurStrength(float s)
 	}
 }
 
+float Renderer::getGaussianSigma() const
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
+	if (!pass)
+	{
+		return 0;
+	}
+	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
+	return gaussianPass->getSigma();
+}
+
+void Renderer::setGaussianSigma(float s)
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
+	if (!pass)
+	{
+		return;
+	}
+	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
+	if (gaussianPass->getSigma() != s)
+	{
+		gaussianPass->setSigma(s);
+	}
+}
+
+void Renderer::setThresholdMin(float t)
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
+	if (!pass)
+	{
+		return;
+	}
+	BloomPass* bloom = static_cast<BloomPass*>(pass);
+	if (bloom->getThresholdMin() != t)
+	{
+		bloom->setThresholdMin(t);
+	}
+}
+
+float Renderer::getThresholdMin() const
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
+	if (!pass)
+	{
+		return 0.0f;
+	}
+	BloomPass* bloom = static_cast<BloomPass*>(pass);
+	return bloom->getThresholdMin();
+}
+
+void Renderer::setThresholdMax(float t)
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
+	if (!pass)
+	{
+		return;
+	}
+	BloomPass* bloom = static_cast<BloomPass*>(pass);
+	if (bloom->getThresholdMax() != t)
+	{
+		bloom->setThresholdMax(t);
+	}
+}
+
+float Renderer::getThresholdMax() const
+{
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
+	if (!pass)
+	{
+		return 0.0f;
+	}
+	BloomPass* bloom = static_cast<BloomPass*>(pass);
+	return bloom->getThresholdMax();
+}
+
 void Renderer::enableSSAO(bool enable)
 {
 	if (mRenderPipeLine.enableSSao != enable)
@@ -579,23 +654,43 @@ void Renderer::renderUI()
 	{
 		ImGui::BeginDisabled();
 	}
+	
+	//threshold
+	float thresholdMin = getThresholdMin();
+	if (ImGui::DragFloat("Threshold Min", &thresholdMin, 0.01f, 0.0f, 0.8f))
+	{
+		setThresholdMin(thresholdMin);
+	}
+
+	float thresholdMax = getThresholdMax();
+	if (ImGui::DragFloat("Threshold Max", &thresholdMax, 0.01f, 1.0f, 3.0f))
+	{
+		setThresholdMax(thresholdMax);
+	}
+
 	int bloomBlur = getBloomBlur();
 	if (ImGui::DragInt("Bloom Blur", &bloomBlur, 1, 0, 12))
-		{
-			setBloomBlur(bloomBlur);
-		}
+	{
+		setBloomBlur(bloomBlur);
+	}
 
 	float scale = getBloomBlurScale();
 	if (ImGui::DragFloat("Bloom Scale", &scale, 0.01f, 0.1f, 6.0f))
-		{
-			setBloomBlurScale(scale);
-		}
+	{
+		setBloomBlurScale(scale);
+	}
 
 	float strength = getBloomBlurStrength();
 	if (ImGui::DragFloat("Bloom Strength", &strength, 0.01f, 0.0f, 5.0f))
-		{
-			setBloomBlurStrength(strength);
-		}
+	{
+		setBloomBlurStrength(strength);
+	}
+
+	float sigma = getGaussianSigma();
+	if (ImGui::DragFloat("Gaussian Sigma", &sigma, 0.1f, 0.0f, 10.0f))
+	{
+		setGaussianSigma(sigma);
+	}
 
 	//debugView
 	ImGui::PushID("bloom");
