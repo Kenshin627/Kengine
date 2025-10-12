@@ -188,7 +188,7 @@ void GaussianBlur::generateKernel()
 	
 	float SS2 = mSpec.Sigma * mSpec.Sigma * 2;
 	sum = 1;
-	for (int i = 1; i < mSpec.kernelSize; ++i)
+	for (int i = 1; i < mSpec.HalfKernelSize; ++i)
 	{
 		result = std::exp(-(i * i) / SS2);
 		mKernels[i] = result;
@@ -197,7 +197,7 @@ void GaussianBlur::generateKernel()
 
 	// normalize kernel
 	// make sum of all elements in kernel to 1
-	for (int i = 0; i < mSpec.kernelSize; ++i)
+	for (int i = 0; i < mSpec.HalfKernelSize; ++i)
 	{
 		mKernels[i] /= sum;
 	}
@@ -215,15 +215,15 @@ void GaussianBlur::computeKernelSize()
 	// 2.5 <= sigma < 3.0 : 13 ...
 	if (mSpec.Sigma <= 0)
 	{
-		mSpec.kernelSize = 1;
+		mSpec.HalfKernelSize = 1;
 	}
 	else
 	{
 		uint kernelSize = 2 * std::round(2 * mSpec.Sigma) + 3;
-		mSpec.kernelSize = std::floor(kernelSize / 2) + 1;
-		if (mSpec.kernelSize > MAX_HALF_KERNEL_SIZE)
+		mSpec.HalfKernelSize = std::floor(kernelSize / 2) + 1;
+		if (mSpec.HalfKernelSize > MAX_HALF_KERNEL_SIZE)
 		{ 
-			mSpec.kernelSize = MAX_HALF_KERNEL_SIZE;
+			mSpec.HalfKernelSize = MAX_HALF_KERNEL_SIZE;
 		}
 	}
 }

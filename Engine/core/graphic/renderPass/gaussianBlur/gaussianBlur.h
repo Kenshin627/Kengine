@@ -8,7 +8,7 @@ struct GaussianBlurSpecification
 	float Scale		{ 1.0f  };
 	float Strength	{ 1.0f  };
 	uint  Amount	{ 2     };
-	uint  kernelSize;
+	uint  HalfKernelSize;
 	float Sigma	    { 1.2f  };
 };
 class GaussianBlur :public RenderPass

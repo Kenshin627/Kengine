@@ -898,7 +898,7 @@ void Renderer::renderUI()
 		if (ssaodebugView)
 		{
 			mDebugView.colorAttachmentIndex = 0;
-			mDebugView.fbo = getRenderPass(RenderPassKey::SSAO)->getCurrentFrameBuffer();
+			mDebugView.fbo = static_cast<GaussianBlur*>(getRenderPass(RenderPassKey::SSAOBLUR))->getOutputFrameBuffer();
 			mDebugView.type = DebugViewAttachmentType::Color;
 		}
 		else
