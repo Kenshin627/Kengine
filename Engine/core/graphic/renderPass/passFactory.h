@@ -56,6 +56,8 @@ public:
 			return std::make_unique<NonMaxSuppression>(r, state);
 		case RenderPassKey::DOUBLETHRESHOLD:
 			return std::make_unique<DoubleThreshold>(r, state);
+		case RenderPassKey::SELECTION:
+			return std::make_unique<SelectionPass>(r, state);
 		default:
 			break;
 		}

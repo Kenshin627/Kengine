@@ -9,6 +9,7 @@
 #include "graphic/renderPass/deferredRendering/geometryPass.h"
 #include "graphic/renderPass/deferredRendering/lightingPass.h"
 #include "graphic/renderPass/postProcess/grayScaleEffect/grayScaleEffect.h"
+#include "graphic/renderPass/selectionPass/selectionPass.h"
 #include "graphic/renderPass/toneMapping/toneMapping.h"
 #include "graphic/renderPass/passFactory.h"
 #include "imgui.h"
@@ -671,6 +672,25 @@ void Renderer::setDefaultRenderPass()
 	auto toneMappingPass = addRenderPass(RenderPassKey::TONEMAPPING, RenderState{ mViewport, false }, lightingPass);
 }
 
+void Renderer::enableSelection(bool enable)
+{
+	if (mRenderPipeLine.enableSelection != enable)
+	{
+		mRenderPipeLine.enableSelection = enable;
+		if (enable)
+		{
+			RenderState passState = { mViewport, true };
+			passState.clearColor = { 0.0, 0.0, 0.0, 1.0 };
+			addRenderPass(RenderPassKey::SELECTION, passState, nullptr);
+		}
+		//TODO remove selection pass
+		else
+		{
+
+		}
+	}
+}
+
 RenderPass* Renderer::addRenderPass(RenderPassKey key, const RenderState& state, RenderPass* where)
 {
 	auto passCacheIter = mPassCache.find(key);
@@ -1003,6 +1023,39 @@ void Renderer::renderUI()
 	{
 		ImGui::EndDisabled();
 	}
+
+	bool enableSelection = mRenderPipeLine.enableSelection;
+	if (ImGui::Checkbox("Selection", &enableSelection))
+	{
+		this->enableSelection(enableSelection);
+	}
+
+	if (!enableSelection)
+	{
+		ImGui::BeginDisabled();
+	}
+	ImGui::PushID("selection");
+	bool selectiondebugView = mRenderPipeLine.debugSelection;
+	if (ImGui::Checkbox("DebugView", &selectiondebugView))
+	{
+		mRenderPipeLine.debugSelection = selectiondebugView;
+		if (selectiondebugView)
+		{
+			mDebugView.colorAttachmentIndex = 0;
+			mDebugView.fbo = static_cast<SelectionPass*>(getRenderPass(RenderPassKey::SELECTION))->getCurrentFrameBuffer();
+			mDebugView.type = DebugViewAttachmentType::Color;
+		}
+		else
+		{
+			resetDebugView();
+		}
+	}
+	ImGui::PopID();
+	if (!enableSelection)
+	{
+		ImGui::EndDisabled();
+	}
+
 	ImGui::End();
 
 	ImGuiIO& io = ImGui::GetIO(); (void)io;

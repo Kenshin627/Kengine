@@ -8,6 +8,6 @@ public:
 	~SelectionPass();
 	virtual void beginPass() override;
 	virtual void runPass(Scene* scene) override;
-	glm::vec3& getColor(uint index) const;
+	glm::vec3 getColor(uint index) const;
 	uint getObjectIndex(const glm::vec2& screenPos) const;
 };

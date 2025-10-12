@@ -24,17 +24,19 @@ enum class PostProcessEffect
 
 struct RenderPipeLine
 {
-	RenderMode                        renderMode			 { RenderMode::DefferedShading};
-	bool	                          enableBloom			 { false					  };
-	bool							  debugBloom			 { false					  };
-	bool						      enableSSao			 { false					  };
-	bool							  debugSSAO				 { false					  };
-	bool                              enableParallaxOcclusion{ false					  };
-	float                             parallaxOcclusionScale { 0.01f					  };
-	bool                              enableCascadedShadowMap{ false					  };
-	bool							  debugCSM	             { false					  };
+	RenderMode                        renderMode			  { RenderMode::DefferedShading};
+	bool	                          enableBloom			  { false					  };
+	bool							  debugBloom			  { false					  };
+	bool						      enableSSao			  { false					  };
+	bool							  debugSSAO				  { false					  };
+	bool                              enableParallaxOcclusion { false					  };
+	float                             parallaxOcclusionScale  { 0.01f					  };
+	bool                              enableCascadedShadowMap { false					  };
+	bool							  debugCSM	              { false					  };
 	PostProcessEffect				  postProcess;
-	bool							  enableCannyEdgeDetection{ false };
+	bool							  enableCannyEdgeDetection{ false					  };
+	bool							  enableSelection		  { false					  };
+	bool							  debugSelection		  { false					  };
 };
 
 struct RenderKeyPass
@@ -127,6 +129,9 @@ public:
 	void setHighEdgeTrheshold(float high);
 	float getHighEdgeThreshold() const;
 
+	//selection
+	void enableSelection(bool enable);
+	//TODO: edge color edge width blurAmount
 	RenderPass* addRenderPass(RenderPassKey key, const RenderState& state, RenderPass* where);
 private:
 	void setDefaultRenderPass();

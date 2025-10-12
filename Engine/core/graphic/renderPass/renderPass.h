@@ -55,7 +55,8 @@ enum class RenderPassKey
 	CANNYBLUR,
 	SOBEL,
 	NMS,
-	DOUBLETHRESHOLD
+	DOUBLETHRESHOLD,
+	SELECTION
 };
 
 /// <summary>

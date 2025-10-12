@@ -47,13 +47,14 @@ void SelectionPass::runPass(Scene* scene)
 		if (renderObject->getType() == RenderObjectType::Mesh)
 		{
 			renderObject->beginDraw(mProgram.get());
+			mProgram->setUniform("uColor", getColor(static_cast<uint>(i + 1)));
 			renderObject->draw();
 			renderObject->endDraw(mProgram.get());
 		}
 	}
 }
 
-glm::vec3& SelectionPass::getColor(uint index) const
+glm::vec3 SelectionPass::getColor(uint index) const
 {
 	glm::vec3 res;
 	res.r = index & 0XFF;
