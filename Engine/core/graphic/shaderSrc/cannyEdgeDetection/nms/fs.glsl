@@ -1,5 +1,7 @@
 #version 460 core
 
+#define PI 3.14159265358979
+
 uniform sampler2D uGradientTexture; // r:幅度, g:方向
 
 in vec2 vTexcoord;
@@ -33,70 +35,58 @@ int getGradientDirection(float angle) {
 
 void main() {
     vec2 texelSize = 1.0 / textureSize(uGradientTexture, 0);
-    
-    // 获取当前像素的梯度幅度和方向
-    vec4 gradient = texture(uGradientTexture, vTexcoord);
-    float currentMagnitude = gradient.r;
-    float currentDirection = gradient.g;
-    
-    // 如果当前梯度幅度为0，直接输出黑色
-    if(currentMagnitude <= 0.0) {
-        FragColor = vec4(0.0);
-        return;
+    vec4 grad = texture(uGradientTexture, vTexcoord);
+    float currentMagnitude = grad.r;
+    float currentAngle = grad.g;
+
+    currentAngle = mod(currentAngle, 2.0 * PI);
+    if(currentAngle < 0.0)
+    {
+        currentAngle += 2.0 * PI;
+    }
+
+    int dir = 0;
+    float tanVal = tan(currentAngle);
+    if(abs(tanVal) <= 1.0)
+    {
+        dir = (tanVal >= 0.0)?2:3;
+    }
+    else
+    {
+        dir = tanVal > 0? 0:1;
+    }
+
+    vec2 neighhorOffset1, neighhorOffset2;
+    if(dir == 0)
+    {
+        neighhorOffset1 = vec2(0.0, 1.0) * texelSize;
+        neighhorOffset2 = vec2(0.0, -1.0) * texelSize;
+    }
+    else if(dir == 1)
+    {
+        neighhorOffset1 = vec2(1.0, 0.0) * texelSize;
+        neighhorOffset2 = vec2(-1.0, 0.0) * texelSize;
+    }
+    else if(dir == 2)
+    {
+        neighhorOffset1 = vec2(1.0, 1.0) * texelSize;
+        neighhorOffset2 = vec2(-1.0, -1.0) * texelSize;
+    }
+    else //dir == 3
+    {
+        neighhorOffset1 = vec2(1.0, -1.0) * texelSize;
+        neighhorOffset2 = vec2(-1.0, 1.0) * texelSize;
     }
     
-    // 确定梯度方向（8个可能方向之一）
-    int dir = getGradientDirection(currentDirection);
     
-    // 根据梯度方向确定需要比较的两个相邻像素
-    vec2 neighbor1Coord = vTexcoord;
-    vec2 neighbor2Coord = vTexcoord;
-    
-    // 根据方向设置相邻像素坐标
-    switch(dir) {
-        case 0:  // 0°左右（水平方向）
-            neighbor1Coord.x -= texelSize.x;
-            neighbor2Coord.x += texelSize.x;
-            break;
-        case 1:  // 45°左右（右上-左下）
-            neighbor1Coord += vec2(-texelSize.x, -texelSize.y);
-            neighbor2Coord += vec2(texelSize.x, texelSize.y);
-            break;
-        case 2:  // 90°左右（垂直方向）
-            neighbor1Coord.y -= texelSize.y;
-            neighbor2Coord.y += texelSize.y;
-            break;
-        case 3:  // 135°左右（左上-右下）
-            neighbor1Coord += vec2(-texelSize.x, texelSize.y);
-            neighbor2Coord += vec2(texelSize.x, -texelSize.y);
-            break;
-        case 4:  // 180°左右（与0°相反）
-            neighbor1Coord.x += texelSize.x;
-            neighbor2Coord.x -= texelSize.x;
-            break;
-        case 5:  // 225°左右（与45°相反）
-            neighbor1Coord += vec2(texelSize.x, texelSize.y);
-            neighbor2Coord += vec2(-texelSize.x, -texelSize.y);
-            break;
-        case 6:  // 270°左右（与90°相反）
-            neighbor1Coord.y += texelSize.y;
-            neighbor2Coord.y -= texelSize.y;
-            break;
-        case 7:  // 315°左右（与135°相反）
-            neighbor1Coord += vec2(texelSize.x, -texelSize.y);
-            neighbor2Coord += vec2(-texelSize.x, texelSize.y);
-            break;
-    }
-    
-    // 获取相邻像素的梯度幅度
-    float neighbor1Magnitude = texture(uGradientTexture, neighbor1Coord).r;
-    float neighbor2Magnitude = texture(uGradientTexture, neighbor2Coord).r;
+    float neighbor1Magnitude = texture(uGradientTexture, vTexcoord + neighhorOffset1).r;
+    float neighbor2Magnitude = texture(uGradientTexture, vTexcoord + neighhorOffset2).r;
     
     // 非极大值抑制
     if(currentMagnitude >= neighbor1Magnitude && currentMagnitude >= neighbor2Magnitude) {
-        FragColor = vec4(vec3(currentMagnitude), 1.0);
+        FragColor = vec4(currentMagnitude, 0.0, 0.0, 1.0);
     } else {
-        FragColor = vec4(0.0);
+        FragColor = vec4(0.0, 0.0, 0.0, 1.0);
     }
 }
     

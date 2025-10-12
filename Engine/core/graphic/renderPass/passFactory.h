@@ -48,6 +48,8 @@ public:
 			return std::make_unique<ToneMapping>(1.0, r, state);
 		case RenderPassKey::GRAYSCALER:
 			return std::make_unique<GrayScaleEffect>(r, state);
+		case RenderPassKey::CANNYBLUR:
+			return std::make_unique<GaussianBlur>(GaussianBlurSpecification{}, r, state);
 		case RenderPassKey::SOBEL:
 			return std::make_unique<SobelPass>(r, state);
 		case RenderPassKey::NMS:

@@ -611,7 +611,7 @@ void Renderer::enableCannyEdgeDetection(bool enable)
 			if (toneMapping)
 			{
 				auto gray = addRenderPass(RenderPassKey::GRAYSCALER, RenderState{}, toneMapping);
-				auto gaussianBlur = addRenderPass(RenderPassKey::BLOOMBLUR, RenderState{}, gray);
+				auto gaussianBlur = addRenderPass(RenderPassKey::CANNYBLUR, RenderState{}, gray);
 				auto sobel = addRenderPass(RenderPassKey::SOBEL, RenderState{}, gaussianBlur);
 				auto nms = addRenderPass(RenderPassKey::NMS, RenderState{}, sobel);
 				auto doubleThreshold = addRenderPass(RenderPassKey::DOUBLETHRESHOLD, RenderState{}, nms);
