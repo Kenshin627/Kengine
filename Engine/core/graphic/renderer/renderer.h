@@ -22,6 +22,12 @@ enum class PostProcessEffect
 	RGBSplit
 };
 
+enum class RenderStrategy
+{
+	Forward,
+	Deferred
+};
+
 struct RenderPipeLine
 {
 	RenderMode                        renderMode			  { RenderMode::DefferedShading};
@@ -71,6 +77,7 @@ public:
 	uint getLastFrameBufferTexture() const;
 	FrameBuffer* getFrameBuffer(RenderPassKey key) const;
 	RenderPass* getRenderPass(RenderPassKey key) const;
+	RenderStrategy getRenderStrategy() const { return mRenderStrategy; }
 public:
 	//POM
 	void enableParallexOcclusion(bool enable);
@@ -147,4 +154,5 @@ private:
 	std::unordered_map<RenderPassKey, RenderKeyPass>			   mPassCache;
 	RenderPipeLine												   mRenderPipeLine;
 	DebugView													   mDebugView;
+	RenderStrategy												   mRenderStrategy{ RenderStrategy::Deferred };
 };

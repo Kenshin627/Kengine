@@ -36,6 +36,8 @@ layout (std140, binding = 1) uniform LightBuffer
 uniform sampler2D diffuseMap;
 uniform sampler2D specularMap;
 uniform float     shiness;
+uniform vec3	  emissiveColor;
+uniform bool      isEmissive;
 
 void main()
 {
@@ -45,21 +47,28 @@ void main()
 	vec3  diff		 = texture(diffuseMap, vTexcoord).rgb;
 	float spec		 = texture(specularMap, vTexcoord).r;
 	int   lightCount = lightBuffer.lights[0].lightCount;
-	for(int i = 0; i < lightCount; i++)
+	if(isEmissive)
 	{
-		vec3 lightPos = lightBuffer.lights[i].position.xyz;
-		vec3 l = lightPos - vPos;
-		float distance = length(l);
-		l = normalize(l);
-		vec3 h = normalize(l + v);
-		vec3 lightColor = lightBuffer.lights[i].color.rgb;
-		float constant = lightBuffer.lights[i].attentionFactor.r;
-		float linear = lightBuffer.lights[i].attentionFactor.g;
-		float quadratic = lightBuffer.lights[i].attentionFactor.b;
-		vec3 ambient = 0.1 * lightColor * diff;
-		vec3 diffuse = max(dot(n, l), 0.0) * lightColor * diff;
-		vec3 specular = pow(max(dot(n, h), 0.0), 32) * lightColor * spec;
-		float attenuation = 1.0 / (constant + linear * distance +quadratic * (distance * distance));
-		FragColor += vec4((ambient + diffuse + specular) * attenuation, 0.0);
+		FragColor = vec4(emissiveColor, 1.0);
 	}
+	else
+	{
+		for(int i = 0; i < lightCount; i++)
+		{
+			vec3 lightPos = lightBuffer.lights[i].position.xyz;
+			vec3 l = lightPos - vPos;
+			float distance = length(l);
+			l = normalize(l);
+			vec3 h = normalize(l + v);
+			vec3 lightColor = lightBuffer.lights[i].color.rgb;
+			float constant = lightBuffer.lights[i].attentionFactor.r;
+			float linear = lightBuffer.lights[i].attentionFactor.g;
+			float quadratic = lightBuffer.lights[i].attentionFactor.b;
+			vec3 ambient = 0.1 * lightColor * diff;
+			vec3 diffuse = max(dot(n, l), 0.0) * lightColor * diff;
+			vec3 specular = pow(max(dot(n, h), 0.0), 32) * lightColor * spec;
+			float attenuation = 1.0 / (constant + linear * distance +quadratic * (distance * distance));
+			FragColor += vec4((ambient + diffuse + specular) * attenuation, 0.0);
+		}
+	}	
 }

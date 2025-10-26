@@ -25,6 +25,7 @@ public:
 	PBRMaterial(const PBRMaterialSpecification& spec);
 	~PBRMaterial();
 	virtual void setUniforms(Program* p) const override;
+	virtual void initProgram() override;
 private:
 	glm::vec3                  mAlbedoColor     { 0.2, 0.2, 0.2 };
 	float                      mMetallic	    { 0.8		    };

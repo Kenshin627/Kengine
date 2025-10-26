@@ -11,7 +11,6 @@ PBRMaterial::PBRMaterial(const PBRMaterialSpecification& spec)
 	TextureSystem& ts = TextureSystem::getInstance();
 	if (spec.albedoMapPath)
 	{
-		//
 		mAlbedoMap = ts.getTexture(spec.albedoMapPath, true, true);
 		mHasAlbedoTex = true;
 	}
@@ -64,6 +63,7 @@ PBRMaterial::PBRMaterial(const PBRMaterialSpecification& spec)
 		mHeightMap = spec.heightMap;
 		mhasHeightTex = true;
 	}
+	initProgram();
 }
 
 PBRMaterial::~PBRMaterial()
@@ -116,4 +116,13 @@ void PBRMaterial::setUniforms(Program* p) const
 	p->setUniform("hasNormalTex", mHasNormalTex);
 	p->setUniform("hasRoughnessTex", mHasRoughnessTex);
 	p->setUniform("hasHeightTex", mhasHeightTex);
+}
+
+void PBRMaterial::initProgram()
+{
+	std::initializer_list<ShaderFile> files = {
+		{ "core/graphic/shaderSrc/pbrMaterial/vs.glsl", ShaderType::Vertex },
+		{ "core/graphic/shaderSrc/pbrMaterial/fs.glsl",ShaderType::Fragment }
+	};
+	mProgram->buildFromFiles(files);
 }

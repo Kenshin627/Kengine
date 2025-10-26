@@ -313,6 +313,8 @@
     <None Include="core\graphic\shaderSrc\deferredRendering\lightingPassShader\vs.glsl" />
     <None Include="core\graphic\shaderSrc\gaussianBlur\fs.glsl" />
     <None Include="core\graphic\shaderSrc\gaussianBlur\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\pbrMaterial\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\pbrMaterial\vs.glsl" />
     <None Include="core\graphic\shaderSrc\postProcess\grayScale\fs.glsl" />
     <None Include="core\graphic\shaderSrc\postProcess\grayScale\vs.glsl" />
     <None Include="core\graphic\shaderSrc\preDepthPass\fs.glsl" />

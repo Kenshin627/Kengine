@@ -13,7 +13,7 @@ ForwardShadingPass::ForwardShadingPass(Renderer* r, const RenderState& state)
 		{
 			{
 				AttachmentType::Color,
-				TextureInternalFormat::RGBA8,
+				TextureInternalFormat::RGBA16F,
 				TextureDataFormat::RGBA,
 				TextureWarpMode::CLAMP_TO_EDGE,
 				TextureWarpMode::CLAMP_TO_EDGE,

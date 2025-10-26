@@ -452,5 +452,7 @@
     <None Include="core\graphic\shaderSrc\cannyEdgeDetection\doubleThreshold\fs.glsl" />
     <None Include="core\graphic\shaderSrc\selectionPass\vs.glsl" />
     <None Include="core\graphic\shaderSrc\selectionPass\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\pbrMaterial\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\pbrMaterial\fs.glsl" />
   </ItemGroup>
 </Project>

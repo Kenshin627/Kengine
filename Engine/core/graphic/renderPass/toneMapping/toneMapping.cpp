@@ -60,8 +60,24 @@ void ToneMapping::beginPass()
 	}
 	else
 	{
-		auto ldrPass = mOwner->getRenderPass(RenderPassKey::DEFFEREDSHADING);
-		ldrMap = ldrPass->getCurrentFrameBuffer()->getColorAttachment(0);
+		auto renderStrategy = mOwner->getRenderStrategy();
+		RenderPass* ldrPass = nullptr;
+		switch (renderStrategy)
+		{
+		case RenderStrategy::Forward:
+			ldrPass = mOwner->getRenderPass(RenderPassKey::FORWARDSHADING);
+			break;
+		case RenderStrategy::Deferred:
+			ldrPass = mOwner->getRenderPass(RenderPassKey::DEFFEREDSHADING);
+			break;
+		default:
+			break;
+		}
+		
+		if (ldrPass)
+		{
+			ldrMap = ldrPass->getCurrentFrameBuffer()->getColorAttachment(0);
+		}
 	}
 	if (ldrMap)
 	{

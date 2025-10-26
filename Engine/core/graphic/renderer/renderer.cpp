@@ -666,10 +666,17 @@ float Renderer::getHighEdgeThreshold() const
 
 void Renderer::setDefaultRenderPass()
 {
-	//TODO: default renderpass forwardShading + toneMapping
-	auto gPass = addRenderPass(RenderPassKey::GEOMETRY, RenderState{ mViewport }, nullptr);
-	auto lightingPass =addRenderPass(RenderPassKey::DEFFEREDSHADING, RenderState{ mViewport, false }, gPass);
-	auto toneMappingPass = addRenderPass(RenderPassKey::TONEMAPPING, RenderState{ mViewport, false }, lightingPass);
+	if (mRenderStrategy == RenderStrategy::Forward)
+	{
+		auto defaultPass = addRenderPass(RenderPassKey::FORWARDSHADING, RenderState{ mViewport, true }, nullptr);
+		auto toneMappingPass = addRenderPass(RenderPassKey::TONEMAPPING, RenderState{ mViewport, false }, defaultPass);
+	}
+	else
+	{
+		auto gPass = addRenderPass(RenderPassKey::GEOMETRY, RenderState{ mViewport }, nullptr);
+		auto lightingPass =addRenderPass(RenderPassKey::DEFFEREDSHADING, RenderState{ mViewport, false }, gPass);
+		auto toneMappingPass = addRenderPass(RenderPassKey::TONEMAPPING, RenderState{ mViewport, false }, lightingPass);
+	}
 }
 
 void Renderer::enableSelection(bool enable)

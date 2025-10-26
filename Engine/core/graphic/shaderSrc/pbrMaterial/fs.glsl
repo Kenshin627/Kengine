@@ -5,6 +5,13 @@
 layout (location = 0) out vec4 FragColor;
 
 in vec2 vTexcoord;
+in vec3 vPos;
+in vec3 vNormal;
+in mat3 vTBN;
+
+//only has value in heightMap
+in vec3 tangentSpaceViewPos;
+in vec3 tangentSpaceFragPos;
 
 struct Light
 {
@@ -18,14 +25,23 @@ struct Light
 	int		lightCount;
 };
 
-uniform sampler2D      gPosition;
-uniform sampler2D      gNormal;
-uniform sampler2D      gDiffuse;
-uniform sampler2D      gSpecShiness;
-uniform sampler2D      gMaterialType;
 
-uniform bool		   enableSSAO;
-uniform sampler2D      ssaoMap;
+uniform sampler2D diffuseMap;       //diffuse or albedo
+uniform sampler2D specularMap;      //spec or metallic
+uniform sampler2D normalMap;        //normal
+uniform sampler2D shinessMap;       //shiness or roughness
+uniform sampler2D heightMap;        //displace mapping
+uniform bool	  hasHeightTex;
+uniform float	  pomScale;
+uniform bool      enablePOM;
+
+uniform vec3	  albedoColor;
+uniform float	  metallic;
+uniform float	  roughness;
+uniform bool	  hasAlbedoTex;
+uniform bool	  hasMetallicTex;
+uniform bool	  hasRoughnessTex;
+uniform bool	  hasNormalTex;
 
 //cascaded shadow map
 uniform bool		   enableCSM;
@@ -173,119 +189,113 @@ float calcShadow(vec3 viewSpacePos, vec3 viewSpaceNormal, out int layer)
 
 void main()
 {
-	//calc illumulation in viewSpace
-	vec3  fragmentPos	   =  texture(gPosition, vTexcoord).xyz;
-	vec3  n				   =  normalize(texture(gNormal, vTexcoord).xyz);
-	vec3  v				   = normalize(-fragmentPos);
-
-	float ambientOcclusion = 1.0;
-	if(enableSSAO)
+	//calc illumulation in worldSpace
+	vec3 fragmentPos = vPos;
+	vec3 n;
+	if(hasNormalTex)
 	{
-		ambientOcclusion   = texture(ssaoMap, vTexcoord).r;
-	}
-	float materialType     = texture(gMaterialType, vTexcoord).r;
-
-	vec4  diffEmissive	   = texture(gDiffuse, vTexcoord);
-	//has done in load textureFlie
-	vec3  diff			   = diffEmissive.rgb;   
-	float emmisive		   = diffEmissive.a;
-	//check if si emissiveLighting return it's emissiveColor, no calc lghting
-	if(emmisive == 1.0)
-	{
-		FragColor = vec4(diff, 1.0);
+		vec3 normal = texture(normalMap, vTexcoord).xyz;
+		normal = normal * 2.0 - 1.0;
+		n = normalize(vTBN * normal);
 	}
 	else
 	{
-		vec4 specShiness	   = texture(gSpecShiness, vTexcoord);
-		float spec			   = specShiness.r;       //for pbr this is metallic
-		float shiness		   = specShiness.a;       //for pbr this is roughness
-		float metallic		   = specShiness.r;
-		float roughness		   = specShiness.g;
-		int   lightCount	   = lightBuffer.lights[0].lightCount;
-		//pbr
-		vec3 F0 = vec3(0.04);
-		F0 = mix(F0, diff, metallic);
-		for(int i = 0; i < lightCount; i++)
+		n = normalize(vNormal);
+	}
+	vec3  v = normalize(cameraBuffer.position.xyz - fragmentPos);
+	float ambientOcclusion = 1.0;
+	vec3  albedo = texture(diffuseMap, vTexcoord).rgb;
+
+	float metal = 0.0f;
+	if(hasMetallicTex)
+	{
+		metal = texture(specularMap, vTexcoord).r;
+	}
+	else
+	{
+		metal = metallic;
+	}
+	
+	float roughnessVal;
+	if(hasRoughnessTex)
+	{
+		roughnessVal = texture(shinessMap, vTexcoord).r;
+	}
+	else
+	{
+		roughnessVal = roughness;
+	}
+
+	int lightCount = lightBuffer.lights[0].lightCount;
+	//pbr
+	vec3 F0 = vec3(0.04);
+	F0 = mix(F0, albedo, metal);
+	for(int i = 0; i < lightCount; i++)
+	{
+		vec3 lightPos = lightBuffer.lights[i].position.xyz;
+		vec3 l = lightPos - fragmentPos;
+		float d = length(l);
+		l = normalize(l);
+		vec3 h = normalize(l + v);
+		vec3 lightColor = lightBuffer.lights[i].color.rgb;
+		float constant = lightBuffer.lights[i].attentionFactor.r;
+		float linear = lightBuffer.lights[i].attentionFactor.g;
+		float quadratic = lightBuffer.lights[i].attentionFactor.b;
+		vec3 ambient = 0.03 * lightColor * albedo;			
+		float attenuation = 1.0 / (constant + linear * d +quadratic * (d * d));
+		//check if spotLight
+		float intensity = 1.0;
+		if(lightBuffer.lights[i].type == 1)
 		{
-			vec4 viewLightPos = cameraBuffer.viewMatrix * vec4(lightBuffer.lights[i].position.xyz, 1.0);
-			vec3 lightPos = vec3(viewLightPos);
-			vec3 l = lightPos - fragmentPos;
-			float d = length(l);
-			l = normalize(l);
-			vec3 h = normalize(l + v);
-			vec3 lightColor = lightBuffer.lights[i].color.rgb;
-			float constant = lightBuffer.lights[i].attentionFactor.r;
-			float linear = lightBuffer.lights[i].attentionFactor.g;
-			float quadratic = lightBuffer.lights[i].attentionFactor.b;
-			vec3 ambient = 0.03 * lightColor * diff;			
-			float attenuation = 1.0 / (constant + linear * d +quadratic * (d * d));
-			//check if spotLight
-			float intensity = 1.0;
-			if(lightBuffer.lights[i].type == 1)
-			{
-				vec3  lightDirection = normalize(vec3(cameraBuffer.viewMatrix * -lightBuffer.lights[i].direction));
-				float costheta = dot(l, lightDirection);
-				float epsilon = lightBuffer.lights[i].innerCutoff - lightBuffer.lights[i].outterCutoff;
-				intensity = clamp((costheta - lightBuffer.lights[i].outterCutoff), 0.0, 1.0) / epsilon;
-			}
-
-			if(materialType == 0.0)
-			{
-				vec3 diffuse = max(dot(n, l), 0.0) * lightColor * diff;
-				vec3 specular = pow(max(dot(n, h), 0.0), shiness) * lightColor * spec;
-				diffuse   *= attenuation;
-				diffuse   *= intensity;
-				specular  *= attenuation;
-				specular  *= intensity;
-				ambient   *= ambientOcclusion;
-				FragColor += vec4(specular + ambient + diffuse, 1.0);
-			}
-			else if(materialType == 1.0)
-			{
-				float NDF = DistributionGGX(n, h, roughness);   
-				float G   = GeometrySmith(n, v, l, roughness);      
-				vec3  F   = fresnelSchlick(max(dot(h, v), 0.0), F0);
-				   
-				vec3 numerator    = NDF * G * F; 
-				float denominator = 4.0 * max(dot(n, v), 0.0) * max(dot(n, l), 0.0) + 0.0001; // + 0.0001 to prevent divide by zero
-				vec3 specular = numerator / denominator;
-
-				vec3 Ks = F;
-				vec3 Kd = vec3(1.0) - Ks;
-				Kd *= (1.0 - metallic);
-				float NdotL = max(dot(n, l), 0.0);
-
-				vec3 ao = vec3(0.03) * lightColor * diff * ambientOcclusion;
-				FragColor.rgb += (Kd * diff / PI + specular) * NdotL * lightColor *intensity * attenuation;
-				FragColor.rgb += ao;
-				FragColor.a = 1.0;
-			}
-		}	
-		//calc shadows
-		if(enableCSM)
-		{
-			int layer;
-			float shadow = calcShadow(fragmentPos, n, layer);
-			if(displayCacadedColor)
-			{
-				if(layer == 0)
-				{
-					FragColor.rgb *= vec3(1, 0, 0);
-				}
-				else if(layer == 1)
-				{
-					FragColor.rgb *= vec3(0, 1, 0);
-				}
-				else if(layer == 2)
-				{
-					FragColor.rgb *= vec3(0, 0, 1);
-				}
-				else if(layer == 3)
-				{
-					FragColor.rgb *= vec3(1, 0, 1);
-				}
-			}		
-			FragColor.rgb *= vec3((1.0 - shadow));
+			vec3  lightDirection = normalize(-lightBuffer.lights[i].direction.xyz);
+			float costheta = dot(l, lightDirection);
+			float epsilon = lightBuffer.lights[i].innerCutoff - lightBuffer.lights[i].outterCutoff;
+			intensity = clamp((costheta - lightBuffer.lights[i].outterCutoff), 0.0, 1.0) / epsilon;
 		}
+		
+		float NDF = DistributionGGX(n, h, roughnessVal);   
+		float G   = GeometrySmith(n, v, l, roughnessVal);      
+		vec3  F   = fresnelSchlick(max(dot(h, v), 0.0), F0);
+		   
+		vec3 numerator    = NDF * G * F; 
+		float denominator = 4.0 * max(dot(n, v), 0.0) * max(dot(n, l), 0.0) + 0.0001; // + 0.0001 to prevent divide by zero
+		vec3 specular = numerator / denominator;
+	
+		vec3 Ks = F;
+		vec3 Kd = vec3(1.0) - Ks;
+		Kd *= (1.0 - metal);
+		float NdotL = max(dot(n, l), 0.0);
+	
+		vec3 ao = vec3(0.03) * lightColor * albedo * ambientOcclusion;
+		FragColor.rgb += (Kd * albedo / PI + specular) * NdotL * lightColor *intensity * attenuation;
+		FragColor.rgb += ao;
+		FragColor.a = 1.0;
+		
+	}	
+	//calc shadows
+	if(enableCSM)
+	{
+		int layer;
+		float shadow = calcShadow(fragmentPos, n, layer);
+		if(displayCacadedColor)
+		{
+			if(layer == 0)
+			{
+				FragColor.rgb *= vec3(1, 0, 0);
+			}
+			else if(layer == 1)
+			{
+				FragColor.rgb *= vec3(0, 1, 0);
+			}
+			else if(layer == 2)
+			{
+				FragColor.rgb *= vec3(0, 0, 1);
+			}
+			else if(layer == 3)
+			{
+				FragColor.rgb *= vec3(1, 0, 1);
+			}
+		}		
+		FragColor.rgb *= vec3((1.0 - shadow));
 	}	
 }
