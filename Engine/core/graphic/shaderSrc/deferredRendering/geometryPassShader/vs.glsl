@@ -75,6 +75,7 @@ void main()
 		vNormal = normalize((vec3(modelViewMatrixInverseTranspose * vec4(aNormal, 0.0))));
 	}
 	vec4 animatedPos = vec4(0.0);
+	bool hasBone = false;
 	for(int i = 0; i < MAX_BONE_INFLUENCE; i++)
 	{
 		if(aBoneIds[i] < 0)
@@ -89,8 +90,13 @@ void main()
 		mat4 boneMat = animationBuffer.boneMatrices[aBoneIds[i]];
 		vec4 localPos = boneMat * vec4(aPos, 1.0);
 		animatedPos += localPos * aWeights[i];
+		hasBone = true;
 	}
 	
+	if(!hasBone)
+	{
+		animatedPos = vec4(aPos, 1.0);
+	}
 	vec4 viewPos = modelViewMatrix * animatedPos;
 	vPos = viewPos.xyz / viewPos.w;
 	vTexcoord = aTexcoord;

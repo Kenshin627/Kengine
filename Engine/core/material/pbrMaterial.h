@@ -26,6 +26,9 @@ public:
 	~PBRMaterial();
 	virtual void setUniforms(Program* p) const override;
 	virtual void initProgram() override;
+	glm::vec3 getAlbedo() const { return mAlbedoColor; }
+	std::shared_ptr<Texture2D> getAlbedoMap() const { return mAlbedoMap; }
+	std::shared_ptr<Texture2D> getNormalMap() const { return mNormalMap; }
 private:
 	glm::vec3                  mAlbedoColor     { 0.2, 0.2, 0.2 };
 	float                      mMetallic	    { 0.8		    };

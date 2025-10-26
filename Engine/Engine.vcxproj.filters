@@ -210,6 +210,9 @@
     <ClCompile Include="core\material\flatWireframeMaterial.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\material\toonShading.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -425,6 +428,9 @@
     <ClInclude Include="core\material\flatWireframeMaterial.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="core\material\toonShading.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="core\graphic\shaderSrc\blinnPhong\vs.glsl" />
@@ -463,5 +469,7 @@
     <None Include="core\graphic\shaderSrc\flatWireframe\fs.glsl" />
     <None Include="core\graphic\shaderSrc\flatWireframe\vs.glsl" />
     <None Include="core\graphic\shaderSrc\flatWireframe\gs.glsl" />
+    <None Include="core\graphic\shaderSrc\toonShading\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\toonShading\fs.glsl" />
   </ItemGroup>
 </Project>

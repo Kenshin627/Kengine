@@ -29,6 +29,7 @@
 #include "graphic/texture/textureSystem.h"
 #include "scene/animation/animator.h"
 #include "material/flatWireframeMaterial.h"
+#include "material/toonShading.h"
 
 constexpr int shadowMapResolution = 4096;
 
@@ -203,17 +204,36 @@ Application::Application(uint width, uint height, const char* title)
 	//scene->addModel(model6);
 	//scene->playAnimation(model6->getAnimation());
 
-	std::shared_ptr<Model> model7 = std::make_shared<Model>("models/dancing_stormtrooper.glb");
+	//std::shared_ptr<Model> model7 = std::make_shared<Model>("models/dancing_stormtrooper.glb");
+	//
+	//std::shared_ptr<FlatWireframeMaterial> wireframe = std::make_shared<FlatWireframeMaterial>();
+	//for (auto& i : model7->getRenderList())
+	//{
+	//	i->setMaterial(wireframe);
+	//}
+	//scene->addRenderObject(model7->getRenderList());
+	////TODO:REMOVE
+	//scene->addModel(model7);
+
+	std::shared_ptr<Model> model8 = std::make_shared<Model>("models/dancing_stormtrooper.glb");
 	
-	std::shared_ptr<FlatWireframeMaterial> wireframe = std::make_shared<FlatWireframeMaterial>();
-	for (auto& i : model7->getRenderList())
+	for (auto& i : model8->getRenderList())
 	{
-		i->setMaterial(wireframe);
+		//TODO
+		auto oldMat = i->getMaterial();
+		auto m = std::dynamic_pointer_cast<PBRMaterial>(oldMat);
+		ToonShadingSpecification spec{ m->getNormalMap(), m->getAlbedoMap(), m->getAlbedo() };
+		std::shared_ptr<ToonShading> toon = std::make_shared<ToonShading>(spec);
+		//i->setScale(5.0);
+		//i->setRotation(-90, 0, 0);
+		i->setMaterial(toon);
 	}
-	scene->addRenderObject(model7->getRenderList());
+	
+	scene->addRenderObject(model8->getRenderList());
 	//TODO:REMOVE
-	scene->addModel(model7);
-	scene->playAnimation(model7->getAnimation());
+	scene->addModel(model8);
+
+	scene->playAnimation(model8->getAnimation());
 	//scene->addRenderObject(model.getRenderList());
 	//scene->addRenderObject(model2.getRenderList());
 	//scene->addRenderObject(model3.getRenderList());

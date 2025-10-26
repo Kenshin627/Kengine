@@ -43,7 +43,6 @@ out vec3 tangentSpaceFragPos;
 
 void main()
 {	
-	mat4 modelViewMatrix = cameraBuffer.viewMatrix* modelMatrix;
 	if(hasHeightTex)
 	{
 		vec3 pos = vec3(modelMatrix * vec4(aPos, 1.0));
@@ -85,10 +84,10 @@ void main()
 			animatedPos = vec4(aPos, 1.0);
 			break;
 		}
-		hasBone = true;
 		mat4 boneMat = animationBuffer.boneMatrices[aBoneIds[i]];
 		vec4 localPos = boneMat * vec4(aPos, 1.0);
 		animatedPos += localPos * aWeights[i];
+		hasBone = true;
 	}
 	
 	if(!hasBone)

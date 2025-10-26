@@ -53,7 +53,7 @@ Model::Model(const std::string& path)
 	Assimp::Importer importer;
 	mFileType = path.substr(path.find_last_of("."));
 	uint importFlags = aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace;
-	if (mFileType == "Glb")
+	if (mFileType == ".glb")
 	{
 		
 	}
@@ -465,7 +465,7 @@ std::shared_ptr<PBRMaterial> Model::reslovePBRMaterial(const aiScene* scene, aiM
 		aiReturn roughnessRes = mat->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness);
 		if (roughnessRes == aiReturn_SUCCESS)
 		{
-			spec.roughness = roughnessRes;
+			spec.roughness = roughness;
 		}
 	}
 	return std::make_shared<PBRMaterial>(spec);

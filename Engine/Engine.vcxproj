@@ -198,6 +198,7 @@
     <ClCompile Include="core\material\material.cpp" />
     <ClCompile Include="core\material\pbrMaterial.cpp" />
     <ClCompile Include="core\material\phongMaterial.cpp" />
+    <ClCompile Include="core\material\toonShading.cpp" />
     <ClCompile Include="core\scene\animation\animation.cpp" />
     <ClCompile Include="core\scene\animation\animator.cpp" />
     <ClCompile Include="core\scene\animation\bone.cpp" />
@@ -269,6 +270,7 @@
     <ClInclude Include="core\material\material.h" />
     <ClInclude Include="core\material\pbrMaterial.h" />
     <ClInclude Include="core\material\phongMaterial.h" />
+    <ClInclude Include="core\material\toonShading.h" />
     <ClInclude Include="core\scene\animation\animation.h" />
     <ClInclude Include="core\scene\animation\animator.h" />
     <ClInclude Include="core\scene\animation\bone.h" />
@@ -332,6 +334,8 @@
     <None Include="core\graphic\shaderSrc\ssao\occlusion\vs.glsl" />
     <None Include="core\graphic\shaderSrc\toneMapping\fs.glsl" />
     <None Include="core\graphic\shaderSrc\toneMapping\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\toonShading\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\toonShading\vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
