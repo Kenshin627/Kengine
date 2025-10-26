@@ -28,6 +28,7 @@
 #include "graphic/renderPass/toneMapping/toneMapping.h"
 #include "graphic/texture/textureSystem.h"
 #include "scene/animation/animator.h"
+#include "material/flatWireframeMaterial.h"
 
 constexpr int shadowMapResolution = 4096;
 
@@ -204,6 +205,11 @@ Application::Application(uint width, uint height, const char* title)
 
 	std::shared_ptr<Model> model7 = std::make_shared<Model>("models/dancing_stormtrooper.glb");
 	
+	std::shared_ptr<FlatWireframeMaterial> wireframe = std::make_shared<FlatWireframeMaterial>();
+	for (auto& i : model7->getRenderList())
+	{
+		i->setMaterial(wireframe);
+	}
 	scene->addRenderObject(model7->getRenderList());
 	//TODO:REMOVE
 	scene->addModel(model7);

@@ -115,7 +115,6 @@ void PhongMaterial::endDraw()
 		mSpecularMap->unBind(1);
 	}
 
-
 	if (mHasNormalTex)
 	{
 		mNormalMap->unBind(2);

@@ -154,5 +154,5 @@ private:
 	std::unordered_map<RenderPassKey, RenderKeyPass>			   mPassCache;
 	RenderPipeLine												   mRenderPipeLine;
 	DebugView													   mDebugView;
-	RenderStrategy												   mRenderStrategy{ RenderStrategy::Deferred };
+	RenderStrategy												   mRenderStrategy{ RenderStrategy::Forward };
 };
