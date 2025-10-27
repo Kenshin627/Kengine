@@ -30,6 +30,8 @@
 #include "scene/animation/animator.h"
 #include "material/flatWireframeMaterial.h"
 #include "material/toonShading.h"
+#include "geometry/grassGround.h"
+#include "material/grassMaterial.h"
 
 constexpr int shadowMapResolution = 4096;
 
@@ -49,7 +51,8 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<Rectangle> wallGeom = std::make_shared<Rectangle>(100.0f, 100.0f, glm::vec2{0.5, 0.5});
 	std::shared_ptr<Cube> cube = std::make_shared<Cube>(1.0f, 1.0f, 1.0f);
 	std::shared_ptr<Sphere> sphereGeometry = std::make_shared<Sphere>(1.0f, 128.0f, 128.0f);
-
+	std::shared_ptr<GrassGround> grass = std::make_shared<GrassGround>(5.0f, 5.0f, glm::vec2(0.2, 0.2));
+	std::shared_ptr<GrassMaterial> grassMat = std::make_shared<GrassMaterial>();
 	//MATERIAL
 	PBRMaterialSpecification groundSpec;
 	groundSpec.albedoMapPath    = "images/black-white-tile-bl/black-white-tile_albedo.png";
@@ -129,9 +132,13 @@ Application::Application(uint width, uint height, const char* title)
 	pbrSpec7.normalMapPath = "images/oakfloor/normal.png";
 	pbrSpec7.heightMapPath = "images/oakfloor/height.png";
 	std::shared_ptr<PBRMaterial> pbrMat7 = std::make_shared<PBRMaterial>(pbrSpec7);
-
+	BlinnPhongMaterialSpecification spec;
+	spec.diffuseColor = glm::vec3(6.0 / 255.0, 96.0 / 255.0, 18.0 / 255.0);
+	spec.specularColor = glm::vec3(0, 0, 0);
+	std::shared_ptr<PhongMaterial> groundMat2 = std::make_shared<PhongMaterial>(spec);
 	//RENDER OBJECT
-	std::shared_ptr<RenderObject> ground = std::make_shared<RenderObject>("ground", groundGeom, pbrMat7);
+	std::shared_ptr<RenderObject> ground = std::make_shared<RenderObject>("ground", groundGeom, groundMat2);
+	std::shared_ptr<RenderObject> grassObj = std::make_shared<RenderObject>("grass", grass, grassMat);
 	std::shared_ptr<RenderObject> wall = std::make_shared<RenderObject>("wall", wallGeom, wall2Mat);
 	wall->setRotation(90, 0, 0);
 	wall->setPosition(0, 0, -10);
@@ -155,7 +162,7 @@ Application::Application(uint width, uint height, const char* title)
 	box2->setPosition(5, 0.5, -4);
 	box2->setRotation(0, 25, 0);
 	box2->setScale(0.5);
-	scene->addRenderObject({ ground/*, wall, sphere1, sphere2, sphere3,sphere4, sphere5, sphere6, box1, box2*/ });
+	scene->addRenderObject({ grassObj, ground/*, wall, sphere1, sphere2, sphere3,sphere4, sphere5, sphere6, box1, box2*/ });
 	
 	//model
 	/*Model model("models/backpack/backpack.obj");
@@ -224,9 +231,8 @@ Application::Application(uint width, uint height, const char* title)
 		auto m = std::dynamic_pointer_cast<PBRMaterial>(oldMat);
 		ToonShadingSpecification spec{ m->getNormalMap(), m->getAlbedoMap(), m->getAlbedo() };
 		std::shared_ptr<ToonShading> toon = std::make_shared<ToonShading>(spec);
-		//i->setScale(5.0);
+		i->setScale(0.5);
 		//i->setRotation(-90, 0, 0);
-		i->setMaterial(toon);
 	}
 	
 	scene->addRenderObject(model8->getRenderList());
