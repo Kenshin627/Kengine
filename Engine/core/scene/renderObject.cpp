@@ -2,6 +2,7 @@
 #include "material/material.h"
 #include "geometry/geometry.h"
 #include <gtc/quaternion.hpp>
+#include <GLFW/glfw3.h>
 
 
 RenderObject::RenderObject(const std::string& name, std::shared_ptr<Geometry> mesh, std::shared_ptr<Material> material)
@@ -36,6 +37,8 @@ void RenderObject::beginDraw(Program* p)
 		mMaterial->beginDraw();
 		mMaterial->getProgram()->setUniform("modelMatrix", mModelMatrix);
 		mMaterial->getProgram()->setUniform("modelMatrixInvertTranspose", mModelMatrixInvertTranspose);
+		float time = glfwGetTime();
+		mMaterial->getProgram()->setUniform("time", time);
 	}
 	mMesh->beginDraw();
 }

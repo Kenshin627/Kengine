@@ -11,6 +11,17 @@ uniform float bladeHeightRandom;
 uniform float bladeBendRandom;
 uniform float bladeForward;
 uniform float bladeCurve;
+uniform vec4 windScaleOffset;
+uniform vec2 windFrequency;
+uniform float windStrength;
+uniform sampler2D windTexture;
+uniform float time;
+
+//p->setUniform("windScaleOffset", mSpec.windScaleOffset);
+//p->setUniform("windFrequency", mSpec.windFrequency);
+//p->setUniform("windStrength", mSpec.windStrength);
+//mWindTexture->bind(0);
+//p->setUniform("windTexture", 0);
 
 layout (std140, binding = 0) uniform CameraBuffer
 {
@@ -74,12 +85,17 @@ void main()
 	mat3 TBN = mat3(t, b, n);
 	mat3 FaceMatrix = AngleAxis3x3(rand(pos.xyz) * TWOPI, vec3(0, 0, 1));
 	mat3 BendMatrix = AngleAxis3x3(rand(pos.zzx) * PI * 0.5 * bladeBendRandom, vec3(-1, 0, 0));
-	mat3 transformMatrix = TBN * FaceMatrix * BendMatrix;
-	mat3 transformFacingMatrix = TBN * FaceMatrix;
+	
 	float h = bladeHeight + (rand(pos.zyx) * 2.0 - 1.0) * bladeHeightRandom;
 	float w = bladeWidth + (rand(pos.xzy) * 2.0 - 1.0) * bladeWidthRandom;
 	float forward = rand(pos.yyz) * bladeForward;
 
+	vec2 uv = pos.xz * windScaleOffset.xy + windScaleOffset.zw + time * windFrequency;
+	vec2 windSample = (texture(windTexture, uv).xy * 2.0 - 1.0) * windStrength;
+	vec3 wind = normalize(vec3(windSample.x, windSample.y, 0));
+	mat3 windRotation = AngleAxis3x3(PI * (windSample.x + windSample.y), wind);
+	mat3 transformMatrix = TBN * windRotation * FaceMatrix * BendMatrix;
+	mat3 transformFacingMatrix = TBN * FaceMatrix;
 	for(int i = 0; i < BLADESEGMENT; i++)
 	{
 		float t = i / BLADESEGMENT;

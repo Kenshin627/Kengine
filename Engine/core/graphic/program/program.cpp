@@ -125,6 +125,16 @@ void Program::setUniform(const char* name, float value) const
 	}
 }
 
+void Program::setUniform(const char* name, double time) const
+{
+	int loc = getUniformLocation(name);
+	if (loc != -1)
+	{
+
+		GLCALL(glUniform1d(loc, time));
+	}
+}
+
 void Program::setUniform(const char* name, uint size, float* data) const
 {
 	int loc = getUniformLocation(name);

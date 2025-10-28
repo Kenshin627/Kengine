@@ -162,7 +162,7 @@ Application::Application(uint width, uint height, const char* title)
 	box2->setPosition(5, 0.5, -4);
 	box2->setRotation(0, 25, 0);
 	box2->setScale(0.5);
-	scene->addRenderObject({ grassObj, ground/*, wall, sphere1, sphere2, sphere3,sphere4, sphere5, sphere6, box1, box2*/ });
+	scene->addRenderObject({ ground, grassObj/*, wall, sphere1, sphere2, sphere3,sphere4, sphere5, sphere6, box1, box2*/ });
 	
 	//model
 	/*Model model("models/backpack/backpack.obj");
