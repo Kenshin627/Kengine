@@ -58,5 +58,9 @@ void main()
 	vec3 smoothness = delta * smoothing;
 	vec3 edgeFactor = smoothstep(thick - smoothness, thick + smoothness, baries);
 	float wireframeFactor = min(min(edgeFactor.x, edgeFactor.y), edgeFactor.z);
-	FragColor = vec4(mix(lineColor, faceShadeColor, wireframeFactor), 1.0);
+	//wireframe + flat
+	//FragColor = vec4(mix(lineColor, faceShadeColor, wireframeFactor), 1.0);
+
+	//wireframe
+	FragColor = vec4(lineColor * wireframeFactor, 1.0);
 }
