@@ -668,7 +668,7 @@ void Renderer::setDefaultRenderPass()
 {
 	if (mRenderStrategy == RenderStrategy::Forward)
 	{
-		auto defaultPass = addRenderPass(RenderPassKey::FORWARDSHADING, RenderState{ mViewport, true }, nullptr);
+		auto defaultPass = addRenderPass(RenderPassKey::WIREFRAME, RenderState{ mViewport, true }, nullptr);
 		auto toneMappingPass = addRenderPass(RenderPassKey::TONEMAPPING, RenderState{ mViewport, false }, defaultPass);
 	}
 	else

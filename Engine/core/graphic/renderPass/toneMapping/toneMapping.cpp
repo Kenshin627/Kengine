@@ -65,7 +65,7 @@ void ToneMapping::beginPass()
 		switch (renderStrategy)
 		{
 		case RenderStrategy::Forward:
-			ldrPass = mOwner->getRenderPass(RenderPassKey::FORWARDSHADING);
+			ldrPass = mOwner->getRenderPass(RenderPassKey::WIREFRAME);
 			break;
 		case RenderStrategy::Deferred:
 			ldrPass = mOwner->getRenderPass(RenderPassKey::DEFFEREDSHADING);

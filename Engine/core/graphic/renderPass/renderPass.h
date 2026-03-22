@@ -56,7 +56,9 @@ enum class RenderPassKey
 	SOBEL,
 	NMS,
 	DOUBLETHRESHOLD,
-	SELECTION
+	SELECTION,
+	FXAA,
+	WIREFRAME
 };
 
 /// <summary>

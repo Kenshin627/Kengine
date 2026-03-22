@@ -178,9 +178,11 @@
     <ClCompile Include="core\graphic\renderPass\cannyEdgeDetection\nms\nonMaxSuppression.cpp" />
     <ClCompile Include="core\graphic\renderPass\cannyEdgeDetection\sobel\sobelPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\cascadeShadowMapPass\cascadeShadowMapPass.cpp" />
+    <ClCompile Include="core\graphic\renderPass\flatWireframe\flatWireframePass.cpp" />
     <ClCompile Include="core\graphic\renderPass\forwardShading\forwardShadingPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\deferredRendering\geometryPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\deferredRendering\lightingPass.cpp" />
+    <ClCompile Include="core\graphic\renderPass\fxaaPass\fxaaPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\gaussianBlur\gaussianBlur.cpp" />
     <ClCompile Include="core\graphic\renderPass\postProcess\grayScaleEffect\grayScaleEffect.cpp" />
     <ClCompile Include="core\graphic\renderPass\preDepthPass\preDepthPass.cpp" />
@@ -251,9 +253,11 @@
     <ClInclude Include="core\graphic\renderPass\cannyEdgeDetection\nms\nonMaxSuppression.h" />
     <ClInclude Include="core\graphic\renderPass\cannyEdgeDetection\sobel\sobelPass.h" />
     <ClInclude Include="core\graphic\renderPass\cascadeShadowMapPass\cascadeShadowMapPass.h" />
+    <ClInclude Include="core\graphic\renderPass\flatWireframe\flatWireframePass.h" />
     <ClInclude Include="core\graphic\renderPass\forwardShading\forwardShadingPass.h" />
     <ClInclude Include="core\graphic\renderPass\deferredRendering\geometryPass.h" />
     <ClInclude Include="core\graphic\renderPass\deferredRendering\lightingPass.h" />
+    <ClInclude Include="core\graphic\renderPass\fxaaPass\fxaaPass.h" />
     <ClInclude Include="core\graphic\renderPass\gaussianBlur\gaussianBlur.h" />
     <ClInclude Include="core\graphic\renderPass\passFactory.h" />
     <ClInclude Include="core\graphic\renderPass\postProcess\grayScaleEffect\grayScaleEffect.h" />
@@ -322,6 +326,8 @@
     <None Include="core\graphic\shaderSrc\flatWireframe\fs.glsl" />
     <None Include="core\graphic\shaderSrc\flatWireframe\gs.glsl" />
     <None Include="core\graphic\shaderSrc\flatWireframe\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\fxaa\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\fxaa\vs.glsl" />
     <None Include="core\graphic\shaderSrc\gaussianBlur\fs.glsl" />
     <None Include="core\graphic\shaderSrc\gaussianBlur\vs.glsl" />
     <None Include="core\graphic\shaderSrc\grass\fs.glsl" />

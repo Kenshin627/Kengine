@@ -137,8 +137,8 @@ Application::Application(uint width, uint height, const char* title)
 	spec.specularColor = glm::vec3(0, 0, 0);
 	std::shared_ptr<PhongMaterial> groundMat2 = std::make_shared<PhongMaterial>(spec);
 	//RENDER OBJECT
-	std::shared_ptr<RenderObject> ground = std::make_shared<RenderObject>("ground", groundGeom, groundMat2);
-	std::shared_ptr<RenderObject> grassObj = std::make_shared<RenderObject>("grass", grass, grassMat);
+	std::shared_ptr<RenderObject> ground = std::make_shared<RenderObject>("ground", groundGeom, pbrMat7);
+	//std::shared_ptr<RenderObject> grassObj = std::make_shared<RenderObject>("grass", grass, grassMat);
 	std::shared_ptr<RenderObject> wall = std::make_shared<RenderObject>("wall", wallGeom, wall2Mat);
 	wall->setRotation(90, 0, 0);
 	wall->setPosition(0, 0, -10);
@@ -162,7 +162,7 @@ Application::Application(uint width, uint height, const char* title)
 	box2->setPosition(5, 0.5, -4);
 	box2->setRotation(0, 25, 0);
 	box2->setScale(0.5);
-	scene->addRenderObject({ ground, grassObj/*, wall, sphere1, sphere2, sphere3,sphere4, sphere5, sphere6, box1, box2*/ });
+	scene->addRenderObject({ ground, wall, sphere5, sphere6 });
 	
 	//model
 	/*Model model("models/backpack/backpack.obj");
@@ -171,16 +171,16 @@ Application::Application(uint width, uint height, const char* title)
 		renderObject->setPosition(2, 1, -3);
 		renderObject->setScale(0.3);
 	}*/
-	//
-	//Model model2("models/Cow.glb");
-	//for (auto& renderObject : model2.getRenderList())
-	//{
-	//	renderObject->setPosition(2, 0, 2);
-	//	renderObject->setRotation(0, 100, 0);
-	//	renderObject->setScale(0.005);
-	//}
-	//
-	//
+	
+	auto model2 = std::make_shared< Model>("models/Cow.glb");
+	for (auto& renderObject : model2->getRenderList())
+	{
+		renderObject->setPosition(2, 0, 2);
+		renderObject->setRotation(0, 100, 0);
+		renderObject->setScale(0.005);
+	}
+	
+	
 	//Model model3("models/Large_troll.glb");
 	//for (auto& renderObject : model3.getRenderList())
 	//{
@@ -235,9 +235,11 @@ Application::Application(uint width, uint height, const char* title)
 		//i->setRotation(-90, 0, 0);
 	}
 	
+	//scene->addRenderObject(model2->getRenderList());
 	scene->addRenderObject(model8->getRenderList());
 	//TODO:REMOVE
 	scene->addModel(model8);
+	//scene->addModel(model2);
 
 	scene->playAnimation(model8->getAnimation());
 	//scene->addRenderObject(model.getRenderList());

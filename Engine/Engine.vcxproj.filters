@@ -219,6 +219,12 @@
     <ClCompile Include="core\geometry\grassGround.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\graphic\renderPass\fxaaPass\fxaaPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\graphic\renderPass\flatWireframe\flatWireframePass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -443,6 +449,12 @@
     <ClInclude Include="core\geometry\grassGround.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\fxaaPass\fxaaPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\flatWireframe\flatWireframePass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="core\graphic\shaderSrc\blinnPhong\vs.glsl" />
@@ -488,5 +500,7 @@
     <None Include="core\graphic\shaderSrc\grass\tes.glsl" />
     <None Include="core\graphic\shaderSrc\grass\gs.glsl" />
     <None Include="core\graphic\shaderSrc\grass\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\fxaa\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\fxaa\fs.glsl" />
   </ItemGroup>
 </Project>

@@ -15,6 +15,7 @@
 #include "cannyEdgeDetection/sobel/sobelPass.h"
 #include "cannyEdgeDetection/nms/nonMaxSuppression.h"
 #include "cannyEdgeDetection/doubleThreshold/doubleThreshold.h"
+#include "flatWireframe/flatWireframePass.h"
 
 class PassFactory
 {
@@ -58,6 +59,10 @@ public:
 			return std::make_unique<DoubleThreshold>(r, state);
 		case RenderPassKey::SELECTION:
 			return std::make_unique<SelectionPass>(r, state);
+		case RenderPassKey::FXAA:
+			//return std::make_unique<FxaaPass>(r, state);
+		case RenderPassKey::WIREFRAME: 
+			return std::make_unique<FlatWireFramePass>(glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(0.1f, 0.1f, 0.1f), 0.5f, 0.1f, r, state);
 		default:
 			break;
 		}
