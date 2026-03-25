@@ -1049,6 +1049,7 @@ void Renderer::renderUI()
 	}
 
 	//pcss
+	auto pcss = static_cast<PCSS*>(getRenderPass(RenderPassKey::PCSS));
 	bool pcssChecked = mRenderPipeLine.enablePCSS;
 	if (ImGui::Checkbox("PCSS", &pcssChecked))
 	{
@@ -1059,9 +1060,70 @@ void Renderer::renderUI()
 		ImGui::BeginDisabled();
 	}
 	//PCSS Settings
+	if (pcssChecked && pcss)
+	{
+		int blockSearchSamples = pcss->getBlockSearchSamples();
+		if (ImGui::DragInt("BlockSearchSamples", &blockSearchSamples, 1.0f, 25, 128))
+		{
+			pcss->setBlockSearchSamples(blockSearchSamples);
+		}
+
+		float lightSize = pcss->getLightRadiusUV();
+		if (ImGui::DragFloat("LightSize", &lightSize, 0.001f, 0.001f, 1.0f))
+		{
+			pcss->setLightRadiusUV(lightSize);
+		}
+
+		float lightNear = pcss->getLightNear();
+		if (ImGui::DragFloat("LightNear", &lightNear, 0.001f, 0.0f, 100.0f))
+		{
+			pcss->setLightNear(lightNear);
+		}
+
+		float lightFar = pcss->getLightFar();
+		if (ImGui::DragFloat("LightFar", &lightFar, 0.001f, 0.0f, 100.0f))
+		{
+			pcss->setLightFar(lightFar);
+		}
+
+		int pcfSamples = pcss->getPcfSamples();
+		if (ImGui::DragInt("PcfSamples", &pcfSamples, 1, 25, 128))
+		{
+			pcss->setPcfSamples(pcfSamples);
+		}
+	}
+
+	// debugView
+	ImGui::PushID("pcss");
+	bool pcssDebugVie = mRenderPipeLine.debugPCSS;
+	if (ImGui::Checkbox("DebugView", &pcssDebugVie))
+	{
+		mRenderPipeLine.debugPCSS = pcssDebugVie;
+		if (pcssDebugVie)
+		{
+			mDebugView.colorAttachmentIndex = 0;
+			mDebugView.fbo = static_cast<PCSS*>(getRenderPass(RenderPassKey::PCSS))->getCurrentFrameBuffer();
+			mDebugView.type = DebugViewAttachmentType::Depth;
+		}
+		else
+		{
+			resetDebugView();
+		}
+	}
+	ImGui::PopID();
+
 	if (!pcssChecked)
 	{
 		ImGui::EndDisabled();
+	}
+
+	if (!pcssChecked)
+	{
+		if (mRenderPipeLine.debugPCSS)
+		{
+			resetDebugView();
+			mRenderPipeLine.debugPCSS = false;
+		}
 	}
 
 	//Canny Edge Detection	

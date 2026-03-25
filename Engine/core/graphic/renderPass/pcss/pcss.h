@@ -12,19 +12,21 @@ public:
 	float getLightNear() const;
 	float getLightFar() const;
 	int getPcfSamples() const;
+
+	void setBlockSearchSamples(int sample);
+	void setLightRadiusUV(float lightUVSize);
+	void setLightNear(float lightNear);
+	void setLightFar(float lightFar);
+	void setPcfSamples(int sample);
+
 	void updateLightViewMatrix();
 private:
 private:
 	std::unique_ptr<UniformBuffer> mLightMatricesBuffer;
-	//uniform int   uBlockerSearchSamples;
-	//uniform float uLightRadiusUV;
-	//uniform float uLightNear;
-	//uniform float uLightFar;
-	//uniform int   uPcfSamples;
-	int		mBlockerSearchSamples{ 128 };
-	float	mLightRadiusUV{ 0.005f };
-	float	mLightNear{};
-	float	mLightFar{};
-	int		mPcfSamples{ 128 };
+	int							   mBlockerSearchSamples{ 128 };
+	float						   mLightRadiusUV{ 0.005f };
+	float						   mLightNear{};
+	float						   mLightFar{};
+	int							   mPcfSamples{ 128 };
 };
 

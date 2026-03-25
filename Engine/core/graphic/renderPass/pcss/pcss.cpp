@@ -104,6 +104,31 @@ int PCSS::getPcfSamples() const
 	return mPcfSamples;
 }
 
+void PCSS::setBlockSearchSamples(int sample)
+{
+	mBlockerSearchSamples = sample;
+}
+
+void PCSS::setLightRadiusUV(float lightUVSize)
+{
+	mLightRadiusUV = lightUVSize;
+}
+
+void PCSS::setLightNear(float lightNear)
+{
+	mLightNear = lightNear;
+}
+
+void PCSS::setLightFar(float lightFar)
+{
+	mLightFar = lightFar;
+}
+
+void PCSS::setPcfSamples(int sample)
+{
+	mPcfSamples = sample;
+}
+
 void PCSS::updateLightViewMatrix()
 {
 	int lightIndex = mOwner->getCurrentScene()->getShadowLightIndex();

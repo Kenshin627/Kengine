@@ -44,6 +44,7 @@ struct RenderPipeLine
 	bool							  enableSelection		  { false					  };
 	bool							  debugSelection		  { false					  };
 	bool							  enablePCSS			  { false					  };
+	bool							  debugPCSS				  { false					  };
 };
 
 struct RenderKeyPass
