@@ -8,6 +8,7 @@
 #include "scene/scene.h"
 #include "core.h"
 #include "geometryPass.h"
+#include "graphic/renderPass/pcss/pcss.h"
 
 LightingPass::LightingPass(Renderer* r, const RenderState& state)
 	:RenderPass(r, state)
@@ -106,5 +107,23 @@ void LightingPass::beginPass()
 
 		//pcf enable
 		mProgram->setUniform("enablePCF", cascadedShadowMapPass->getEnablePCF());
+	}
+
+	//pcss
+	auto pcssPass = mOwner->getRenderPass(RenderPassKey::PCSS);
+	mProgram->setUniform("enablePCSS", pcssPass != nullptr && pcssPass->isActive());
+	if (pcssPass != nullptr && pcssPass->isActive())
+	{
+		FrameBuffer* pcssBuffer = pcssPass->getCurrentFrameBuffer();
+		Texture* shadowDepthTex = pcssBuffer->getDepthStencilAttachment();
+		shadowDepthTex->bind(7);
+		mProgram->setUniform("pcssShadowMap", 7);
+		PCSS* pcss = static_cast<PCSS*>(pcssPass);
+
+		mProgram->setUniform("uBlockerSearchSamples", pcss->getBlockSearchSamples());
+		mProgram->setUniform("uLightRadiusUV", pcss->getLightRadiusUV());
+		mProgram->setUniform("uLightNear", pcss->getLightNear());
+		mProgram->setUniform("uLightFar", pcss->getLightFar());
+		mProgram->setUniform("uPcfSamples", pcss->getPcfSamples());
 	}
 }

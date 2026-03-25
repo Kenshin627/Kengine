@@ -43,6 +43,7 @@ struct RenderPipeLine
 	bool							  enableCannyEdgeDetection{ false					  };
 	bool							  enableSelection		  { false					  };
 	bool							  debugSelection		  { false					  };
+	bool							  enablePCSS			  { false					  };
 };
 
 struct RenderKeyPass
@@ -129,6 +130,9 @@ public:
 	void enableCSM(bool enable);
 	bool getEnableCSM() const;
 
+	void enablePCSS(bool enable);
+	bool getEnablePCSS(bool enable) const;
+
 	//canny edge detection
 	void enableCannyEdgeDetection(bool enable);
 	void setLowEdgeTrheshold(float low);
@@ -154,5 +158,5 @@ private:
 	std::unordered_map<RenderPassKey, RenderKeyPass>			   mPassCache;
 	RenderPipeLine												   mRenderPipeLine;
 	DebugView													   mDebugView;
-	RenderStrategy												   mRenderStrategy{ RenderStrategy::Forward };
+	RenderStrategy												   mRenderStrategy{ RenderStrategy::Deferred };
 };

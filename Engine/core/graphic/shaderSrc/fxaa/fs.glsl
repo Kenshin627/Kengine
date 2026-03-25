@@ -209,6 +209,7 @@ void main()
 	
 	if (CanSkipFXAA(luma)) 
 	{
+		//discard;
 		FragColor = GetSource(vTexcoord);
 	}
 	else
@@ -225,7 +226,7 @@ void main()
 			blendUV.x += blendFactor * edge.pixelStep;
 		}
 		FragColor = GetSource(blendUV);
-		FragColor = vec4(vec3(edge.lumaGradient), 1.0);
+		//FragColor = vec4(vec3(edge.lumaGradient), 1.0);
 	}
 	
 }

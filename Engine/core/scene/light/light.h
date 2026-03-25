@@ -29,6 +29,7 @@ struct GPULightBufferDataWrapper
 };
 
 class CascadeShadowMapPass;
+class PCSS;
 class Light:public RenderObject
 {
 public:
@@ -57,7 +58,7 @@ public:
 	float getQuadratic() const;
 	LightType getType() const;
 	void updateLightBuffer();
-	void castShadow(CascadeShadowMapPass* csmPass);
+	void castShadow(PCSS* csmPass);
 	void disableCastShadow();
 	bool isCastShadow() const { return mCastShadow; }
 protected:
@@ -70,6 +71,6 @@ private:
 	float				  mLinear{ 0.09f };
 	float				  mQuadratic{ 0.032f };
 	//TODO: using eventDispatcher
-	CascadeShadowMapPass* mCsmPass	 {nullptr};
+	PCSS* mCsmPass	 {nullptr};
 	bool				  mCastShadow{ false };
 };

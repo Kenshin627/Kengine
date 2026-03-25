@@ -3,6 +3,7 @@
 #include "material/phongMaterial.h"
 #include "scene/scene.h"
 #include "graphic/renderPass/cascadeShadowMapPass/cascadeShadowMapPass.h"
+#include "graphic/renderPass/pcss/pcss.h"
 
 Light::Light(const std::string& name, const glm::vec3& pos, const glm::vec3& dir, const glm::vec3& color, float kc, float kl, float kq)
 	:RenderObject(name),
@@ -148,17 +149,17 @@ void Light::updateLightBuffer()
 	getOwner()->updateLightBuffer();
 	if (mCsmPass)
 	{
-		mCsmPass->updateLightMatricesBuffer();
+		mCsmPass->updateLightViewMatrix();
 	}
 }
 
-void Light::castShadow(CascadeShadowMapPass* csmPass)
+void Light::castShadow(PCSS* csmPass)
 {
 	mCsmPass = csmPass;
 	mCastShadow = true;
 	if (csmPass)
 	{
-		mCsmPass->cascadedSplit();
+		mCsmPass->updateLightViewMatrix();
 	}
 }
 
@@ -167,7 +168,7 @@ void Light::disableCastShadow()
 	mCastShadow = false;
 	if (mCsmPass)
 	{
-		mCsmPass->updateLightMatricesBuffer();
+		mCsmPass->updateLightViewMatrix();
 		mCsmPass = nullptr;
 	}
 }

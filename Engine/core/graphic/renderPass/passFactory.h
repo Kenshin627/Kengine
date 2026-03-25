@@ -17,6 +17,8 @@
 #include "cannyEdgeDetection/doubleThreshold/doubleThreshold.h"
 #include "fxaaPass/fxaaPass.h"
 #include "flatWireframe/flatWireframePass.h"
+#include "pcss/pcss.h"
+
 class PassFactory
 {
 public:
@@ -63,6 +65,8 @@ public:
 			return std::make_unique<FXAA>(r, state);
 		case RenderPassKey::WIREFRAME: 
 			return std::make_unique<FlatWireFramePass>(glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(0.1f, 0.1f, 0.1f), 0.5f, 0.1f, r, state);
+		case RenderPassKey::PCSS:
+			return std::make_unique<PCSS>(r, state);
 		default:
 			break;
 		}

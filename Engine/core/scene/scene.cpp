@@ -10,6 +10,7 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "scene/light/spotLight/spotLight.h"
 #include "graphic/renderPass/cascadeShadowMapPass/cascadeShadowMapPass.h"
+#include "graphic/renderPass/pcss/pcss.h"
 #include "animation/animator.h"
 #include "model/model.h"
 
@@ -312,7 +313,7 @@ void Scene::updateSceneUI()
 			{
 				if (castShadow)
 				{
-					auto csm = static_cast<CascadeShadowMapPass*>(mRenderer->getRenderPass(RenderPassKey::CSM));
+					auto csm = static_cast<PCSS*>(mRenderer->getRenderPass(RenderPassKey::PCSS));
 					spot->castShadow(csm);
 				}
 				else

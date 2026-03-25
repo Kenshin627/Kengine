@@ -601,6 +601,47 @@ bool Renderer::getEnableCSM() const
 	return mRenderPipeLine.enableCascadedShadowMap;
 }
 
+void Renderer::enablePCSS(bool enable)
+{
+	if (mRenderPipeLine.enablePCSS != enable)
+	{
+		mRenderPipeLine.enablePCSS = enable;
+		if (enable)
+		{
+			addRenderPass(RenderPassKey::PCSS, RenderState{ {0, 0, 1000, 1000}, true }, nullptr);
+		}
+		else
+		{
+			RenderPass* prev{ nullptr };
+			RenderPass* next{ nullptr };
+			RenderPass* pcssPass{ nullptr };
+			auto csmIter = mPassCache.find(RenderPassKey::PCSS);
+			if (csmIter != mPassCache.end())
+			{
+				csmIter->second.pass->deActive();
+				pcssPass = csmIter->second.pass.get();
+				if (pcssPass)
+				{
+					prev = pcssPass->prev();
+					next = pcssPass->next();
+				}
+			}
+
+			if (prev && next)
+			{
+				prev->setNext(next);
+				next->setPrev(prev);
+			}
+			mCurrentRenderPassGroup.remove(pcssPass);
+		}
+	}
+}
+
+bool Renderer::getEnablePCSS(bool enable) const
+{
+	return mRenderPipeLine.enablePCSS;
+}
+
 void Renderer::enableCannyEdgeDetection(bool enable)
 {
 	if (mRenderPipeLine.enableCannyEdgeDetection != enable)
@@ -670,7 +711,7 @@ void Renderer::setDefaultRenderPass()
 	{
 		auto defaultPass = addRenderPass(RenderPassKey::FORWARDSHADING, RenderState{ mViewport, true }, nullptr);
 		auto toneMappingPass = addRenderPass(RenderPassKey::TONEMAPPING, RenderState{ mViewport, false }, defaultPass);
-		auto fxaa = addRenderPass(RenderPassKey::FXAA, RenderState{ mViewport, false }, toneMappingPass);
+		//auto fxaa = addRenderPass(RenderPassKey::FXAA, RenderState{ mViewport, false }, toneMappingPass);
 	}
 	else
 	{
@@ -1000,6 +1041,22 @@ void Renderer::renderUI()
 	}
 	
 	if(!csmChecked)
+	{
+		ImGui::EndDisabled();
+	}
+
+	//pcss
+	bool pcssChecked = mRenderPipeLine.enablePCSS;
+	if (ImGui::Checkbox("PCSS", &pcssChecked))
+	{
+		enablePCSS(pcssChecked);
+	}
+	if (!pcssChecked)
+	{
+		ImGui::BeginDisabled();
+	}
+	//PCSS Settings
+	if (!pcssChecked)
 	{
 		ImGui::EndDisabled();
 	}

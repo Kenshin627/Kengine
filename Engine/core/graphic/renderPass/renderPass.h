@@ -58,7 +58,8 @@ enum class RenderPassKey
 	DOUBLETHRESHOLD,
 	SELECTION,
 	FXAA,
-	WIREFRAME
+	WIREFRAME,
+	PCSS
 };
 
 /// <summary>
