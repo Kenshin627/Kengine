@@ -544,7 +544,7 @@ float shadowPCF(vec2 uv, float z0, float bias, float filterRadiusUv)
          //z0 - bias
          if(d < (z0 - bias))
          {
-            sum += d;
+            sum += 1.0f;
          }
     }
 
@@ -564,7 +564,7 @@ float shadowPCSS(vec2 uv, float z, float bias, float z_vs)
 
     if (num_blockers == 0.0)
     {
-        return 1.0;
+        return 0.0;
     }
 
     // ------------------------
@@ -595,7 +595,7 @@ float shadowOcclusion(vec3 viewSpacePos)
     // transform to [0,1] range
     proj_coords = proj_coords * 0.5 + 0.5;
 
-    if (proj_coords.z > 1.0) return 1.0;
+    if (proj_coords.z > 1.0) return 0.0;
 
     // get depth of current fragment from light's perspective
     float current_depth = proj_coords.z;
@@ -603,11 +603,11 @@ float shadowOcclusion(vec3 viewSpacePos)
     // check whether current frag pos is in shadow
     //TODO:
     //float bias = max(0.0001 * (1.0 - dot(normalize(in_normal), -u_directional_light.direction)), 0.000001);
-    float bias = 0.000001;
+    float bias = 0.0005;
     vec4 pos_vs = lightViewSpacePos;
     pos_vs.xyz /= pos_vs.w;
 
-    return shadowPCSS(proj_coords.xy, current_depth, bias, (pos_vs.z));
+    return shadowPCSS(proj_coords.xy, current_depth, bias, -(pos_vs.z));
 }
 ////////////////////////////////////////////////////////
 
@@ -847,7 +847,7 @@ void main()
 		{
 			//pcssLightMatriceBuffer
             float shadow = shadowOcclusion(fragmentPos);
-            FragColor.rgb *= vec3(shadow);
+            FragColor.rgb *= vec3(1.0f - shadow);
 		}
 	}	
 }

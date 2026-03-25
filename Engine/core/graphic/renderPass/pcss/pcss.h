@@ -21,10 +21,10 @@ private:
 	//uniform float uLightNear;
 	//uniform float uLightFar;
 	//uniform int   uPcfSamples;
-	int		mBlockerSearchSamples{ 25 };
-	float	mLightRadiusUV{ 1.0f };
+	int		mBlockerSearchSamples{ 128 };
+	float	mLightRadiusUV{ 0.005f };
 	float	mLightNear{};
 	float	mLightFar{};
-	int		mPcfSamples{ 25 };
+	int		mPcfSamples{ 128 };
 };
 

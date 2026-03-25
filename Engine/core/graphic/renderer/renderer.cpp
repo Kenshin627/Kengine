@@ -608,7 +608,10 @@ void Renderer::enablePCSS(bool enable)
 		mRenderPipeLine.enablePCSS = enable;
 		if (enable)
 		{
-			addRenderPass(RenderPassKey::PCSS, RenderState{ {0, 0, 1000, 1000}, true }, nullptr);
+			RenderState state;
+			state.viewport = { 0, 0, 2048, 2048 };
+			state.cullFaceMode = GL_FRONT;
+			addRenderPass(RenderPassKey::PCSS, state, nullptr);
 		}
 		else
 		{

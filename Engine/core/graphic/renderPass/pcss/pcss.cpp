@@ -120,10 +120,11 @@ void PCSS::updateLightViewMatrix()
 	glm::vec3 lightDirection = light->getDirection();
 	//TODO:: 
 	glm::mat4 lightViewSpace = glm::lookAt(lightPos, {0, 0, 0}, { 0, 1, 0 });
-
-	glm::mat4 lightProjection = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 0.01f, 100.0f);
-	mLightNear = 0.01;
-	mLightFar = 100;
+	float size = 5.0f;
+	mLightNear = 1.0f;
+	mLightFar = 100.0f;
+	glm::mat4 lightProjection = glm::ortho(-size, size, -size, size, mLightNear, mLightFar);
+	
 	mLightMatricesBuffer->setData(sizeof(glm::mat4), glm::value_ptr(lightProjection * lightViewSpace), 0);
 	mLightMatricesBuffer->setData(sizeof(glm::mat4), glm::value_ptr(lightViewSpace), sizeof(glm::mat4));
 }
