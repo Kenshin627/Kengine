@@ -2,8 +2,9 @@
 
 uniform sampler2D uSourceTex;
 uniform int       uDownSampleBlurSize;
-uniform int       uDownSampleBlurSigma;
+uniform float       uDownSampleBlurSigma;
 uniform bool      uFirstDownSample;
+uniform float     uBloomIntensity;
 
 in vec2  vTexcoord;
 out vec4 fragColor;
@@ -51,5 +52,5 @@ void main()
 {
     fragColor = vec4(0.0, 0.0, 0.0, 1.0);
     vec2 sourceTexelSize = 1.0f / textureSize(uSourceTex, 0);
-    fragColor.rgb = GaussNxN(sourceTexelSize);
+    fragColor.rgb = GaussNxN(sourceTexelSize) * uBloomIntensity;
 }

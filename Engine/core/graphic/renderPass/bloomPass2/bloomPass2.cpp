@@ -14,19 +14,26 @@ BloomPass2::BloomPass2(Renderer* r, const RenderState& state)
 {
     mDownSampleProgram = std::make_unique<Program>();
     mUpSampleProgram = std::make_unique<Program>();
+    mExtractHighLightProgram = std::make_unique<Program>();
 
     mDownSampleProgram->buildFromFiles({
         { "core/graphic/shaderSrc/bloom2/quad.glsl", ShaderType::Vertex },
         { "core/graphic/shaderSrc/bloom2/downSample.glsl", ShaderType::Fragment }
-        });
+    });
 
     mUpSampleProgram->buildFromFiles({
         { "core/graphic/shaderSrc/bloom2/quad.glsl", ShaderType::Vertex },
         { "core/graphic/shaderSrc/bloom2/upSample.glsl", ShaderType::Fragment }
-        });
+    });
 
-    mDownSampleFBOs.reserve(7);
-    mUpSampleFBOs.reserve(7);
+    mExtractHighLightProgram->buildFromFiles(
+    {
+        { "core/graphic/shaderSrc/bloom/vs.glsl", ShaderType::Vertex },
+        { "core/graphic/shaderSrc/bloom/fs.glsl", ShaderType::Fragment }
+    });
+
+    mDownSampleFBOs.reserve(downSamples);
+    mUpSampleFBOs.reserve(downSamples);
     int sourceWidth = state.viewport.z;
     int sourceHeight = state.viewport.w;
 
@@ -60,6 +67,31 @@ BloomPass2::BloomPass2(Renderer* r, const RenderState& state)
         int h = mDownSampleFBOs[downSamples - 2 - i]->getColorAttachment(0)->height();
         mUpSampleFBOs.push_back(std::make_unique<FrameBuffer>(glm::vec3{ w, h, 0 }, specs));
     }
+
+    std::initializer_list<FrameBufferSpecification> extractHighLightSpecs =
+    {
+        //color attachmeng 1 hdr
+        {
+            AttachmentType::Color,
+            TextureInternalFormat::RGBA16F,
+            TextureDataFormat::RGBA,
+            TextureWarpMode::CLAMP_TO_EDGE,
+            TextureWarpMode::CLAMP_TO_EDGE,
+            TextureFilter::LINEAR,
+            TextureFilter::LINEAR
+        },
+        //color attachment 0 normal ldr 
+        {
+            AttachmentType::Color,
+            TextureInternalFormat::RGBA16F,
+            TextureDataFormat::RGBA,
+            TextureWarpMode::CLAMP_TO_EDGE,
+            TextureWarpMode::CLAMP_TO_EDGE,
+            TextureFilter::LINEAR,
+            TextureFilter::LINEAR
+        }
+    };
+    mExtractHighLightFBO = std::make_unique<FrameBuffer>(glm::vec3{ mSize.x, mSize.y, 0 }, extractHighLightSpecs);
 }
 
 BloomPass2::~BloomPass2()
@@ -68,6 +100,14 @@ BloomPass2::~BloomPass2()
 
 void BloomPass2::beginPass()
 {
+    mExtractHighLightFBO->bind();
+    mExtractHighLightProgram->bind();
+    updateRenderState();
+    Texture* tex = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(0);
+    tex->bind();
+    mExtractHighLightProgram->setUniform("screenMap", 0);
+    mExtractHighLightProgram->setUniform("thresholdMin", mThresholdMin);
+    mExtractHighLightProgram->setUniform("thresholdMax", mThresholdMax);
 }
 
 void BloomPass2::runPass(Scene* scene)
@@ -79,15 +119,17 @@ void BloomPass2::runPass(Scene* scene)
         return;
     }
     quad->beginDraw();
+    quad->draw();
 
     // downSampleChains
-    auto source = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(0);
+    auto source = mExtractHighLightFBO->getColorAttachment(0);
     mDownSampleProgram->bind();
     mDownSampleFBOs[0]->bind();
     source->bind();
     mDownSampleProgram->setUniform("uSourceTex", 0);
-    mDownSampleProgram->setUniform("uDownSampleBlurSize", 5);
-    mDownSampleProgram->setUniform("uDownSampleBlurSigma", 1);
+    mDownSampleProgram->setUniform("uDownSampleBlurSize", mBlurRadius);
+    mDownSampleProgram->setUniform("uDownSampleBlurSigma", mGaussianSigma);
+    mDownSampleProgram->setUniform("uBloomIntensity", mBloomIntensity);
     mDownSampleProgram->setUniform("uFirstDownSample", 1);
     glViewport(0, 0, mDownSampleFBOs[0]->getColorAttachment(0)->width(), mDownSampleFBOs[0]->getColorAttachment(0)->height());
     glClear(mRenderState.clearBits);
@@ -110,8 +152,9 @@ void BloomPass2::runPass(Scene* scene)
     mUpSampleProgram->bind();
     mUpSampleProgram->setUniform("uPrevTex", 0);
     mUpSampleProgram->setUniform("uCurrentTex", 1);
-    mUpSampleProgram->setUniform("uUpSampleBlurSize", 5);
-    mUpSampleProgram->setUniform("uUpSampleBlurSigma", 1);
+    mUpSampleProgram->setUniform("uUpSampleBlurSize", mBlurRadius);
+    mUpSampleProgram->setUniform("uUpSampleBlurSigma", mGaussianSigma);
+    mUpSampleProgram->setUniform("uBloomIntensity", mBloomIntensity);
 
     mDownSampleFBOs[downSamples - 1]->getColorAttachment(0)->bind(0);  // 最小downSample → uPrevTex
     mDownSampleFBOs[downSamples - 2]->getColorAttachment(0)->bind(1);  // 次小downSample → uCurrentTex
@@ -146,9 +189,38 @@ void BloomPass2::endPass()
 {
 }
 
-Texture* BloomPass2::getOutputTexture() const
+void BloomPass2::resize(uint width, uint height)
+{
+    //resize viewport
+    mRenderState.viewport.z = width;
+    mRenderState.viewport.w = height;
+    //resize fbo if nessesary
+    if (!mDownSampleFBOs.empty())
+    {
+        for (auto& downSampleFBO : mDownSampleFBOs)
+        {
+            downSampleFBO->resize(width, height);
+        }
+    }
+
+    if (!mUpSampleFBOs.empty())
+    {
+        for (auto& upSampleFBO : mUpSampleFBOs)
+        {
+            upSampleFBO->resize(width, height);
+        }
+    }
+    mExtractHighLightFBO->resize(width, height);
+}
+
+Texture* BloomPass2::getHDRTexture() const
 {
     return mUpSampleFBOs[downSamples - 2]->getColorAttachment(0);
+}
+
+Texture* BloomPass2::getLDRTexture() const
+{
+    return mExtractHighLightFBO->getColorAttachment(1);
 }
 
 FrameBuffer* BloomPass2::getDebugView() const

@@ -137,10 +137,10 @@ void Renderer::setEnableBloom(bool enable)
 		if (enable)
 		{
 			auto lastPass1 = *(--(--mCurrentRenderPassGroup.end()));
-			addRenderPass(RenderPassKey::BLOOM, RenderState{ mViewport, false }, lastPass1);
+			addRenderPass(RenderPassKey::BLOOM2, RenderState{ mViewport, false }, lastPass1);
 
-			auto lastPass2 = *(--(--mCurrentRenderPassGroup.end()));
-			addRenderPass(RenderPassKey::BLOOM2, RenderState{ mViewport, false }, lastPass2);
+			//auto lastPass2 = *(--(--mCurrentRenderPassGroup.end()));
+			//addRenderPass(RenderPassKey::BLOOM2, RenderState{ mViewport, false }, lastPass2);
 		}
 		else
 		{
@@ -148,7 +148,7 @@ void Renderer::setEnableBloom(bool enable)
 			RenderPass* next{nullptr};
 			RenderPass* bloomPass{nullptr};
 			RenderPass* bloomBlurPass{nullptr};
-			auto bloomIter = mPassCache.find(RenderPassKey::BLOOM);
+			auto bloomIter = mPassCache.find(RenderPassKey::BLOOM2);
 			if (bloomIter != mPassCache.end())
 			{
 				bloomIter->second.pass->deActive();
@@ -156,17 +156,7 @@ void Renderer::setEnableBloom(bool enable)
 				if (bloomPass)
 				{					
 					prev = bloomPass->prev();
-				}
-			}
-
-			auto bloomBlurIter = mPassCache.find(RenderPassKey::BLOOMBLUR);
-			if (bloomBlurIter != mPassCache.end())
-			{
-				bloomBlurIter->second.pass->deActive();
-				bloomBlurPass = bloomBlurIter->second.pass.get();
-				if (bloomBlurPass)
-				{
-					next = bloomBlurPass->next();
+					next = bloomPass->next();
 				}
 			}
 
@@ -186,106 +176,81 @@ bool Renderer::getEnableBloom() const
 	return mRenderPipeLine.enableBloom;
 }
 
-uint Renderer::getBloomBlur() const
+uint Renderer::getBlurRadius() const
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
 	if (!pass)
 	{
 		return 0;
 	}
-	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
-	return gaussianPass->getGussianBlurAmount();
+	BloomPass2* gaussianPass = static_cast<BloomPass2*>(pass);
+	return gaussianPass->getBlurRadius();
 }
 
-void Renderer::setBloomBlur(uint blur)
+void Renderer::setBlurRadius(uint blur)
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
-	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
-	if (gaussianPass->getGussianBlurAmount() != blur)
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
+	BloomPass2* gaussianPass = static_cast<BloomPass2*>(pass);
+	if (gaussianPass->getBlurRadius() != blur)
 	{
-		gaussianPass->setGaussianBlurAmount(blur);
-	}
-}
-
-float Renderer::getBloomBlurScale()
-{
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
-	if (!pass)
-	{
-		return 0;
-	}
-	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
-	return gaussianPass->getGussianBlurScale();
-}
-
-void Renderer::setBloomBlurScale(float s)
-{
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
-	if (!pass)
-	{
-		return;
-	}
-	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
-	if (gaussianPass->getGussianBlurScale() != s)
-	{
-		gaussianPass->setGaussianBlurScale(s);
+		gaussianPass->setBlurRadius(blur);
 	}
 }
 
 float Renderer::getBloomBlurStrength()
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
 	if (!pass)
 	{
 		return 0;
 	}
-	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
-	return gaussianPass->getGussianBlurStrength();
+	BloomPass2* gaussianPass = static_cast<BloomPass2*>(pass);
+	return gaussianPass->getBloomIntensity();
 }
 
 void Renderer::setBloomBlurStrength(float s)
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
-	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
-	if (gaussianPass->getGussianBlurStrength() != s)
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
+	BloomPass2* gaussianPass = static_cast<BloomPass2*>(pass);
+	if (gaussianPass->getBloomIntensity() != s)
 	{
-		gaussianPass->setGaussianBlurStrength(s);
+		gaussianPass->setBloomIntensity(s);
 	}
 }
 
 float Renderer::getGaussianSigma() const
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
 	if (!pass)
 	{
 		return 0;
 	}
-	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
-	return gaussianPass->getSigma();
+	BloomPass2* gaussianPass = static_cast<BloomPass2*>(pass);
+	return gaussianPass->getGaussianSigma();
 }
 
 void Renderer::setGaussianSigma(float s)
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOMBLUR);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
 	if (!pass)
 	{
 		return;
 	}
-	GaussianBlur* gaussianPass = static_cast<GaussianBlur*>(pass);
-	if (gaussianPass->getSigma() != s)
+	BloomPass2* gaussianPass = static_cast<BloomPass2*>(pass);
+	if (gaussianPass->getGaussianSigma() != s)
 	{
-		gaussianPass->setSigma(s);
+		gaussianPass->setGaussianSigma(s);
 	}
 }
 
 void Renderer::setThresholdMin(float t)
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
 	if (!pass)
 	{
 		return;
 	}
-	BloomPass* bloom = static_cast<BloomPass*>(pass);
+	BloomPass2* bloom = static_cast<BloomPass2*>(pass);
 	if (bloom->getThresholdMin() != t)
 	{
 		bloom->setThresholdMin(t);
@@ -294,23 +259,23 @@ void Renderer::setThresholdMin(float t)
 
 float Renderer::getThresholdMin() const
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
 	if (!pass)
 	{
 		return 0.0f;
 	}
-	BloomPass* bloom = static_cast<BloomPass*>(pass);
+	BloomPass2* bloom = static_cast<BloomPass2*>(pass);
 	return bloom->getThresholdMin();
 }
 
 void Renderer::setThresholdMax(float t)
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
 	if (!pass)
 	{
 		return;
 	}
-	BloomPass* bloom = static_cast<BloomPass*>(pass);
+	BloomPass2* bloom = static_cast<BloomPass2*>(pass);
 	if (bloom->getThresholdMax() != t)
 	{
 		bloom->setThresholdMax(t);
@@ -319,12 +284,12 @@ void Renderer::setThresholdMax(float t)
 
 float Renderer::getThresholdMax() const
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
 	if (!pass)
 	{
 		return 0.0f;
 	}
-	BloomPass* bloom = static_cast<BloomPass*>(pass);
+	BloomPass2* bloom = static_cast<BloomPass2*>(pass);
 	return bloom->getThresholdMax();
 }
 
@@ -815,7 +780,7 @@ void Renderer::renderUI()
 	}
 	ImGui::Separator();
 
-	//BLOOM
+	//BLOOM2
 	bool bloomChecked = mRenderPipeLine.enableBloom;
 	if (ImGui::Checkbox("Bloom", &bloomChecked))
 	{
@@ -840,20 +805,14 @@ void Renderer::renderUI()
 		setThresholdMax(thresholdMax);
 	}
 
-	int bloomBlur = getBloomBlur();
-	if (ImGui::DragInt("Bloom Blur", &bloomBlur, 1, 0, 12))
+	int blurRadius = getBlurRadius();
+	if (ImGui::DragInt("BloomRadius", &blurRadius, 1, 3, 12))
 	{
-		setBloomBlur(bloomBlur);
-	}
-
-	float scale = getBloomBlurScale();
-	if (ImGui::DragFloat("Bloom Scale", &scale, 0.01f, 0.1f, 6.0f))
-	{
-		setBloomBlurScale(scale);
+		setBlurRadius(blurRadius);
 	}
 
 	float strength = getBloomBlurStrength();
-	if (ImGui::DragFloat("Bloom Strength", &strength, 0.01f, 0.0f, 5.0f))
+	if (ImGui::DragFloat("Bloom Intensity", &strength, 0.01f, 0.0f, 5.0f))
 	{
 		setBloomBlurStrength(strength);
 	}

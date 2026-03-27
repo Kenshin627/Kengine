@@ -46,19 +46,17 @@ void ToneMapping::beginPass()
 	RenderPass::beginPass();
 	mProgram->setUniform("exposure", mExposure);
 	
-	auto pass = mOwner->getRenderPass(RenderPassKey::BLOOM);
-	bool enableBloom = pass && (pass->isActive());
+	auto bloomPass = static_cast<BloomPass2*>(mOwner->getRenderPass(RenderPassKey::BLOOM2));
+	bool enableBloom = bloomPass && (bloomPass->isActive());
 	mProgram->setUniform("enableBloom", enableBloom);
 
 	Texture* ldrMap = nullptr;
 	if (enableBloom)
-	{	
-		auto gaussianPass = static_cast<BloomPass2*>(mOwner->getRenderPass(RenderPassKey::BLOOM2));
-		Texture* hdrBlurTex = gaussianPass->getOutputTexture();
+	{			
+		Texture* hdrBlurTex = bloomPass->getHDRTexture();
+		ldrMap = bloomPass->getLDRTexture();
 		hdrBlurTex->bind(1);
 		mProgram->setUniform("hDRBlurMap", 1);
-		auto bloomPass = static_cast<BloomPass*>(pass);
-		ldrMap = bloomPass->getLDRTexture();		
 	}
 	else
 	{

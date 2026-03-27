@@ -17,7 +17,7 @@ Light::Light(const std::string& name, const glm::vec3& pos, const glm::vec3& dir
 {
 	//set light Geometry sphere radius = 0.1
 	//set lightPosition = lightPosition
-	std::shared_ptr<Geometry> geomtry = std::make_shared<Sphere>(0.2, 32, 16);
+	std::shared_ptr<Geometry> geomtry = std::make_shared<Sphere>(0.1, 32, 16);
 	setGeometry(geomtry);
 	RenderObject::setPosition(pos);
 	//set light Material isEmissive = true EmissiveColor = lightColor

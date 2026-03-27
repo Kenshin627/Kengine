@@ -90,10 +90,9 @@ public:
 	//BLOOM
 	void setEnableBloom(bool enable);
 	bool getEnableBloom() const;
-	uint getBloomBlur() const;
-	void setBloomBlur(uint blur);
-	float getBloomBlurScale();
-	void setBloomBlurScale(float s);
+	uint getBlurRadius() const;
+	void setBlurRadius(uint blur);
+
 	float getBloomBlurStrength();
 	void setBloomBlurStrength(float s);
 	float getGaussianSigma() const;
