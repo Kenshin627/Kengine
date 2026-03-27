@@ -140,7 +140,7 @@ void Renderer::setEnableBloom(bool enable)
 			addRenderPass(RenderPassKey::BLOOM, RenderState{ mViewport, false }, lastPass1);
 
 			auto lastPass2 = *(--(--mCurrentRenderPassGroup.end()));
-			addRenderPass(RenderPassKey::BLOOMBLUR, RenderState{ mViewport, false }, lastPass2);
+			addRenderPass(RenderPassKey::BLOOM2, RenderState{ mViewport, false }, lastPass2);
 		}
 		else
 		{
@@ -873,7 +873,7 @@ void Renderer::renderUI()
 		if (bloomDebugView)
 		{
 			mDebugView.colorAttachmentIndex = 0;
-			mDebugView.fbo = static_cast<GaussianBlur*>(getRenderPass(RenderPassKey::BLOOMBLUR))->getOutputFrameBuffer();
+			mDebugView.fbo = static_cast<BloomPass2*>(getRenderPass(RenderPassKey::BLOOM2))->getDebugView();
 			mDebugView.type = DebugViewAttachmentType::Color;
 		}
 		else

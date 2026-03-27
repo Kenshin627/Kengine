@@ -18,6 +18,7 @@
 #include "fxaaPass/fxaaPass.h"
 #include "flatWireframe/flatWireframePass.h"
 #include "pcss/pcss.h"
+#include "bloomPass2/bloomPass2.h"
 
 class PassFactory
 {
@@ -67,6 +68,8 @@ public:
 			return std::make_unique<FlatWireFramePass>(glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(0.1f, 0.1f, 0.1f), 0.5f, 0.1f, r, state);
 		case RenderPassKey::PCSS:
 			return std::make_unique<PCSS>(r, state);
+		case RenderPassKey::BLOOM2:
+			return std::make_unique<BloomPass2>(r, state);
 		default:
 			break;
 		}

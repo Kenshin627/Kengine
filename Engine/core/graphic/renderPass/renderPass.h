@@ -59,7 +59,8 @@ enum class RenderPassKey
 	SELECTION,
 	FXAA,
 	WIREFRAME,
-	PCSS
+	PCSS,
+	BLOOM2
 };
 
 /// <summary>

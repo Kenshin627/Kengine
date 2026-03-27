@@ -172,6 +172,7 @@
     <ClCompile Include="core\graphic\gpuBuffer\uniformBuffer.cpp" />
     <ClCompile Include="core\graphic\gpuBuffer\vertexArray.cpp" />
     <ClCompile Include="core\graphic\gpuBuffer\vertexBuffer.cpp" />
+    <ClCompile Include="core\graphic\renderPass\bloomPass2\bloomPass2.cpp" />
     <ClCompile Include="core\graphic\renderPass\bloomPass\bloomPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\blurPass\blurPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\cannyEdgeDetection\doubleThreshold\doubleThreshold.cpp" />
@@ -248,6 +249,7 @@
     <ClInclude Include="core\graphic\gpuBuffer\uniformBuffer.h" />
     <ClInclude Include="core\graphic\gpuBuffer\vertexArray.h" />
     <ClInclude Include="core\graphic\gpuBuffer\vertexBuffer.h" />
+    <ClInclude Include="core\graphic\renderPass\bloomPass2\bloomPass2.h" />
     <ClInclude Include="core\graphic\renderPass\bloomPass\bloomPass.h" />
     <ClInclude Include="core\graphic\renderPass\blurPass\blurPass.h" />
     <ClInclude Include="core\graphic\renderPass\cannyEdgeDetection\doubleThreshold\doubleThreshold.h" />
@@ -310,6 +312,9 @@
   <ItemGroup>
     <None Include="core\graphic\shaderSrc\blinnPhong\fs.glsl" />
     <None Include="core\graphic\shaderSrc\blinnPhong\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom2\downSample.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom2\quad.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom2\upSample.glsl" />
     <None Include="core\graphic\shaderSrc\bloom\fs.glsl" />
     <None Include="core\graphic\shaderSrc\bloom\vs.glsl" />
     <None Include="core\graphic\shaderSrc\cannyEdgeDetection\doubleThreshold\fs.glsl" />
