@@ -195,6 +195,7 @@
     <ClCompile Include="core\graphic\renderPass\selectionPass\selectionPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\ssaoPass\ssaoPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\toneMapping\toneMapping.cpp" />
+    <ClCompile Include="core\graphic\renderPass\weightedBlendedOIT\weightedBlendedOIT.cpp" />
     <ClCompile Include="core\graphic\texture\texture.cpp" />
     <ClCompile Include="core\graphic\texture\texture2D\texture2D.cpp" />
     <ClCompile Include="core\graphic\texture\texture3D\texture3D.cpp" />
@@ -273,6 +274,7 @@
     <ClInclude Include="core\graphic\renderPass\selectionPass\selectionPass.h" />
     <ClInclude Include="core\graphic\renderPass\ssaoPass\ssaoPass.h" />
     <ClInclude Include="core\graphic\renderPass\toneMapping\toneMapping.h" />
+    <ClInclude Include="core\graphic\renderPass\weightedBlendedOIT\weightedBlendedOIT.h" />
     <ClInclude Include="core\graphic\texture\texture.h" />
     <ClInclude Include="core\graphic\texture\texture2D\texture2D.h" />
     <ClInclude Include="core\graphic\texture\texture3D\texture3D.h" />
@@ -360,6 +362,10 @@
     <None Include="core\graphic\shaderSrc\toneMapping\vs.glsl" />
     <None Include="core\graphic\shaderSrc\toonShading\fs.glsl" />
     <None Include="core\graphic\shaderSrc\toonShading\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\weightedBlendedOIT\accum\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\weightedBlendedOIT\accum\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\weightedBlendedOIT\composite\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\weightedBlendedOIT\composite\vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

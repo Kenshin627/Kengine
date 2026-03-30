@@ -371,6 +371,19 @@ void Scene::updateSceneUI()
 		}
 		ImGui::PopID();
 	}
+
+	for (int i = 0; i < mTransparencyList.size(); i++)
+	{
+		auto ro = mTransparencyList[i];
+		ImGui::PushID("transparency" + i);
+		ImGui::Text(ro->getName().c_str());
+		auto pos = ro->getPosition();
+		if (ImGui::DragFloat3("position", &pos.x, 0.2))
+		{
+			ro->setPosition(pos);
+		}
+		ImGui::PopID();
+	}
 	ImGui::End();
 }
 
@@ -420,5 +433,41 @@ void Scene::updateAnimationBuffer()
 		return;
 	}
 	mBoneMatrixBuffer->setData(boneMatrices.size() * sizeof(glm::mat4), boneMatrices.data());
+}
+
+void Scene::addTransparencyObject(std::shared_ptr<RenderObject> obj)
+{
+	mTransparencyList.push_back(obj);
+}
+
+void Scene::addTransparencyObject(const std::initializer_list<std::shared_ptr<RenderObject>>& objects)
+{
+	if (objects.size() == 0)
+	{
+		return;
+	}
+	mTransparencyList.insert(mTransparencyList.end(), objects.begin(), objects.end());
+	for (auto& renderObject : objects)
+	{
+		renderObject->setOwner(this);
+	}
+}
+
+void Scene::addTransparencyObject(const std::vector<std::shared_ptr<RenderObject>>& objects)
+{
+	if (objects.size() == 0)
+	{
+		return;
+	}
+	mTransparencyList.insert(mTransparencyList.end(), objects.begin(), objects.end());
+	for (auto& renderObject : objects)
+	{
+		renderObject->setOwner(this);
+	}
+}
+
+const std::vector<std::shared_ptr<RenderObject>>& Scene::getTransparencyList() const
+{
+	return mTransparencyList;
 }
 

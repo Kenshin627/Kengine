@@ -11,6 +11,7 @@
 #include "graphic/renderPass/postProcess/grayScaleEffect/grayScaleEffect.h"
 #include "graphic/renderPass/selectionPass/selectionPass.h"
 #include "graphic/renderPass/toneMapping/toneMapping.h"
+#include "graphic/renderPass/weightedBlendedOIT/weightedBlendedOIT.h"
 #include "graphic/renderPass/passFactory.h"
 #include "imgui.h"
 #include "implot.h"
@@ -685,7 +686,8 @@ void Renderer::setDefaultRenderPass()
 	{
 		auto gPass = addRenderPass(RenderPassKey::GEOMETRY, RenderState{ mViewport }, nullptr);
 		auto lightingPass =addRenderPass(RenderPassKey::DEFFEREDSHADING, RenderState{ mViewport, false }, gPass);
-		auto toneMappingPass = addRenderPass(RenderPassKey::TONEMAPPING, RenderState{ mViewport, false }, lightingPass);
+		auto wboitPass = addRenderPass(RenderPassKey::WEIGHTEDBLENDEDOIT, RenderState{ mViewport, true }, lightingPass);
+		auto toneMappingPass = addRenderPass(RenderPassKey::TONEMAPPING, RenderState{ mViewport, false }, wboitPass);
 	}
 }
 

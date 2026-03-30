@@ -51,6 +51,11 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<Rectangle> wallGeom = std::make_shared<Rectangle>(100.0f, 100.0f, glm::vec2{0.5, 0.5});
 	std::shared_ptr<Cube> cube = std::make_shared<Cube>(1.0f, 1.0f, 1.0f);
 	std::shared_ptr<Sphere> sphereGeometry = std::make_shared<Sphere>(1.0f, 128.0f, 128.0f);
+	std::shared_ptr<Sphere> sphereGeometry1 = std::make_shared<Sphere>(2.0f, 128.0f, 128.0f);
+	std::shared_ptr<Sphere> sphereGeometry2 = std::make_shared<Sphere>(3.0f, 128.0f, 128.0f);
+	std::shared_ptr<Sphere> sphereGeometry3 = std::make_shared<Sphere>(2.0f, 128.0f, 128.0f);
+	std::shared_ptr<Sphere> sphereGeometry4 = std::make_shared<Sphere>(1.5f, 128.0f, 128.0f);
+	std::shared_ptr<Sphere> sphereGeometry5 = std::make_shared<Sphere>(0.5f, 128.0f, 128.0f);
 	std::shared_ptr<GrassGround> grass = std::make_shared<GrassGround>(5.0f, 5.0f, glm::vec2(0.2, 0.2));
 	std::shared_ptr<GrassMaterial> grassMat = std::make_shared<GrassMaterial>();
 	//MATERIAL
@@ -101,28 +106,25 @@ Application::Application(uint width, uint height, const char* title)
 	PBRMaterialSpecification pbrSpec3;
 	pbrSpec3.roughness = 0.3;
 	pbrSpec3.metallic = 0.8;
-	pbrSpec3.albedoColor = { 0.3, 0.3, 0.3 };
+	pbrSpec3.albedoColor = { 0.1, 0.5, 1.3 };
 	std::shared_ptr<PBRMaterial> pbrMat3 = std::make_shared<PBRMaterial>(pbrSpec3);
 
 	PBRMaterialSpecification pbrSpec4;
-	pbrSpec4.albedoMapPath = "images/patterned-bw-vinyl-bl/albedo.png";
-	pbrSpec4.metallicMapPath = "images/patterned-bw-vinyl-bl/metallic.png";
-	pbrSpec4.roughnessMapPath = "images/patterned-bw-vinyl-bl/roughness.png";
-	pbrSpec4.normalMapPath = "images/patterned-bw-vinyl-bl/normal.png";
+	pbrSpec3.roughness = 0.0f;
+	pbrSpec3.metallic = 1.0;
+	pbrSpec3.albedoColor = { 0.8, 0.8, 0.0 };
 	std::shared_ptr<PBRMaterial> pbrMat4 = std::make_shared<PBRMaterial>(pbrSpec4);
 
 	PBRMaterialSpecification pbrSpec5;
-	pbrSpec5.albedoMapPath = "images/rounded-metal-cubes-bl/albedo.png";
-	pbrSpec5.metallicMapPath = "images/rounded-metal-cubes-bl/metallic.png";
-	pbrSpec5.roughnessMapPath = "images/rounded-metal-cubes-bl/roughness.png";
-	pbrSpec5.normalMapPath = "images/rounded-metal-cubes-bl/normal.png";
+	pbrSpec5.roughness = 0.5f;
+	pbrSpec5.metallic = 1.0;
+	pbrSpec5.albedoColor = { 0.0, 0.8, 0.0 };
 	std::shared_ptr<PBRMaterial> pbrMat5 = std::make_shared<PBRMaterial>(pbrSpec5);
 
 	PBRMaterialSpecification pbrSpec6;
-	pbrSpec6.albedoMapPath = "images/peeling-painted-metal-bl/albedo.png";
-	pbrSpec6.metallicMapPath = "images/peeling-painted-metal-bl/metallic.png";
-	pbrSpec6.roughnessMapPath = "images/peeling-painted-metal-bl/roughness.png";
-	pbrSpec6.normalMapPath = "images/peeling-painted-metal-bl/normal.png";
+	pbrSpec5.roughness = 1.0f;
+	pbrSpec5.metallic = 0.0;
+	pbrSpec5.albedoColor = { 0.8, 0.0, 0.5 };
 	std::shared_ptr<PBRMaterial> pbrMat6 = std::make_shared<PBRMaterial>(pbrSpec6);
 
 	PBRMaterialSpecification pbrSpec7;
@@ -143,25 +145,26 @@ Application::Application(uint width, uint height, const char* title)
 	wall->setRotation(90, 0, 0);
 	wall->setPosition(0, 0, -10);
 
-	std::shared_ptr<RenderObject> sphere1 = std::make_shared<RenderObject>("sphere1", sphereGeometry, wall2Mat);
-	sphere1->setPosition(0.6, 1.0, -0.8);
-	std::shared_ptr<RenderObject> sphere2 = std::make_shared<RenderObject>("sphere2", sphereGeometry, pbrMat2);
+	/*std::shared_ptr<RenderObject> sphere1 = std::make_shared<RenderObject>("sphere1", sphereGeometry1, wall2Mat);
+	sphere1->setPosition(0.6, 1.0, -0.8);*/
+	std::shared_ptr<RenderObject> sphere2 = std::make_shared<RenderObject>("sphere2", sphereGeometry2, pbrMat5);
 	sphere2->setPosition(-2.8, 1.0, -3.6);
-	std::shared_ptr<RenderObject> sphere3 = std::make_shared<RenderObject>("sphere3", sphereGeometry, pbrMat3);
+	std::shared_ptr<RenderObject> sphere3 = std::make_shared<RenderObject>("sphere3", sphereGeometry3, pbrMat3);
 	sphere3->setPosition(-6.4, 1.0, -1.2);
-	std::shared_ptr<RenderObject> sphere4 = std::make_shared<RenderObject>("sphere4", sphereGeometry, pbrMat4);
+	std::shared_ptr<RenderObject> sphere4 = std::make_shared<RenderObject>("sphere4", sphereGeometry4, pbrMat4);
 	sphere4->setPosition(0.6, 1.0, 2.8);
 	std::shared_ptr<RenderObject> sphere5 = std::make_shared<RenderObject>("sphere5", sphereGeometry, pbrMat5);
 	sphere5->setPosition(-4.8, 1.0, 2.2);
 	std::shared_ptr<RenderObject> sphere6 = std::make_shared<RenderObject>("sphere6", sphereGeometry, pbrMat6);
 	sphere6->setPosition(-2.2, 1.0, 0.2);
-	
+
 	std::shared_ptr<RenderObject> box1 = std::make_shared<RenderObject>("box1", cube, pbrMat2);
 	std::shared_ptr<RenderObject> box2 = std::make_shared<RenderObject>("box2", cube, metallicMat);
 	box1->setPosition(-3, 0.5, -4);
 	box2->setPosition(5, 0.5, -4);
 	box2->setRotation(0, 25, 0);
 	box2->setScale(0.5);
+	scene->addTransparencyObject({ sphere2, sphere3, sphere4 });
 	scene->addRenderObject({ ground, wall, sphere5, sphere6 });
 	
 	//model
@@ -236,7 +239,7 @@ Application::Application(uint width, uint height, const char* title)
 	}
 	
 	//scene->addRenderObject(model2->getRenderList());
-	scene->addRenderObject(model8->getRenderList());
+	scene->addTransparencyObject(model8->getRenderList());
 	//TODO:REMOVE
 	scene->addModel(model8);
 	//scene->addModel(model2);

@@ -41,11 +41,16 @@ public:
 	void updateSceneUI();
 	int getShadowLightIndex() const;
 	void playAnimation(Animation* animation);
+	void addTransparencyObject(std::shared_ptr<RenderObject> obj);
+	void addTransparencyObject(const std::initializer_list<std::shared_ptr<RenderObject>>& objects);
+	void addTransparencyObject(const std::vector<std::shared_ptr<RenderObject>>& objects);
+	const std::vector<std::shared_ptr<RenderObject>>& getTransparencyList() const;
 	private:
 		void updateCameraBuffer();
 		void updateAnimationBuffer();
 private:
 	std::vector<std::shared_ptr<RenderObject>> mRenderList;
+	std::vector<std::shared_ptr<RenderObject>> mTransparencyList;
 	std::vector<std::shared_ptr<Light>>		   mLights;
 	std::shared_ptr<Camera>					   mMainCamera;
 	std::unique_ptr<UniformBuffer>			   mCameraBuffer;

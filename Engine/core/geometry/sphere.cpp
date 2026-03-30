@@ -102,3 +102,8 @@ void Sphere::buildGeometry()
     vao->addAttributes(layouts);
     setVAO(std::move(vao));
 }
+
+void Sphere::setRadius(float radius)
+{
+    mRadius = radius;
+}

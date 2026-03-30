@@ -7,6 +7,7 @@ public:
 	Sphere(float r, float segment, float ring);
 	~Sphere();
 	virtual void buildGeometry() override;
+	void setRadius(float radius);
 private:
 	float mRadius;
 	float mSegment;
