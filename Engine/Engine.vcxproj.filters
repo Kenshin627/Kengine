@@ -234,6 +234,9 @@
     <ClCompile Include="core\graphic\renderPass\weightedBlendedOIT\weightedBlendedOIT.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\graphic\renderPass\ssr\ssr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -473,6 +476,9 @@
     <ClInclude Include="core\graphic\renderPass\weightedBlendedOIT\weightedBlendedOIT.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\ssr\ssr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="core\graphic\shaderSrc\blinnPhong\vs.glsl" />
@@ -529,5 +535,7 @@
     <None Include="core\graphic\shaderSrc\weightedBlendedOIT\accum\fs.glsl" />
     <None Include="core\graphic\shaderSrc\weightedBlendedOIT\composite\vs.glsl" />
     <None Include="core\graphic\shaderSrc\weightedBlendedOIT\composite\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\ssr\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\ssr\fs.glsl" />
   </ItemGroup>
 </Project>

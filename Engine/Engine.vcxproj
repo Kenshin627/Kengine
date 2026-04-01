@@ -194,6 +194,7 @@
     <ClCompile Include="core\graphic\renderer\renderer.cpp" />
     <ClCompile Include="core\graphic\renderPass\selectionPass\selectionPass.cpp" />
     <ClCompile Include="core\graphic\renderPass\ssaoPass\ssaoPass.cpp" />
+    <ClCompile Include="core\graphic\renderPass\ssr\ssr.cpp" />
     <ClCompile Include="core\graphic\renderPass\toneMapping\toneMapping.cpp" />
     <ClCompile Include="core\graphic\renderPass\weightedBlendedOIT\weightedBlendedOIT.cpp" />
     <ClCompile Include="core\graphic\texture\texture.cpp" />
@@ -273,6 +274,7 @@
     <ClInclude Include="core\graphic\renderer\renderer.h" />
     <ClInclude Include="core\graphic\renderPass\selectionPass\selectionPass.h" />
     <ClInclude Include="core\graphic\renderPass\ssaoPass\ssaoPass.h" />
+    <ClInclude Include="core\graphic\renderPass\ssr\ssr.h" />
     <ClInclude Include="core\graphic\renderPass\toneMapping\toneMapping.h" />
     <ClInclude Include="core\graphic\renderPass\weightedBlendedOIT\weightedBlendedOIT.h" />
     <ClInclude Include="core\graphic\texture\texture.h" />
@@ -358,6 +360,8 @@
     <None Include="core\graphic\shaderSrc\ssao\blur\vs.glsl" />
     <None Include="core\graphic\shaderSrc\ssao\occlusion\fs.glsl" />
     <None Include="core\graphic\shaderSrc\ssao\occlusion\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\ssr\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\ssr\vs.glsl" />
     <None Include="core\graphic\shaderSrc\toneMapping\fs.glsl" />
     <None Include="core\graphic\shaderSrc\toneMapping\vs.glsl" />
     <None Include="core\graphic\shaderSrc\toonShading\fs.glsl" />

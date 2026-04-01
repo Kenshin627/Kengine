@@ -128,12 +128,15 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<PBRMaterial> pbrMat6 = std::make_shared<PBRMaterial>(pbrSpec6);
 
 	PBRMaterialSpecification pbrSpec7;
-	pbrSpec7.albedoMapPath = "images/oakfloor/albedo.png";
-	//pbrSpec7.metallicMapPath = "images/oakfloor/metallic.png";
-	pbrSpec7.roughnessMapPath = "images/oakfloor/roughness.png";
-	pbrSpec7.normalMapPath = "images/oakfloor/normal.png";
-	pbrSpec7.heightMapPath = "images/oakfloor/height.png";
+	//pbrSpec7.albedoMapPath = "images/oakfloor/albedo.png";	
+	//pbrSpec7.roughnessMapPath = "images/oakfloor/roughness.png";
+	//pbrSpec7.normalMapPath = "images/oakfloor/normal.png";
+	//pbrSpec7.heightMapPath = "images/oakfloor/height.png";
+	pbrSpec7.albedoColor = glm::vec3(0.2, 0.2, 0.2);
+	pbrSpec7.metallic = 1.0;
+	pbrSpec7.roughness = 0.0;
 	std::shared_ptr<PBRMaterial> pbrMat7 = std::make_shared<PBRMaterial>(pbrSpec7);
+	pbrMat7->setMirror(true);
 	BlinnPhongMaterialSpecification spec;
 	spec.diffuseColor = glm::vec3(6.0 / 255.0, 96.0 / 255.0, 18.0 / 255.0);
 	spec.specularColor = glm::vec3(0, 0, 0);
@@ -239,7 +242,7 @@ Application::Application(uint width, uint height, const char* title)
 	}
 	
 	//scene->addRenderObject(model2->getRenderList());
-	scene->addTransparencyObject(model8->getRenderList());
+	scene->addRenderObject(model8->getRenderList());
 	//TODO:REMOVE
 	scene->addModel(model8);
 	//scene->addModel(model2);

@@ -18,6 +18,9 @@ public:
 	virtual void endDraw();
 	virtual void initProgram();
 	Program* getProgram() const { return mProgram.get(); }
+	bool isMirror() const { return mIsMirror; }
+	void setMirror(bool mirror) { mIsMirror = mirror; }
 protected:
 	Scope<Program> mProgram;
+	bool		   mIsMirror{false};
 };

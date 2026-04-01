@@ -20,6 +20,7 @@
 #include "pcss/pcss.h"
 #include "bloomPass2/bloomPass2.h"
 #include "weightedBlendedOIT/weightedBlendedOIT.h"
+#include "ssr/ssr.h"
 
 class PassFactory
 {
@@ -73,6 +74,8 @@ public:
 			return std::make_unique<BloomPass2>(r, state);
 		case RenderPassKey::WEIGHTEDBLENDEDOIT:
 			return std::make_unique<WeightedBlendedOIT>(r, state);
+		case RenderPassKey::SSREFLECTION:
+			return std::make_unique<SSR>(r, state);
 		default:
 			break;
 		}

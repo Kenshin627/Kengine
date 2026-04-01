@@ -8,6 +8,7 @@ layout (location = 1) out vec3  gNormal;       //normal in viewSpace
 layout (location = 2) out vec4  gDiffuse;      //diffsue or emissive + isEmissive or albedo
 layout (location = 3) out vec4  gSpecShiness;  //spec + shienss  or metallic + roughness
 layout (location = 4) out float gMaterialType; //material type blinnphong 0  pbr 1
+layout (location = 5) out float gMirror; //material type blinnphong 0  pbr 1
 
 in vec3 vPos;
 in vec3 vNormal;
@@ -49,6 +50,8 @@ uniform bool	  hasMetallicTex;
 uniform bool	  hasRoughnessTex;
 //////////////////////////////////////////////////////
 
+uniform bool isMirror;
+
 vec2 ParallaxOcclusionMap(vec2 texCoord, vec3 tangentSpaceViewDir)
 {
 	float numLayers         = mix(MIN_STEPS, MAX_STEPS, max(dot(vec3(0,0,1), tangentSpaceViewDir), 0.0));
@@ -75,6 +78,7 @@ vec2 ParallaxOcclusionMap(vec2 texCoord, vec3 tangentSpaceViewDir)
 
 void main()
 {
+	gMirror = isMirror ? 1.0 : 0.0;
 	gPosition.xyz = vPos;
 	gMaterialType = materialType;
 	vec2 texCoord = vTexcoord;

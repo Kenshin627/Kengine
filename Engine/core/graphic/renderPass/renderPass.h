@@ -61,7 +61,8 @@ enum class RenderPassKey
 	WIREFRAME,
 	PCSS,
 	BLOOM2,
-	WEIGHTEDBLENDEDOIT
+	WEIGHTEDBLENDEDOIT,
+	SSREFLECTION,
 };
 
 /// <summary>

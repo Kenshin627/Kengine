@@ -15,6 +15,7 @@ GeometryPass::GeometryPass(Renderer* r, const RenderState& state)
 	//|		RGBA16F    | diffuse/emissive + isEmissive   |       albedo               |
 	//|     RGBA16F    | spec + shiness				     |       metallic + roughness |
 	//|     R8         | materialType 0				     |       materialType 1       |
+	//|     R8         | mirror    0				     |       mirror 1			  |
 	std::initializer_list<FrameBufferSpecification> specs =
 	{
 		{
@@ -48,6 +49,15 @@ GeometryPass::GeometryPass(Renderer* r, const RenderState& state)
 			AttachmentType::Color,
 			TextureInternalFormat::RGBA16F,
 			TextureDataFormat::RGBA,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureFilter::NEAREST,
+			TextureFilter::NEAREST
+		},
+		{
+			AttachmentType::Color,
+			TextureInternalFormat::R8,
+			TextureDataFormat::R,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureFilter::NEAREST,

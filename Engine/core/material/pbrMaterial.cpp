@@ -116,6 +116,9 @@ void PBRMaterial::setUniforms(Program* p) const
 	p->setUniform("hasNormalTex", mHasNormalTex);
 	p->setUniform("hasRoughnessTex", mHasRoughnessTex);
 	p->setUniform("hasHeightTex", mhasHeightTex);
+
+	//mirror
+	p->setUniform("isMirror", mIsMirror);
 }
 
 void PBRMaterial::initProgram()
