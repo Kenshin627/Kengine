@@ -3,7 +3,6 @@
 #include "renderPass.h"
 #include "ssaoPass/ssaoPass.h"
 #include "cascadeShadowMapPass/cascadeShadowMapPass.h"
-#include "bloomPass/bloomPass.h"
 #include "blurPass/blurPass.h"
 #include "deferredRendering/geometryPass.h"
 #include "deferredRendering/lightingPass.h"
@@ -40,8 +39,6 @@ public:
 			spec.splitLambda = 0.95;
 			spec.splitMethod = FrustumSplitMethod::Pratical;
 			return std::make_unique<CascadeShadowMapPass>(spec, r, state);
-		case RenderPassKey::BLOOM:
-			return std::make_unique<BloomPass>(r, state);
 		case RenderPassKey::BLOOMBLUR:
 			return std::make_unique<GaussianBlur>(GaussianBlurSpecification{}, r, state);
 		case RenderPassKey::GEOMETRY:

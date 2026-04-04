@@ -138,9 +138,6 @@
     <ClCompile Include="core\graphic\renderPass\toneMapping\toneMapping.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="core\graphic\renderPass\bloomPass\bloomPass.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="core\graphic\renderPass\gaussianBlur\gaussianBlur.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -366,9 +363,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="core\graphic\renderPass\toneMapping\toneMapping.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="core\graphic\renderPass\bloomPass\bloomPass.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="core\graphic\renderPass\gaussianBlur\gaussianBlur.h">
