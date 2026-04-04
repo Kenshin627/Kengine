@@ -4,64 +4,31 @@
 #include <graphic/program/program.h>
 #include "geometry/screenQuad.h"
 #include "scene/scene.h"
-#include "graphic/texture/texture.h"
 #include "graphic/texture/texture2D/texture2D.h"
 
 static int downSamples = 7;
-static int downSize = 2;
 
 BloomPass::BloomPass(Renderer* r, const RenderState& state)
     :RenderPass(r, state)
 {
+    mExtractHighLightProgram = std::make_unique<Program>();
     mDownSampleProgram = std::make_unique<Program>();
     mUpSampleProgram = std::make_unique<Program>();
-    mExtractHighLightProgram = std::make_unique<Program>();
+
+    mExtractHighLightProgram->buildFromFiles(
+    {
+        { "core/graphic/shaderSrc/bloom/extractComp.glsl", ShaderType::Compute }
+    });
 
     mDownSampleProgram->buildFromFiles({
-        { "core/graphic/shaderSrc/bloom/downsample/downSampleComp.glsl", ShaderType::Compute }
+        { "core/graphic/shaderSrc/bloom/downSampleComp.glsl", ShaderType::Compute }
     });
 
     mUpSampleProgram->buildFromFiles({
-        { "core/graphic/shaderSrc/bloom/upsample/upSampleComp.glsl", ShaderType::Compute }
+        { "core/graphic/shaderSrc/bloom/upSampleComp.glsl", ShaderType::Compute }
     });
-
-    mExtractHighLightProgram->buildFromFiles(
-        {
-            { "core/graphic/shaderSrc/bloom/extractHighlight/vs.glsl", ShaderType::Vertex },
-            { "core/graphic/shaderSrc/bloom/extractHighlight/fs.glsl", ShaderType::Fragment }
-    });
-
-    mDownSampleFBOs.reserve(downSamples);
-    mUpSampleFBOs.reserve(downSamples);
-    int sourceWidth = state.viewport.z;
-    int sourceHeight = state.viewport.w;
-
-    std::initializer_list<FrameBufferSpecification> extractHighLightSpecs =
-    {
-        //color attachmeng 1 hdr
-        {
-            AttachmentType::Color,
-            TextureInternalFormat::RGBA16F,
-            TextureDataFormat::RGBA,
-            TextureWarpMode::CLAMP_TO_EDGE,
-            TextureWarpMode::CLAMP_TO_EDGE,
-            TextureFilter::LINEAR,
-            TextureFilter::LINEAR
-        },
-        //color attachment 0 normal ldr 
-        {
-            AttachmentType::Color,
-            TextureInternalFormat::RGBA16F,
-            TextureDataFormat::RGBA,
-            TextureWarpMode::CLAMP_TO_EDGE,
-            TextureWarpMode::CLAMP_TO_EDGE,
-            TextureFilter::LINEAR,
-            TextureFilter::LINEAR
-        }
-    };
-    mExtractHighLightFBO = std::make_unique<FrameBuffer>(glm::vec3{ mSize.x, mSize.y, 0 }, extractHighLightSpecs);
-
-    buildDownUpSampleTexture(sourceWidth / 2, sourceHeight / 2);
+    
+    buildDownUpSampleTexture(state.viewport.z, state.viewport.w);
 }
 
 BloomPass::~BloomPass()
@@ -77,22 +44,15 @@ void BloomPass::beginPass()
 void BloomPass::runPass(Scene* scene)
 {
     //Extract highLights
-    mExtractHighLightFBO->bind();
     mExtractHighLightProgram->bind();
-    updateRenderState();
     Texture* tex = mPrevPass->getCurrentFrameBuffer()->getColorAttachment(0);
-    tex->bind();
-    mExtractHighLightProgram->setUniform("screenMap", 0);
+    tex->bindImage2D(0, 0, GL_READ_ONLY);
+	mLDRTexture->bindImage2D(1, 0, GL_WRITE_ONLY);
+	mHDRTexture->bindImage2D(2, 0, GL_WRITE_ONLY);
     mExtractHighLightProgram->setUniform("thresholdMin", mThresholdMin);
     mExtractHighLightProgram->setUniform("thresholdMax", mThresholdMax);
-    ScreenQuad* quad = scene->getScreenQuad();
-    if (!quad)
-    {
-        KS_CORE_ERROR("pass screen quad is null");
-        return;
-    }
-    quad->beginDraw();
-    quad->draw();
+    glDispatchCompute((mRenderState.viewport.z + 7) / 8, (mRenderState.viewport.w + 7) / 8, 1);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
     //DownSampleChains
     mDownSampleProgram->bind();
@@ -100,13 +60,10 @@ void BloomPass::runPass(Scene* scene)
     mDownSampleProgram->setUniform("uDownSampleBlurSigma", mGaussianSigma);
     mDownSampleProgram->setUniform("uBloomIntensity", mBloomIntensity);
     mDownSampleProgram->setUniform("uFirstDownSample", 1);
-
-    mDownSampleTexture->bindImage2D(1, 0, GL_WRITE_ONLY);
-    auto source = mExtractHighLightFBO->getColorAttachment(0);
+    mDownSampleTexture->bindImage2D(1, 0, GL_WRITE_ONLY);   
     mDownSampleProgram->setUniform("uSourceTex", 0);
-    source->bind(0);
+    mHDRTexture->bind(0);
     mDownSampleProgram->setUniform("uSourceMipmap", 0);
-
     glDispatchCompute((mRenderState.viewport.z / 2 + 7) / 8, (mRenderState.viewport.w / 2 + 7) / 8, 1.0);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
@@ -150,14 +107,14 @@ void BloomPass::runPass(Scene* scene)
 
 void BloomPass::endPass()
 {
+	//nothing to do
 }
 
 void BloomPass::resize(uint width, uint height)
 {
     mRenderState.viewport.z = width;
     mRenderState.viewport.w = height;
-    buildDownUpSampleTexture(width / 2, height / 2);
-    mExtractHighLightFBO->resize(width, height);
+    buildDownUpSampleTexture(width, height);
 }
 
 Texture* BloomPass::getHDRTexture() const
@@ -167,20 +124,21 @@ Texture* BloomPass::getHDRTexture() const
 
 Texture* BloomPass::getLDRTexture() const
 {
-    return mExtractHighLightFBO->getColorAttachment(1);
+    return mLDRTexture.get();
 }
 
 FrameBuffer* BloomPass::getDebugView() const
 {
-    return mUpSampleFBOs[downSamples - 2].get();
+    //TODO
+    return nullptr;
 }
 
 void BloomPass::buildDownUpSampleTexture(uint width, uint height)
 {
     TextureSpecification mipChainSpec;
     mipChainSpec.dataFormat = TextureDataFormat::RGBA;
-    mipChainSpec.width = width;
-    mipChainSpec.height = height;
+    mipChainSpec.width = width / 2;
+    mipChainSpec.height = height / 2;
     mipChainSpec.internalFormat = TextureInternalFormat::RGBA16F;
     mipChainSpec.mipmapLevel = downSamples;
     mipChainSpec.minFilter = TextureFilter::LINEAR_MIPMAP_LINEAR;
@@ -188,7 +146,22 @@ void BloomPass::buildDownUpSampleTexture(uint width, uint height)
     mipChainSpec.warpS = TextureWarpMode::CLAMP_TO_EDGE;
     mipChainSpec.warpT = TextureWarpMode::CLAMP_TO_EDGE;
     mDownSampleTexture = std::make_unique<Texture2D>(mipChainSpec);
-    glTextureStorage2D(mDownSampleTexture->id(), mipChainSpec.mipmapLevel, Texture::convertToGLInternalFormat(mipChainSpec.internalFormat), width, height);
+    glTextureStorage2D(mDownSampleTexture->id(), mipChainSpec.mipmapLevel, Texture::convertToGLInternalFormat(mipChainSpec.internalFormat), width / 2, height / 2);
     mUpSampleTexture = std::make_unique<Texture2D>(mipChainSpec);
-    glTextureStorage2D(mUpSampleTexture->id(), mipChainSpec.mipmapLevel - 1, Texture::convertToGLInternalFormat(mipChainSpec.internalFormat), width, height);
+    glTextureStorage2D(mUpSampleTexture->id(), mipChainSpec.mipmapLevel - 1, Texture::convertToGLInternalFormat(mipChainSpec.internalFormat), width / 2, height / 2);
+
+    TextureSpecification extractHighLightSpec;
+    extractHighLightSpec.dataFormat = TextureDataFormat::RGBA;
+    extractHighLightSpec.width = width;
+    extractHighLightSpec.height = height;
+    extractHighLightSpec.internalFormat = TextureInternalFormat::RGBA16F;
+    extractHighLightSpec.mipmapLevel = 1;
+    extractHighLightSpec.minFilter = TextureFilter::LINEAR;
+    extractHighLightSpec.magFilter = TextureFilter::LINEAR;
+    extractHighLightSpec.warpS = TextureWarpMode::CLAMP_TO_EDGE;
+    extractHighLightSpec.warpT = TextureWarpMode::CLAMP_TO_EDGE;
+    mLDRTexture = std::make_unique<Texture2D>(extractHighLightSpec);
+    glTextureStorage2D(mLDRTexture->id(), 1, Texture::convertToGLInternalFormat(extractHighLightSpec.internalFormat), width, height);
+    mHDRTexture = std::make_unique<Texture2D>(extractHighLightSpec);
+    glTextureStorage2D(mHDRTexture->id(), 1, Texture::convertToGLInternalFormat(extractHighLightSpec.internalFormat), width, height);
 }

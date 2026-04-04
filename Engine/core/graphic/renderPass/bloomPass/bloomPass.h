@@ -8,7 +8,6 @@ class BloomPass : public RenderPass
 public:
     BloomPass(Renderer* r, const RenderState& state);
     ~BloomPass();
-
     virtual void beginPass() override;
     virtual void runPass(Scene* scene) override;
     virtual void endPass() override;
@@ -33,21 +32,19 @@ public:
 private:
     void buildDownUpSampleTexture(uint width, uint height);
 private:
-    std::unique_ptr<Program> mDownSampleProgram;
-    std::unique_ptr<Program> mUpSampleProgram;
-    std::vector<std::unique_ptr<FrameBuffer>> mDownSampleFBOs;
-    std::vector<std::unique_ptr<FrameBuffer>> mUpSampleFBOs;
+    std::unique_ptr<Program>     mDownSampleProgram;
+    std::unique_ptr<Program>     mUpSampleProgram;
+    std::unique_ptr<Program>     mExtractHighLightProgram;
 
-    std::unique_ptr<Program> mExtractHighLightProgram;
-    std::unique_ptr<FrameBuffer> mExtractHighLightFBO;
+    //std::unique_ptr<FrameBuffer> mExtractHighLightFBO;
+    std::unique_ptr<Texture>     mDownSampleTexture;
+	std::unique_ptr<Texture>     mUpSampleTexture;
+	std::unique_ptr<Texture>     mLDRTexture;
+    std::unique_ptr<Texture>     mHDRTexture;
 
-    std::unique_ptr<Texture> mDownSampleTexture;
-	std::unique_ptr<Texture> mUpSampleTexture;
-
-    float mThresholdMin{ 0.8f };
-    float mThresholdMax{ 1.2f };
-
-    int mBlurRadius{ 5 };
-    float mGaussianSigma{ 1.0f };
-    float mBloomIntensity{ 0.8f };
+    float mThresholdMin     { 0.8f };
+    float mThresholdMax     { 1.2f };
+    int   mBlurRadius       { 5    };
+    float mGaussianSigma    { 1.0f };
+    float mBloomIntensity   { 0.8f };
 };

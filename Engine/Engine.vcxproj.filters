@@ -522,17 +522,16 @@
     <None Include="core\graphic\shaderSrc\pcss\vs.glsl" />
     <None Include="core\graphic\shaderSrc\bloom\downsample\downSample.glsl" />
     <None Include="core\graphic\shaderSrc\bloom\upsample\upSample.glsl" />
-    <None Include="core\graphic\shaderSrc\bloom\quad.glsl" />
     <None Include="core\graphic\shaderSrc\weightedBlendedOIT\accum\vs.glsl" />
     <None Include="core\graphic\shaderSrc\weightedBlendedOIT\accum\fs.glsl" />
     <None Include="core\graphic\shaderSrc\weightedBlendedOIT\composite\vs.glsl" />
     <None Include="core\graphic\shaderSrc\weightedBlendedOIT\composite\fs.glsl" />
     <None Include="core\graphic\shaderSrc\ssr\vs.glsl" />
     <None Include="core\graphic\shaderSrc\ssr\fs.glsl" />
-    <None Include="core\graphic\shaderSrc\bloom\extractHighlight\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\extractComp.glsl" />
     <None Include="core\graphic\shaderSrc\bloom\extractHighlight\vs.glsl" />
-    <None Include="core\graphic\shaderSrc\bloom\downsample\downSampleComp.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\downSampleComp.glsl" />
     <None Include="core\graphic\shaderSrc\bloom\common.glsl" />
-    <None Include="core\graphic\shaderSrc\bloom\upsample\upSampleComp.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\upSampleComp.glsl" />
   </ItemGroup>
 </Project>
