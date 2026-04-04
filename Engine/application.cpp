@@ -128,13 +128,13 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<PBRMaterial> pbrMat6 = std::make_shared<PBRMaterial>(pbrSpec6);
 
 	PBRMaterialSpecification pbrSpec7;
-	//pbrSpec7.albedoMapPath = "images/oakfloor/albedo.png";	
-	//pbrSpec7.roughnessMapPath = "images/oakfloor/roughness.png";
-	//pbrSpec7.normalMapPath = "images/oakfloor/normal.png";
-	//pbrSpec7.heightMapPath = "images/oakfloor/height.png";
-	pbrSpec7.albedoColor = glm::vec3(0.2, 0.2, 0.2);
-	pbrSpec7.metallic = 1.0;
-	pbrSpec7.roughness = 0.0;
+	pbrSpec7.albedoMapPath = "images/oakfloor/albedo.png";	
+	pbrSpec7.roughnessMapPath = "images/oakfloor/roughness.png";
+	pbrSpec7.normalMapPath = "images/oakfloor/normal.png";
+	pbrSpec7.heightMapPath = "images/oakfloor/height.png";
+	//pbrSpec7.albedoColor = glm::vec3(0.2, 0.2, 0.2);
+	//pbrSpec7.metallic = 1.0;
+	//pbrSpec7.roughness = 0.0;
 	std::shared_ptr<PBRMaterial> pbrMat7 = std::make_shared<PBRMaterial>(pbrSpec7);
 	pbrMat7->setMirror(true);
 	BlinnPhongMaterialSpecification spec;
@@ -156,9 +156,9 @@ Application::Application(uint width, uint height, const char* title)
 	sphere3->setPosition(-6.4, 1.0, -1.2);
 	std::shared_ptr<RenderObject> sphere4 = std::make_shared<RenderObject>("sphere4", sphereGeometry4, pbrMat4);
 	sphere4->setPosition(0.6, 1.0, 2.8);
-	std::shared_ptr<RenderObject> sphere5 = std::make_shared<RenderObject>("sphere5", sphereGeometry, pbrMat5);
-	sphere5->setPosition(-4.8, 1.0, 2.2);
-	std::shared_ptr<RenderObject> sphere6 = std::make_shared<RenderObject>("sphere6", sphereGeometry, pbrMat6);
+	std::shared_ptr<RenderObject> sphere5 = std::make_shared<RenderObject>("sphere5", sphereGeometry, groundMat);
+	sphere5->setPosition(0.0, 1.0, -2.0);
+	std::shared_ptr<RenderObject> sphere6 = std::make_shared<RenderObject>("sphere6", sphereGeometry, metallicMat);
 	sphere6->setPosition(-2.2, 1.0, 0.2);
 
 	std::shared_ptr<RenderObject> box1 = std::make_shared<RenderObject>("box1", cube, pbrMat2);
@@ -168,7 +168,7 @@ Application::Application(uint width, uint height, const char* title)
 	box2->setRotation(0, 25, 0);
 	box2->setScale(0.5);
 	scene->addTransparencyObject({ sphere2, sphere3, sphere4 });
-	scene->addRenderObject({ ground, wall, sphere5, sphere6 });
+	scene->addRenderObject({ ground, sphere5, sphere6 });
 	
 	//model
 	/*Model model("models/backpack/backpack.obj");
@@ -255,17 +255,17 @@ Application::Application(uint width, uint height, const char* title)
 	//scene->addRenderObject(model5.getRenderList());
 	
 	//camera
-	auto camera = std::make_shared<Camera>(glm::vec3(4, 6, 5), 54.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.01, 100);
+	auto camera = std::make_shared<Camera>(glm::vec3(7, 6.4, 6.2), 25.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.01, 100);
 	scene->setMainCamera(camera);
 
 	//light
 	auto light1 = std::make_shared<PointLight>("point Light1", glm::vec3(-0.5f, 1.7f, 0.0f), glm::vec3(500.0f/255.0f, 500.0f/255.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	auto light2 = std::make_shared<PointLight>("point Light2", glm::vec3(0.4f, 1.5f, 1.0f), glm::vec3(0.0f/255.0f, 500.0f/255.0f, 0.0f/255.0f), 1.0f, 0.09f, 0.032f);
-	auto light3 = std::make_shared<PointLight>("point Light3", glm::vec3(-2.3f, 1.0f, 2.0f), glm::vec3(100.0f/255.0f, 400.0f/255.0f, 400.0f/255.0f), 1.0f, 0.09f, 0.032f);
+	auto light3 = std::make_shared<PointLight>("point Light3", glm::vec3(-0.6f, 1.9f, -0.4f), glm::vec3(0.0f/255.0f, 510.0f/255.0f, 765.0f/255.0f), 1.0f, 0.09f, 0.032f);
 	auto spotLight1 = std::make_shared<SpotLight>("spot Light1", glm::vec3(3.0f, 2.0f, 2.0f), glm::vec3(-3.0f, -2.0f, -2.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 17.f, 15.5f);
 	auto spotLight2 = std::make_shared<SpotLight>("spot Light2", glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(10.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f, 17.5f, 15.5f);
 	auto spotLight3 = std::make_shared<SpotLight>("spot Light3", glm::vec3(0.0f, 2.0f, 10.0f), glm::vec3(0.0f, -2.0f, -10.0f), glm::vec3(5.0f, 5.0f, 5.0f), 1.0f, 0.09f, 0.032f, 17.5f, 15.5f);
-	scene->addLights({ light1, light2, light3, spotLight1 });
+	scene->addLights({ light3, spotLight1 });
 	
 	//pass
 	//PASS GROUP#1

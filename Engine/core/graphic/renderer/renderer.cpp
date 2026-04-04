@@ -687,8 +687,8 @@ void Renderer::setDefaultRenderPass()
 		auto gPass = addRenderPass(RenderPassKey::GEOMETRY, RenderState{ mViewport }, nullptr);
 		auto lightingPass = addRenderPass(RenderPassKey::DEFFEREDSHADING, RenderState{ mViewport, false }, gPass);
 		//auto wboitPass = addRenderPass(RenderPassKey::WEIGHTEDBLENDEDOIT, RenderState{ mViewport, true }, lightingPass);
-		auto ssr = addRenderPass(RenderPassKey::SSREFLECTION, RenderState{ mViewport, false }, lightingPass);
-		auto toneMappingPass = addRenderPass(RenderPassKey::TONEMAPPING, RenderState{ mViewport, false }, ssr);
+		//auto ssr = addRenderPass(RenderPassKey::SSREFLECTION, RenderState{ mViewport, false }, lightingPass);
+		auto toneMappingPass = addRenderPass(RenderPassKey::TONEMAPPING, RenderState{ mViewport, false }, lightingPass);
 	}
 }
 

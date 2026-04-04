@@ -44,5 +44,5 @@ private:
 
     int mBlurRadius{ 5 };
     float mGaussianSigma{ 1.0f };
-    float mBloomIntensity{ 1.0f };
+    float mBloomIntensity{ 0.8f };
 };

@@ -68,7 +68,7 @@ void ToneMapping::beginPass()
 			ldrPass = mOwner->getRenderPass(RenderPassKey::FORWARDSHADING);
 			break;
 		case RenderStrategy::Deferred:
-			ldrPass = mOwner->getRenderPass(RenderPassKey::SSREFLECTION);
+			ldrPass = mOwner->getRenderPass(RenderPassKey::DEFFEREDSHADING);
 			break;
 		default:
 			break;
