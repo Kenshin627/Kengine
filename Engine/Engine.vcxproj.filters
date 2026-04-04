@@ -489,8 +489,6 @@
     <None Include="core\graphic\shaderSrc\ssao\blur\fs.glsl" />
     <None Include="core\graphic\shaderSrc\toneMapping\vs.glsl" />
     <None Include="core\graphic\shaderSrc\toneMapping\fs.glsl" />
-    <None Include="core\graphic\shaderSrc\bloom\vs.glsl" />
-    <None Include="core\graphic\shaderSrc\bloom\fs.glsl" />
     <None Include="core\graphic\shaderSrc\gaussianBlur\vs.glsl" />
     <None Include="core\graphic\shaderSrc\gaussianBlur\fs.glsl" />
     <None Include="core\graphic\shaderSrc\cascadeShadowMap\vs.glsl" />
@@ -522,14 +520,16 @@
     <None Include="core\graphic\shaderSrc\fxaa\fs.glsl" />
     <None Include="core\graphic\shaderSrc\pcss\fs.glsl" />
     <None Include="core\graphic\shaderSrc\pcss\vs.glsl" />
-    <None Include="core\graphic\shaderSrc\bloom2\downSample.glsl" />
-    <None Include="core\graphic\shaderSrc\bloom2\upSample.glsl" />
-    <None Include="core\graphic\shaderSrc\bloom2\quad.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\downsample\downSample.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\upsample\upSample.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\quad.glsl" />
     <None Include="core\graphic\shaderSrc\weightedBlendedOIT\accum\vs.glsl" />
     <None Include="core\graphic\shaderSrc\weightedBlendedOIT\accum\fs.glsl" />
     <None Include="core\graphic\shaderSrc\weightedBlendedOIT\composite\vs.glsl" />
     <None Include="core\graphic\shaderSrc\weightedBlendedOIT\composite\fs.glsl" />
     <None Include="core\graphic\shaderSrc\ssr\vs.glsl" />
     <None Include="core\graphic\shaderSrc\ssr\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\extractHighlight\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\extractHighlight\vs.glsl" />
   </ItemGroup>
 </Project>

@@ -138,10 +138,10 @@ void Renderer::setEnableBloom(bool enable)
 		if (enable)
 		{
 			auto lastPass1 = *(--(--mCurrentRenderPassGroup.end()));
-			addRenderPass(RenderPassKey::BLOOM2, RenderState{ mViewport, false }, lastPass1);
+			addRenderPass(RenderPassKey::BLOOM, RenderState{ mViewport, false }, lastPass1);
 
 			//auto lastPass2 = *(--(--mCurrentRenderPassGroup.end()));
-			//addRenderPass(RenderPassKey::BLOOM2, RenderState{ mViewport, false }, lastPass2);
+			//addRenderPass(RenderPassKey::BLOOM, RenderState{ mViewport, false }, lastPass2);
 		}
 		else
 		{
@@ -149,7 +149,7 @@ void Renderer::setEnableBloom(bool enable)
 			RenderPass* next{nullptr};
 			RenderPass* bloomPass{nullptr};
 			RenderPass* bloomBlurPass{nullptr};
-			auto bloomIter = mPassCache.find(RenderPassKey::BLOOM2);
+			auto bloomIter = mPassCache.find(RenderPassKey::BLOOM);
 			if (bloomIter != mPassCache.end())
 			{
 				bloomIter->second.pass->deActive();
@@ -179,7 +179,7 @@ bool Renderer::getEnableBloom() const
 
 uint Renderer::getBlurRadius() const
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
 	if (!pass)
 	{
 		return 0;
@@ -190,7 +190,7 @@ uint Renderer::getBlurRadius() const
 
 void Renderer::setBlurRadius(uint blur)
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
 	BloomPass* gaussianPass = static_cast<BloomPass*>(pass);
 	if (gaussianPass->getBlurRadius() != blur)
 	{
@@ -200,7 +200,7 @@ void Renderer::setBlurRadius(uint blur)
 
 float Renderer::getBloomBlurStrength()
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
 	if (!pass)
 	{
 		return 0;
@@ -211,7 +211,7 @@ float Renderer::getBloomBlurStrength()
 
 void Renderer::setBloomBlurStrength(float s)
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
 	BloomPass* gaussianPass = static_cast<BloomPass*>(pass);
 	if (gaussianPass->getBloomIntensity() != s)
 	{
@@ -221,7 +221,7 @@ void Renderer::setBloomBlurStrength(float s)
 
 float Renderer::getGaussianSigma() const
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
 	if (!pass)
 	{
 		return 0;
@@ -232,7 +232,7 @@ float Renderer::getGaussianSigma() const
 
 void Renderer::setGaussianSigma(float s)
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
 	if (!pass)
 	{
 		return;
@@ -246,7 +246,7 @@ void Renderer::setGaussianSigma(float s)
 
 void Renderer::setThresholdMin(float t)
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
 	if (!pass)
 	{
 		return;
@@ -260,7 +260,7 @@ void Renderer::setThresholdMin(float t)
 
 float Renderer::getThresholdMin() const
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
 	if (!pass)
 	{
 		return 0.0f;
@@ -271,7 +271,7 @@ float Renderer::getThresholdMin() const
 
 void Renderer::setThresholdMax(float t)
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
 	if (!pass)
 	{
 		return;
@@ -285,7 +285,7 @@ void Renderer::setThresholdMax(float t)
 
 float Renderer::getThresholdMax() const
 {
-	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM2);
+	RenderPass* pass = getRenderPass(RenderPassKey::BLOOM);
 	if (!pass)
 	{
 		return 0.0f;
@@ -783,7 +783,7 @@ void Renderer::renderUI()
 	}
 	ImGui::Separator();
 
-	//BLOOM2
+	//BLOOM
 	bool bloomChecked = mRenderPipeLine.enableBloom;
 	if (ImGui::Checkbox("Bloom", &bloomChecked))
 	{
@@ -835,7 +835,7 @@ void Renderer::renderUI()
 		if (bloomDebugView)
 		{
 			mDebugView.colorAttachmentIndex = 0;
-			mDebugView.fbo = static_cast<BloomPass*>(getRenderPass(RenderPassKey::BLOOM2))->getDebugView();
+			mDebugView.fbo = static_cast<BloomPass*>(getRenderPass(RenderPassKey::BLOOM))->getDebugView();
 			mDebugView.type = DebugViewAttachmentType::Color;
 		}
 		else

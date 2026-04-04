@@ -314,11 +314,11 @@
   <ItemGroup>
     <None Include="core\graphic\shaderSrc\blinnPhong\fs.glsl" />
     <None Include="core\graphic\shaderSrc\blinnPhong\vs.glsl" />
-    <None Include="core\graphic\shaderSrc\bloom2\downSample.glsl" />
-    <None Include="core\graphic\shaderSrc\bloom2\quad.glsl" />
-    <None Include="core\graphic\shaderSrc\bloom2\upSample.glsl" />
-    <None Include="core\graphic\shaderSrc\bloom\fs.glsl" />
-    <None Include="core\graphic\shaderSrc\bloom\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\downsample\downSample.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\extractHighlight\fs.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\quad.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\upsample\upSample.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\extractHighlight\vs.glsl" />
     <None Include="core\graphic\shaderSrc\cannyEdgeDetection\doubleThreshold\fs.glsl" />
     <None Include="core\graphic\shaderSrc\cannyEdgeDetection\doubleThreshold\vs.glsl" />
     <None Include="core\graphic\shaderSrc\cannyEdgeDetection\nms\fs.glsl" />

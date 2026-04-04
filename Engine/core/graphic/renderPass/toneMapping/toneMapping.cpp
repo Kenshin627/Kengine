@@ -46,7 +46,7 @@ void ToneMapping::beginPass()
 	RenderPass::beginPass();
 	mProgram->setUniform("exposure", mExposure);
 	
-	auto bloomPass = static_cast<BloomPass*>(mOwner->getRenderPass(RenderPassKey::BLOOM2));
+	auto bloomPass = static_cast<BloomPass*>(mOwner->getRenderPass(RenderPassKey::BLOOM));
 	bool enableBloom = bloomPass && (bloomPass->isActive());
 	mProgram->setUniform("enableBloom", enableBloom);
 

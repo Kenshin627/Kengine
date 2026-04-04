@@ -17,19 +17,19 @@ BloomPass::BloomPass(Renderer* r, const RenderState& state)
     mExtractHighLightProgram = std::make_unique<Program>();
 
     mDownSampleProgram->buildFromFiles({
-        { "core/graphic/shaderSrc/bloom2/quad.glsl", ShaderType::Vertex },
-        { "core/graphic/shaderSrc/bloom2/downSample.glsl", ShaderType::Fragment }
+        { "core/graphic/shaderSrc/bloom/quad.glsl", ShaderType::Vertex },
+        { "core/graphic/shaderSrc/bloom/downsample/downSample.glsl", ShaderType::Fragment }
     });
 
     mUpSampleProgram->buildFromFiles({
-        { "core/graphic/shaderSrc/bloom2/quad.glsl", ShaderType::Vertex },
-        { "core/graphic/shaderSrc/bloom2/upSample.glsl", ShaderType::Fragment }
+        { "core/graphic/shaderSrc/bloom/quad.glsl", ShaderType::Vertex },
+        { "core/graphic/shaderSrc/bloom/upsample/upSample.glsl", ShaderType::Fragment }
     });
 
     mExtractHighLightProgram->buildFromFiles(
     {
-        { "core/graphic/shaderSrc/bloom/vs.glsl", ShaderType::Vertex },
-        { "core/graphic/shaderSrc/bloom/fs.glsl", ShaderType::Fragment }
+        { "core/graphic/shaderSrc/bloom/extractHighlight/vs.glsl", ShaderType::Vertex },
+        { "core/graphic/shaderSrc/bloom/extractHighlight/fs.glsl", ShaderType::Fragment }
     });
 
     mDownSampleFBOs.reserve(downSamples);

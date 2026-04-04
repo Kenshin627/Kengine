@@ -67,7 +67,7 @@ public:
 			return std::make_unique<FlatWireFramePass>(glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(0.1f, 0.1f, 0.1f), 0.5f, 0.1f, r, state);
 		case RenderPassKey::PCSS:
 			return std::make_unique<PCSS>(r, state);
-		case RenderPassKey::BLOOM2:
+		case RenderPassKey::BLOOM:
 			return std::make_unique<BloomPass>(r, state);
 		case RenderPassKey::WEIGHTEDBLENDEDOIT:
 			return std::make_unique<WeightedBlendedOIT>(r, state);

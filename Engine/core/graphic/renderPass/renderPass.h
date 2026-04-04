@@ -60,7 +60,6 @@ enum class RenderPassKey
 	FXAA,
 	WIREFRAME,
 	PCSS,
-	BLOOM2,
 	WEIGHTEDBLENDEDOIT,
 	SSREFLECTION,
 };
