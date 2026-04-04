@@ -3,11 +3,11 @@
 
 class Texture;
 
-class BloomPass2 : public RenderPass
+class BloomPass : public RenderPass
 {
 public:
-    BloomPass2(Renderer* r, const RenderState& state);
-    ~BloomPass2();
+    BloomPass(Renderer* r, const RenderState& state);
+    ~BloomPass();
 
     virtual void beginPass() override;
     virtual void runPass(Scene* scene) override;

@@ -17,7 +17,7 @@
 #include "fxaaPass/fxaaPass.h"
 #include "flatWireframe/flatWireframePass.h"
 #include "pcss/pcss.h"
-#include "bloomPass2/bloomPass2.h"
+#include "BloomPass/BloomPass.h"
 #include "weightedBlendedOIT/weightedBlendedOIT.h"
 #include "ssr/ssr.h"
 
@@ -68,7 +68,7 @@ public:
 		case RenderPassKey::PCSS:
 			return std::make_unique<PCSS>(r, state);
 		case RenderPassKey::BLOOM2:
-			return std::make_unique<BloomPass2>(r, state);
+			return std::make_unique<BloomPass>(r, state);
 		case RenderPassKey::WEIGHTEDBLENDEDOIT:
 			return std::make_unique<WeightedBlendedOIT>(r, state);
 		case RenderPassKey::SSREFLECTION:

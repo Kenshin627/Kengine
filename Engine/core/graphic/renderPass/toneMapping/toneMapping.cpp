@@ -8,7 +8,7 @@
 #include "scene/scene.h"
 #include "core.h"
 #include <graphic/renderPass/gaussianBlur/gaussianBlur.h>
-#include "graphic/renderPass/bloomPass2/bloomPass2.h"
+#include "graphic/renderPass/BloomPass/BloomPass.h"
 
 ToneMapping::ToneMapping(float exposure, Renderer* r, const RenderState& state)
 	:RenderPass(r, state),
@@ -46,7 +46,7 @@ void ToneMapping::beginPass()
 	RenderPass::beginPass();
 	mProgram->setUniform("exposure", mExposure);
 	
-	auto bloomPass = static_cast<BloomPass2*>(mOwner->getRenderPass(RenderPassKey::BLOOM2));
+	auto bloomPass = static_cast<BloomPass*>(mOwner->getRenderPass(RenderPassKey::BLOOM2));
 	bool enableBloom = bloomPass && (bloomPass->isActive());
 	mProgram->setUniform("enableBloom", enableBloom);
 

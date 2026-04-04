@@ -225,7 +225,7 @@
     <ClCompile Include="core\graphic\renderPass\pcss\pcss.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="core\graphic\renderPass\bloomPass2\bloomPass2.cpp">
+    <ClCompile Include="core\graphic\renderPass\bloomPass\bloomPass.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="core\graphic\renderPass\weightedBlendedOIT\weightedBlendedOIT.cpp">
@@ -464,7 +464,7 @@
     <ClInclude Include="core\graphic\renderPass\pcss\pcss.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="core\graphic\renderPass\bloomPass2\bloomPass2.h">
+    <ClInclude Include="core\graphic\renderPass\bloomPass\bloomPass.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="core\graphic\renderPass\weightedBlendedOIT\weightedBlendedOIT.h">

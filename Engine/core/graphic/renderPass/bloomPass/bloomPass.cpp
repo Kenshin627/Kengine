@@ -1,5 +1,5 @@
 #include "core.h"
-#include "BloomPass2.h"
+#include "BloomPass.h"
 #include "graphic/gpuBuffer/frameBuffer.h"
 #include <graphic/program/program.h>
 #include "geometry/screenQuad.h"
@@ -9,7 +9,7 @@
 static int downSamples = 7;
 static int downSize = 2;
 
-BloomPass2::BloomPass2(Renderer* r, const RenderState& state)
+BloomPass::BloomPass(Renderer* r, const RenderState& state)
     :RenderPass(r, state)
 {
     mDownSampleProgram = std::make_unique<Program>();
@@ -94,11 +94,11 @@ BloomPass2::BloomPass2(Renderer* r, const RenderState& state)
     mExtractHighLightFBO = std::make_unique<FrameBuffer>(glm::vec3{ mSize.x, mSize.y, 0 }, extractHighLightSpecs);
 }
 
-BloomPass2::~BloomPass2()
+BloomPass::~BloomPass()
 {
 }
 
-void BloomPass2::beginPass()
+void BloomPass::beginPass()
 {
     mExtractHighLightFBO->bind();
     mExtractHighLightProgram->bind();
@@ -110,7 +110,7 @@ void BloomPass2::beginPass()
     mExtractHighLightProgram->setUniform("thresholdMax", mThresholdMax);
 }
 
-void BloomPass2::runPass(Scene* scene)
+void BloomPass::runPass(Scene* scene)
 {
     ScreenQuad* quad = scene->getScreenQuad();
     if (!quad)
@@ -185,11 +185,11 @@ void BloomPass2::runPass(Scene* scene)
     }
 }
 
-void BloomPass2::endPass()
+void BloomPass::endPass()
 {
 }
 
-void BloomPass2::resize(uint width, uint height)
+void BloomPass::resize(uint width, uint height)
 {
     //resize viewport
     mRenderState.viewport.z = width;
@@ -213,17 +213,17 @@ void BloomPass2::resize(uint width, uint height)
     mExtractHighLightFBO->resize(width, height);
 }
 
-Texture* BloomPass2::getHDRTexture() const
+Texture* BloomPass::getHDRTexture() const
 {
     return mUpSampleFBOs[downSamples - 2]->getColorAttachment(0);
 }
 
-Texture* BloomPass2::getLDRTexture() const
+Texture* BloomPass::getLDRTexture() const
 {
     return mExtractHighLightFBO->getColorAttachment(1);
 }
 
-FrameBuffer* BloomPass2::getDebugView() const
+FrameBuffer* BloomPass::getDebugView() const
 {
     return mUpSampleFBOs[downSamples - 2].get();
 }
