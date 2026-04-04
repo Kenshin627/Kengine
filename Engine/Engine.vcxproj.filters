@@ -531,5 +531,8 @@
     <None Include="core\graphic\shaderSrc\ssr\fs.glsl" />
     <None Include="core\graphic\shaderSrc\bloom\extractHighlight\fs.glsl" />
     <None Include="core\graphic\shaderSrc\bloom\extractHighlight\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\downsample\downSampleComp.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\common.glsl" />
+    <None Include="core\graphic\shaderSrc\bloom\upsample\upSampleComp.glsl" />
   </ItemGroup>
 </Project>

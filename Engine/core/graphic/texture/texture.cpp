@@ -64,6 +64,11 @@ void Texture::setMagFilter(TextureFilter filter)
 	GLCALL(glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, convertToGLFilter(filter)));
 }
 
+void Texture::bindImage2D(uint unit, int level, uint access)
+{
+	GLCALL(glBindImageTexture(unit, mRendererID, level, GL_FALSE, 0, access, convertToGLInternalFormat(mInternalFormat)));
+}
+
 uint Texture::convertToGLInternalFormat(TextureInternalFormat format)
 {
 	switch (format)

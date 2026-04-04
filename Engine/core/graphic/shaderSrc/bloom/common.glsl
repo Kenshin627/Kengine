@@ -1,0 +1,1 @@
+// calculate gaussian weight

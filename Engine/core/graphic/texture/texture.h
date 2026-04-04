@@ -77,6 +77,7 @@ public:
 	void setWarpModeT(TextureWarpMode mode);
 	void setMinFilter(TextureFilter filter);
 	void setMagFilter(TextureFilter filter);
+	void bindImage2D(uint unit, int level, uint access);
 public:
 	static uint convertToGLInternalFormat(TextureInternalFormat format);
 	static uint convertToGLDataFormat(TextureDataFormat format);

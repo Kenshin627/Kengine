@@ -2,7 +2,7 @@
 
 uniform sampler2D uSourceTex;
 uniform int       uDownSampleBlurSize;
-uniform float       uDownSampleBlurSigma;
+uniform float     uDownSampleBlurSigma;
 uniform bool      uFirstDownSample;
 uniform float     uBloomIntensity;
 

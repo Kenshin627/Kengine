@@ -5,6 +5,7 @@
 #include "geometry/screenQuad.h"
 #include "scene/scene.h"
 #include "graphic/texture/texture.h"
+#include "graphic/texture/texture2D/texture2D.h"
 
 static int downSamples = 7;
 static int downSize = 2;
@@ -17,20 +18,22 @@ BloomPass::BloomPass(Renderer* r, const RenderState& state)
     mExtractHighLightProgram = std::make_unique<Program>();
 
     mDownSampleProgram->buildFromFiles({
-        { "core/graphic/shaderSrc/bloom/quad.glsl", ShaderType::Vertex },
-        { "core/graphic/shaderSrc/bloom/downsample/downSample.glsl", ShaderType::Fragment }
-    });
+        //{ "core/graphic/shaderSrc/bloom/quad.glsl", ShaderType::Vertex },
+        //{ "core/graphic/shaderSrc/bloom/downsample/downSample.glsl", ShaderType::Fragment }
+        { "core/graphic/shaderSrc/bloom/downsample/downSampleComp.glsl", ShaderType::Compute }
+        });
 
     mUpSampleProgram->buildFromFiles({
-        { "core/graphic/shaderSrc/bloom/quad.glsl", ShaderType::Vertex },
-        { "core/graphic/shaderSrc/bloom/upsample/upSample.glsl", ShaderType::Fragment }
-    });
+        //{ "core/graphic/shaderSrc/bloom/quad.glsl", ShaderType::Vertex },
+        //{ "core/graphic/shaderSrc/bloom/upsample/upSample.glsl", ShaderType::Fragment }
+        { "core/graphic/shaderSrc/bloom/upsample/upSampleComp.glsl", ShaderType::Compute }
+        });
 
     mExtractHighLightProgram->buildFromFiles(
-    {
-        { "core/graphic/shaderSrc/bloom/extractHighlight/vs.glsl", ShaderType::Vertex },
-        { "core/graphic/shaderSrc/bloom/extractHighlight/fs.glsl", ShaderType::Fragment }
-    });
+        {
+            { "core/graphic/shaderSrc/bloom/extractHighlight/vs.glsl", ShaderType::Vertex },
+            { "core/graphic/shaderSrc/bloom/extractHighlight/fs.glsl", ShaderType::Fragment }
+        });
 
     mDownSampleFBOs.reserve(downSamples);
     mUpSampleFBOs.reserve(downSamples);
@@ -92,14 +95,23 @@ BloomPass::BloomPass(Renderer* r, const RenderState& state)
         }
     };
     mExtractHighLightFBO = std::make_unique<FrameBuffer>(glm::vec3{ mSize.x, mSize.y, 0 }, extractHighLightSpecs);
+
+    buildDownUpSampleTexture(sourceWidth / 2, sourceHeight / 2);
 }
 
 BloomPass::~BloomPass()
 {
+    //nothing to do
 }
 
 void BloomPass::beginPass()
 {
+    //noting to do
+}
+
+void BloomPass::runPass(Scene* scene)
+{
+    //Extract highLights
     mExtractHighLightFBO->bind();
     mExtractHighLightProgram->bind();
     updateRenderState();
@@ -108,10 +120,6 @@ void BloomPass::beginPass()
     mExtractHighLightProgram->setUniform("screenMap", 0);
     mExtractHighLightProgram->setUniform("thresholdMin", mThresholdMin);
     mExtractHighLightProgram->setUniform("thresholdMax", mThresholdMax);
-}
-
-void BloomPass::runPass(Scene* scene)
-{
     ScreenQuad* quad = scene->getScreenQuad();
     if (!quad)
     {
@@ -121,68 +129,71 @@ void BloomPass::runPass(Scene* scene)
     quad->beginDraw();
     quad->draw();
 
-    // downSampleChains
-    auto source = mExtractHighLightFBO->getColorAttachment(0);
+    //DownSampleChains
     mDownSampleProgram->bind();
-    mDownSampleFBOs[0]->bind();
-    source->bind();
-    mDownSampleProgram->setUniform("uSourceTex", 0);
     mDownSampleProgram->setUniform("uDownSampleBlurSize", mBlurRadius);
     mDownSampleProgram->setUniform("uDownSampleBlurSigma", mGaussianSigma);
     mDownSampleProgram->setUniform("uBloomIntensity", mBloomIntensity);
     mDownSampleProgram->setUniform("uFirstDownSample", 1);
-    glViewport(0, 0, mDownSampleFBOs[0]->getColorAttachment(0)->width(), mDownSampleFBOs[0]->getColorAttachment(0)->height());
-    glClear(mRenderState.clearBits);
-    glClearColor(mRenderState.clearColor.r, mRenderState.clearColor.g, mRenderState.clearColor.b, mRenderState.clearColor.a);
-    quad->draw();
 
+    mDownSampleTexture->bindImage2D(1, 0, GL_WRITE_ONLY);
+    auto source = mExtractHighLightFBO->getColorAttachment(0);
+    //source->bindImage2D(0, 0, GL_READ_ONLY);
+    mDownSampleProgram->setUniform("uSourceTex", 0);
+    source->bind(0);
+    mDownSampleProgram->setUniform("uSourceMipmap", 0);
+
+    glDispatchCompute((mRenderState.viewport.z / 2 + 7) / 8, (mRenderState.viewport.w / 2 + 7) / 8, 1.0);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+    mDownSampleTexture->bind(0);
     for (int i = 1; i < downSamples; ++i)
     {
-        mDownSampleFBOs[i - 1]->getColorAttachment(0)->bind();
-        mDownSampleFBOs[i]->bind();
+        mDownSampleProgram->setUniform("uSourceMipmap", i - 1);
+        //mDownSampleTexture->bindImage2D(0, i - 1, GL_READ_ONLY);
+        mDownSampleTexture->bindImage2D(1, i, GL_WRITE_ONLY);
         mDownSampleProgram->setUniform("uFirstDownSample", 0);
-
-        glViewport(0, 0, mDownSampleFBOs[i]->getColorAttachment(0)->width(), mDownSampleFBOs[i]->getColorAttachment(0)->height());
-        glClear(mRenderState.clearBits);
-        glClearColor(mRenderState.clearColor.r, mRenderState.clearColor.g, mRenderState.clearColor.b, mRenderState.clearColor.a);
-        quad->draw();
+        uint width = mDownSampleTexture->width() / (1 << i);
+        uint height = mDownSampleTexture->height() / (1 << i);
+        glDispatchCompute((width + 7) / 8, (height + 7) / 8, 1.0);
+        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     }
 
-    // upSampleChains
+    //UpSampleChains
     mUpSampleProgram->bind();
-    mUpSampleProgram->setUniform("uPrevTex", 0);
-    mUpSampleProgram->setUniform("uCurrentTex", 1);
+
     mUpSampleProgram->setUniform("uUpSampleBlurSize", mBlurRadius);
     mUpSampleProgram->setUniform("uUpSampleBlurSigma", mGaussianSigma);
     mUpSampleProgram->setUniform("uBloomIntensity", mBloomIntensity);
 
-    mDownSampleFBOs[downSamples - 1]->getColorAttachment(0)->bind(0);  // 最小downSample → uPrevTex
-    mDownSampleFBOs[downSamples - 2]->getColorAttachment(0)->bind(1);  // 次小downSample → uCurrentTex
-    mUpSampleFBOs[0]->bind();
+    //layout(binding = 0, rgba16f) uniform image2D uPrevTex;
+    //layout(binding = 1, rgba16f) uniform image2D uCurrentTex;
+    //layout(binding = 2, rgba16f) uniform image2D uDestTex;
+    mUpSampleProgram->setUniform("uPrevTex", 0);
+    mUpSampleProgram->setUniform("uCurrentTex", 1);
+	mUpSampleProgram->setUniform("uPrevMipLevel", downSamples - 1);
+    mUpSampleProgram->setUniform("uCurrentMipLevel", downSamples - 2);
+	mDownSampleTexture->bind(1);
+    //mDownSampleTexture->bindImage2D(0, downSamples - 1, GL_READ_ONLY);
+    //mDownSampleTexture->bindImage2D(1, downSamples - 2, GL_READ_ONLY);
+    mUpSampleTexture->bindImage2D(2, downSamples - 2, GL_WRITE_ONLY);
+    glDispatchCompute((mDownSampleTexture->width() / (1 << (downSamples - 2)) + 7) / 8, (mDownSampleTexture->height() / (1 << (downSamples - 2)) + 7) / 8, 1.0);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-    glViewport(0, 0, mUpSampleFBOs[0]->getColorAttachment(0)->width(), mUpSampleFBOs[0]->getColorAttachment(0)->height());
-    glClear(mRenderState.clearBits);
-    glClearColor(mRenderState.clearColor.r, mRenderState.clearColor.g, mRenderState.clearColor.b, mRenderState.clearColor.a);
-    quad->draw();
-
-    for (int i = 1; i < downSamples - 1; ++i)
-    {
-
+    mUpSampleTexture->bind(0);
+    //for (int i = 1; i < downSamples - 1; ++i)
+    //{
         for (int i = 1; i < downSamples - 1; ++i)
         {
-            mUpSampleFBOs[i - 1]->getColorAttachment(0)->bind(0);
-            mDownSampleFBOs[downSamples - 2 - i]->getColorAttachment(0)->bind(1);
-            mUpSampleFBOs[i]->bind();
-
-            glViewport(0, 0, mUpSampleFBOs[i]->getColorAttachment(0)->width(), mUpSampleFBOs[i]->getColorAttachment(0)->height());
-            glClear(mRenderState.clearBits);
-            glClearColor(mRenderState.clearColor.r, mRenderState.clearColor.g, mRenderState.clearColor.b, mRenderState.clearColor.a);
-            quad->draw();
+            //mUpSampleTexture->bindImage2D(0, downSamples - 1 - i, GL_READ_ONLY);
+            //mDownSampleTexture->bindImage2D(1, downSamples - 2 - i, GL_READ_ONLY);
+            mUpSampleProgram->setUniform("uPrevMipLevel", downSamples - 1 - i);
+            mUpSampleProgram->setUniform("uCurrentMipLevel", downSamples - 2 - i);
+            mUpSampleTexture->bindImage2D(2, downSamples - 2 - i, GL_WRITE_ONLY);
+            glDispatchCompute((mUpSampleTexture->width() / (1 << (downSamples - 2 - i)) + 7) / 8, (mDownSampleTexture->height() / (1 << (downSamples - 2 - i)) + 7) / 8, 1.0);
+            glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
         }
-
-        quad->endDraw();
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
+    //}
 }
 
 void BloomPass::endPass()
@@ -194,28 +205,13 @@ void BloomPass::resize(uint width, uint height)
     //resize viewport
     mRenderState.viewport.z = width;
     mRenderState.viewport.w = height;
-    //resize fbo if nessesary
-    if (!mDownSampleFBOs.empty())
-    {
-        for (auto& downSampleFBO : mDownSampleFBOs)
-        {
-            downSampleFBO->resize(width, height);
-        }
-    }
-
-    if (!mUpSampleFBOs.empty())
-    {
-        for (auto& upSampleFBO : mUpSampleFBOs)
-        {
-            upSampleFBO->resize(width, height);
-        }
-    }
+    buildDownUpSampleTexture(width / 2, height / 2);
     mExtractHighLightFBO->resize(width, height);
 }
 
 Texture* BloomPass::getHDRTexture() const
 {
-    return mUpSampleFBOs[downSamples - 2]->getColorAttachment(0);
+    return mUpSampleTexture.get();
 }
 
 Texture* BloomPass::getLDRTexture() const
@@ -226,4 +222,33 @@ Texture* BloomPass::getLDRTexture() const
 FrameBuffer* BloomPass::getDebugView() const
 {
     return mUpSampleFBOs[downSamples - 2].get();
+}
+
+void BloomPass::buildDownUpSampleTexture(uint width, uint height)
+{
+    TextureSpecification downSampleSpec;
+    downSampleSpec.dataFormat = TextureDataFormat::RGBA;
+    downSampleSpec.width = width;
+    downSampleSpec.height = height;
+    downSampleSpec.internalFormat = TextureInternalFormat::RGBA16F;
+    downSampleSpec.mipmapLevel = downSamples;
+    downSampleSpec.minFilter = TextureFilter::LINEAR_MIPMAP_LINEAR;
+    downSampleSpec.magFilter = TextureFilter::LINEAR;
+    downSampleSpec.warpS = TextureWarpMode::CLAMP_TO_EDGE;
+    downSampleSpec.warpT = TextureWarpMode::CLAMP_TO_EDGE;
+    mDownSampleTexture = std::make_unique<Texture2D>(downSampleSpec);
+    glTextureStorage2D(mDownSampleTexture->id(), downSampleSpec.mipmapLevel, Texture::convertToGLInternalFormat(downSampleSpec.internalFormat), width, height);
+
+    TextureSpecification upSampleSpec;
+    upSampleSpec.dataFormat = TextureDataFormat::RGBA;
+    upSampleSpec.width = width;
+    upSampleSpec.height = height;
+    upSampleSpec.internalFormat = TextureInternalFormat::RGBA16F;
+    upSampleSpec.mipmapLevel = downSamples - 1;
+    upSampleSpec.minFilter = TextureFilter::LINEAR_MIPMAP_LINEAR;
+    upSampleSpec.magFilter = TextureFilter::LINEAR;
+    upSampleSpec.warpS = TextureWarpMode::CLAMP_TO_EDGE;
+    upSampleSpec.warpT = TextureWarpMode::CLAMP_TO_EDGE;
+    mUpSampleTexture = std::make_unique<Texture2D>(upSampleSpec);
+    glTextureStorage2D(mUpSampleTexture->id(), upSampleSpec.mipmapLevel, Texture::convertToGLInternalFormat(upSampleSpec.internalFormat), width, height);
 }

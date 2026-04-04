@@ -1,11 +1,11 @@
 #version 460 core
 
-in vec2 vTexcoord;
+in vec2  vTexcoord;
 out vec4 fragColor;
 uniform sampler2D uPrevTex;
 uniform sampler2D uCurrentTex;
 uniform int       uUpSampleBlurSize;
-uniform float       uUpSampleBlurSigma;
+uniform float     uUpSampleBlurSigma;
 uniform float     uBloomIntensity;
 
 float GaussWeight2D(float x, float y, float sigma)

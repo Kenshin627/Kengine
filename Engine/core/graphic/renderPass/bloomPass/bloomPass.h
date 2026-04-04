@@ -31,6 +31,8 @@ public:
     void setBloomIntensity(float intensity) { mBloomIntensity = intensity; };
     float getBloomIntensity() const { return mBloomIntensity; };
 private:
+    void buildDownUpSampleTexture(uint width, uint height);
+private:
     std::unique_ptr<Program> mDownSampleProgram;
     std::unique_ptr<Program> mUpSampleProgram;
     std::vector<std::unique_ptr<FrameBuffer>> mDownSampleFBOs;
@@ -38,6 +40,9 @@ private:
 
     std::unique_ptr<Program> mExtractHighLightProgram;
     std::unique_ptr<FrameBuffer> mExtractHighLightFBO;
+
+    std::unique_ptr<Texture> mDownSampleTexture;
+	std::unique_ptr<Texture> mUpSampleTexture;
 
     float mThresholdMin{ 0.8f };
     float mThresholdMax{ 1.2f };
