@@ -7,6 +7,7 @@ public:
 	~ToneMapping();
 	virtual void beginPass() override;
 	virtual void runPass(Scene* scene) override;
+	virtual Texture* getDebugView() const override;
 private:
 	float mExposure;
 };

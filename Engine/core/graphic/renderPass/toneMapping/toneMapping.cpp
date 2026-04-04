@@ -98,3 +98,8 @@ void ToneMapping::runPass(Scene* scene)
 	quad->draw();
 	quad->endDraw();
 }
+
+Texture* ToneMapping::getDebugView() const
+{
+	return mFrameBuffer->getColorAttachment(0);
+}

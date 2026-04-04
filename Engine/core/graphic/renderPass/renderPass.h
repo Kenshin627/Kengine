@@ -10,6 +10,7 @@ class FrameBuffer;
 class Geometry;
 class Scene;
 class Renderer;
+class Texture;
 
 enum class RenderTarget
 {
@@ -93,6 +94,7 @@ public:
 	void active();
 	void deActive();
 	bool isActive() const;
+	virtual Texture* getDebugView() const { return nullptr; };
 protected:
 	virtual bool checkFrameBuffer();
 protected:

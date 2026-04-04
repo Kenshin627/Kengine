@@ -62,9 +62,12 @@ enum class DebugViewAttachmentType
 
 struct DebugView
 {
-	FrameBuffer* fbo{ nullptr };
-	int colorAttachmentIndex{ -1 };
-	DebugViewAttachmentType type{ DebugViewAttachmentType::None };
+	Texture* texture{ nullptr };
+	RenderPassKey key{ RenderPassKey::BLOOM};
+	bool operator ==(const DebugView& v)
+	{
+		return key == v.key;
+	}
 };
 
 class Renderer
@@ -124,7 +127,7 @@ public:
 	void setSSAOSigma(float s);
 
 
-	const DebugView& getDebugView() const;
+	const std::vector<DebugView>& getDebugView() const;
 
 	//CSM
 	void enableCSM(bool enable);
@@ -148,7 +151,7 @@ private:
 	void setDefaultRenderPass();
 	void removePass(RenderPassKey key);
 	void renderUI();
-	void resetDebugView();
+	void popDebugView(RenderPassKey key);
 private:
 	std::shared_ptr<Scene>										   mCurrentScene;
 	std::list<RenderPass*>										   mCurrentRenderPassGroup;
@@ -157,6 +160,6 @@ private:
 	glm::vec4													   mViewport;
 	std::unordered_map<RenderPassKey, RenderKeyPass>			   mPassCache;
 	RenderPipeLine												   mRenderPipeLine;
-	DebugView													   mDebugView;
+	std::vector<DebugView>										   mDebugViews;
 	RenderStrategy												   mRenderStrategy{ RenderStrategy::Deferred };
 };

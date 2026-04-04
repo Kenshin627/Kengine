@@ -3,6 +3,8 @@
 
 constexpr uint MAX_HALF_KERNEL_SIZE = 21;
 
+class Texture; 
+
 struct GaussianBlurSpecification
 {
 	float Scale		{ 1.0f  };
@@ -29,6 +31,7 @@ public:
 	float getGussianBlurStrength() const;
 	void setSigma(float s);
 	float getSigma() const;
+	virtual Texture* getDebugView() const override;
 protected:
 	virtual bool checkFrameBuffer() override;
 private:

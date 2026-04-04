@@ -6,8 +6,6 @@
 #include "scene/scene.h"
 #include "graphic/texture/texture2D/texture2D.h"
 
-static int downSamples = 7;
-
 BloomPass::BloomPass(Renderer* r, const RenderState& state)
     :RenderPass(r, state)
 {
@@ -68,7 +66,7 @@ void BloomPass::runPass(Scene* scene)
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
     mDownSampleTexture->bind(0);
-    for (int i = 1; i < downSamples; ++i)
+    for (int i = 1; i < mMipmapLevels; ++i)
     {
         mDownSampleProgram->setUniform("uSourceMipmap", i - 1);
         mDownSampleTexture->bindImage2D(1, i, GL_WRITE_ONLY);
@@ -86,21 +84,21 @@ void BloomPass::runPass(Scene* scene)
     mUpSampleProgram->setUniform("uBloomIntensity", mBloomIntensity);
     mUpSampleProgram->setUniform("uPrevTex", 0);
     mUpSampleProgram->setUniform("uCurrentTex", 1);
-	mUpSampleProgram->setUniform("uPrevMipLevel", downSamples - 1);
-    mUpSampleProgram->setUniform("uCurrentMipLevel", downSamples - 2);
+	mUpSampleProgram->setUniform("uPrevMipLevel", mMipmapLevels - 1);
+    mUpSampleProgram->setUniform("uCurrentMipLevel", mMipmapLevels - 2);
 	mDownSampleTexture->bind(1);
-    mUpSampleTexture->bindImage2D(2, downSamples - 2, GL_WRITE_ONLY);
-    glDispatchCompute((mDownSampleTexture->width() / (1 << (downSamples - 2)) + 7) / 8, (mDownSampleTexture->height() / (1 << (downSamples - 2)) + 7) / 8, 1.0);
+    mUpSampleTexture->bindImage2D(2, mMipmapLevels - 2, GL_WRITE_ONLY);
+    glDispatchCompute((mDownSampleTexture->width() / (1 << (mMipmapLevels - 2)) + 7) / 8, (mDownSampleTexture->height() / (1 << (mMipmapLevels - 2)) + 7) / 8, 1.0);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
     mUpSampleTexture->bind(0);
 
-    for (int i = 1; i < downSamples - 1; ++i)
+    for (int i = 1; i < mMipmapLevels - 1; ++i)
     {
-        mUpSampleProgram->setUniform("uPrevMipLevel", downSamples - 1 - i);
-        mUpSampleProgram->setUniform("uCurrentMipLevel", downSamples - 2 - i);
-        mUpSampleTexture->bindImage2D(2, downSamples - 2 - i, GL_WRITE_ONLY);
-        glDispatchCompute((mUpSampleTexture->width() / (1 << (downSamples - 2 - i)) + 7) / 8, (mDownSampleTexture->height() / (1 << (downSamples - 2 - i)) + 7) / 8, 1.0);
+        mUpSampleProgram->setUniform("uPrevMipLevel", mMipmapLevels - 1 - i);
+        mUpSampleProgram->setUniform("uCurrentMipLevel", mMipmapLevels - 2 - i);
+        mUpSampleTexture->bindImage2D(2, mMipmapLevels - 2 - i, GL_WRITE_ONLY);
+        glDispatchCompute((mUpSampleTexture->width() / (1 << (mMipmapLevels - 2 - i)) + 7) / 8, (mDownSampleTexture->height() / (1 << (mMipmapLevels - 2 - i)) + 7) / 8, 1.0);
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     }
 }
@@ -127,10 +125,9 @@ Texture* BloomPass::getLDRTexture() const
     return mLDRTexture.get();
 }
 
-FrameBuffer* BloomPass::getDebugView() const
+Texture* BloomPass::getDebugView() const
 {
-    //TODO
-    return nullptr;
+	return mUpSampleTexture.get();
 }
 
 void BloomPass::buildDownUpSampleTexture(uint width, uint height)
@@ -140,7 +137,7 @@ void BloomPass::buildDownUpSampleTexture(uint width, uint height)
     mipChainSpec.width = width / 2;
     mipChainSpec.height = height / 2;
     mipChainSpec.internalFormat = TextureInternalFormat::RGBA16F;
-    mipChainSpec.mipmapLevel = downSamples;
+    mipChainSpec.mipmapLevel = mMipmapLevels;
     mipChainSpec.minFilter = TextureFilter::LINEAR_MIPMAP_LINEAR;
     mipChainSpec.magFilter = TextureFilter::LINEAR;
     mipChainSpec.warpS = TextureWarpMode::CLAMP_TO_EDGE;

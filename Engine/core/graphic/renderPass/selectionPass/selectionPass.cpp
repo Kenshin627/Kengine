@@ -70,3 +70,8 @@ uint SelectionPass::getObjectIndex(const glm::vec2& screenPos) const
 	unsigned char* rgb = static_cast<unsigned char*>(pixelVal);
 	return rgb[0] + rgb[1] << 8 + rgb[2] << 16;
 }
+
+Texture* SelectionPass::getDebugView() const
+{
+	return mFrameBuffer->getColorAttachment(0);
+}

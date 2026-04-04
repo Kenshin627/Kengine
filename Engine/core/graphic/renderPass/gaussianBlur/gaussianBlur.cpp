@@ -149,6 +149,11 @@ float GaussianBlur::getSigma() const
 	return mSpec.Sigma;
 }
 
+Texture* GaussianBlur::getDebugView() const
+{
+	return mDoubleBuffers[1].get()->getColorAttachment(0);
+}
+
 bool GaussianBlur::checkFrameBuffer()
 {
 	for (auto& fbo : mDoubleBuffers)

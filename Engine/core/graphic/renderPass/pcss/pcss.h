@@ -18,8 +18,8 @@ public:
 	void setLightNear(float lightNear);
 	void setLightFar(float lightFar);
 	void setPcfSamples(int sample);
-
 	void updateLightViewMatrix();
+	virtual Texture* getDebugView() const override;
 private:
 private:
 	std::unique_ptr<UniformBuffer> mLightMatricesBuffer;

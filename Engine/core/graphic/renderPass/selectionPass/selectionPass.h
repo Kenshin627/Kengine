@@ -10,4 +10,5 @@ public:
 	virtual void runPass(Scene* scene) override;
 	glm::vec3 getColor(uint index) const;
 	uint getObjectIndex(const glm::vec2& screenPos) const;
+	virtual Texture* getDebugView() const override;
 };

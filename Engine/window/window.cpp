@@ -146,20 +146,12 @@ void Window::RunLoop()
 		//debugViewport
 		ImGui::Begin("DebugViewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 		ImVec2 debugViewportSize = ImGui::GetContentRegionAvail();
-		const DebugView& debugView =  mRenderer->getDebugView();
-		auto fbo = debugView.fbo;
+		const std::vector<DebugView>& debugView =  mRenderer->getDebugView();
 		int texId = mDefaultImage->id();
-		if (fbo)
+		if (!debugView.empty())
 		{
-			if (debugView.type == DebugViewAttachmentType::Color)
-			{
-				texId = fbo->getColorAttachment(debugView.colorAttachmentIndex)->id();
-			}
-			else
-			{
-				texId = fbo->getDepthStencilAttachment()->id();
-			}
-		}
+			texId = debugView.back().texture->id();
+		}		
 		ImGui::Image((void*)(intptr_t)texId, debugViewportSize, ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::End();
 

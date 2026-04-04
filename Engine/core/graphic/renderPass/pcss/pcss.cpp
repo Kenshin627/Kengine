@@ -153,3 +153,8 @@ void PCSS::updateLightViewMatrix()
 	mLightMatricesBuffer->setData(sizeof(glm::mat4), glm::value_ptr(lightProjection * lightViewSpace), 0);
 	mLightMatricesBuffer->setData(sizeof(glm::mat4), glm::value_ptr(lightViewSpace), sizeof(glm::mat4));
 }
+
+Texture* PCSS::getDebugView() const
+{
+	return mFrameBuffer->getDepthStencilAttachment();
+}

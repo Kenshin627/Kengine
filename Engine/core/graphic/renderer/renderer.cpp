@@ -521,9 +521,9 @@ void Renderer::setSSAOSigma(float s)
 	}
 }
 
-const DebugView& Renderer::getDebugView() const
+const std::vector<DebugView>& Renderer::getDebugView() const
 {
-	return mDebugView;
+	return mDebugViews;
 }
 
 void Renderer::enableCSM(bool enable)
@@ -834,13 +834,12 @@ void Renderer::renderUI()
 		mRenderPipeLine.debugBloom = bloomDebugView;
 		if (bloomDebugView)
 		{
-			mDebugView.colorAttachmentIndex = 0;
-			mDebugView.fbo = static_cast<BloomPass*>(getRenderPass(RenderPassKey::BLOOM))->getDebugView();
-			mDebugView.type = DebugViewAttachmentType::Color;
+			Texture* texture = getRenderPass(RenderPassKey::BLOOM)->getDebugView();
+			mDebugViews.push_back({ texture, RenderPassKey::BLOOM });
 		}
 		else
 		{
-			resetDebugView();
+			popDebugView(RenderPassKey::BLOOM);
 		}
 	}
 	ImGui::PopID();
@@ -855,7 +854,7 @@ void Renderer::renderUI()
 		if (mRenderPipeLine.debugBloom)
 		{
 			mRenderPipeLine.debugBloom = false;
-			resetDebugView();
+			popDebugView(RenderPassKey::BLOOM);
 		}
 	}
 	ImGui::Separator();
@@ -931,13 +930,12 @@ void Renderer::renderUI()
 		mRenderPipeLine.debugSSAO = ssaodebugView;
 		if (ssaodebugView)
 		{
-			mDebugView.colorAttachmentIndex = 0;
-			mDebugView.fbo = static_cast<GaussianBlur*>(getRenderPass(RenderPassKey::SSAOBLUR))->getOutputFrameBuffer();
-			mDebugView.type = DebugViewAttachmentType::Color;
+			Texture* tex = getRenderPass(RenderPassKey::SSAOBLUR)->getDebugView();
+			mDebugViews.push_back({ tex, RenderPassKey::SSAOBLUR });
 		}
 		else
 		{
-			resetDebugView();
+			popDebugView(RenderPassKey::SSAOBLUR);
 		}
 	}
 	ImGui::PopID();
@@ -950,7 +948,7 @@ void Renderer::renderUI()
 	{
 		if (mRenderPipeLine.debugSSAO)
 		{
-			resetDebugView();
+			popDebugView(RenderPassKey::SSAOBLUR);
 			mRenderPipeLine.debugSSAO = false;
 		}
 	}
@@ -1063,13 +1061,12 @@ void Renderer::renderUI()
 		mRenderPipeLine.debugPCSS = pcssDebugVie;
 		if (pcssDebugVie)
 		{
-			mDebugView.colorAttachmentIndex = 0;
-			mDebugView.fbo = static_cast<PCSS*>(getRenderPass(RenderPassKey::PCSS))->getCurrentFrameBuffer();
-			mDebugView.type = DebugViewAttachmentType::Depth;
+			Texture* tex = getRenderPass(RenderPassKey::PCSS)->getDebugView();
+			mDebugViews.push_back({ tex, RenderPassKey::PCSS });
 		}
 		else
 		{
-			resetDebugView();
+			popDebugView(RenderPassKey::PCSS);
 		}
 	}
 	ImGui::PopID();
@@ -1083,7 +1080,7 @@ void Renderer::renderUI()
 	{
 		if (mRenderPipeLine.debugPCSS)
 		{
-			resetDebugView();
+			popDebugView(RenderPassKey::PCSS);
 			mRenderPipeLine.debugPCSS = false;
 		}
 	}
@@ -1133,13 +1130,12 @@ void Renderer::renderUI()
 		mRenderPipeLine.debugSelection = selectiondebugView;
 		if (selectiondebugView)
 		{
-			mDebugView.colorAttachmentIndex = 0;
-			mDebugView.fbo = static_cast<SelectionPass*>(getRenderPass(RenderPassKey::SELECTION))->getCurrentFrameBuffer();
-			mDebugView.type = DebugViewAttachmentType::Color;
+			Texture* tex =getRenderPass(RenderPassKey::SELECTION)->getDebugView();
+			mDebugViews.push_back({ tex, RenderPassKey::SELECTION });
 		}
 		else
 		{
-			resetDebugView();
+			popDebugView(RenderPassKey::SELECTION);
 		}
 	}
 	ImGui::PopID();
@@ -1187,9 +1183,13 @@ void Renderer::renderUI()
 	
 }
 
-void Renderer::resetDebugView()
+void Renderer::popDebugView(RenderPassKey key)
 {
-	mDebugView.colorAttachmentIndex = -1;
-	mDebugView.fbo = nullptr;
-	mDebugView.type = DebugViewAttachmentType::None;
+	for (auto& view : mDebugViews)
+	{
+		auto it = std::find_if(mDebugViews.begin(), mDebugViews.end(), [&](const DebugView& v) { return v.key == key; });
+		if (it != mDebugViews.end())
+			mDebugViews.erase(it);
+		
+	}
 }
