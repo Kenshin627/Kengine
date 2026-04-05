@@ -32,6 +32,7 @@
 #include "material/toonShading.h"
 #include "geometry/grassGround.h"
 #include "material/grassMaterial.h"
+#include "geometry/capsule.h"
 
 constexpr int shadowMapResolution = 4096;
 
@@ -58,6 +59,8 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<Sphere> sphereGeometry5 = std::make_shared<Sphere>(0.5f, 128.0f, 128.0f);
 	std::shared_ptr<GrassGround> grass = std::make_shared<GrassGround>(5.0f, 5.0f, glm::vec2(0.2, 0.2));
 	std::shared_ptr<GrassMaterial> grassMat = std::make_shared<GrassMaterial>();
+
+	std::shared_ptr<Capsule> capsule = std::make_shared<Capsule>(0.1f, 0.5f, 32, 32);
 	//MATERIAL
 	PBRMaterialSpecification groundSpec;
 	groundSpec.albedoMapPath    = "images/black-white-tile-bl/black-white-tile_albedo.png";
@@ -161,6 +164,8 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<RenderObject> sphere6 = std::make_shared<RenderObject>("sphere6", sphereGeometry, metallicMat);
 	sphere6->setPosition(-2.2, 1.0, 0.2);
 
+	std::shared_ptr<RenderObject> capsuleObj = std::make_shared<RenderObject>("capsule", capsule, metallicMat);
+	capsuleObj->setPosition(0.2, 0.8, 1.2);
 	std::shared_ptr<RenderObject> box1 = std::make_shared<RenderObject>("box1", cube, pbrMat2);
 	std::shared_ptr<RenderObject> box2 = std::make_shared<RenderObject>("box2", cube, metallicMat);
 	box1->setPosition(-3, 0.5, -4);
@@ -168,7 +173,7 @@ Application::Application(uint width, uint height, const char* title)
 	box2->setRotation(0, 25, 0);
 	box2->setScale(0.5);
 	scene->addTransparencyObject({ sphere2, sphere3, sphere4 });
-	scene->addRenderObject({ ground, sphere5, sphere6 });
+	scene->addRenderObject({ ground, sphere5, sphere6, capsuleObj });
 	
 	//model
 	/*Model model("models/backpack/backpack.obj");

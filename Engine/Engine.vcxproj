@@ -160,6 +160,7 @@
     <ClCompile Include="common\logger.cpp" />
     <ClCompile Include="core\eventSystem\event.cpp" />
     <ClCompile Include="core\eventSystem\eventDispacher.cpp" />
+    <ClCompile Include="core\geometry\capsule.cpp" />
     <ClCompile Include="core\geometry\cube.cpp" />
     <ClCompile Include="core\geometry\geometry.cpp" />
     <ClCompile Include="core\geometry\grassGround.cpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="common\typedef.h" />
     <ClInclude Include="core\eventSystem\event.h" />
     <ClInclude Include="core\eventSystem\eventDispacher.h" />
+    <ClInclude Include="core\geometry\capsule.h" />
     <ClInclude Include="core\geometry\cube.h" />
     <ClInclude Include="core\geometry\geometry.h" />
     <ClInclude Include="core\geometry\grassGround.h" />
