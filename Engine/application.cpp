@@ -37,6 +37,7 @@
 #include "geometry/cone.h"
 #include "geometry/ring.h"
 #include "geometry/torus.h"
+#include "geometry/torusKnot.h"
 
 constexpr int shadowMapResolution = 4096;
 
@@ -68,14 +69,8 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<Cylinder> cylinder = std::make_shared<Cylinder>(0.2, 0.2, 0.8);
 	std::shared_ptr<Cone> cone = std::make_shared<Cone>(0.5, 0.8, 32, 32);
 	std::shared_ptr<Ring> ring = std::make_shared<Ring>(0.5, 0.8, 32, 32);
-	//float radius = 1.0,
-	//float tube = 0.4,
-	//int radialSegments = 12,
-	//int tubularSegments = 48,
-	//float arc = PI * 2.0,
-	//float thetaStart = 0,
-	//float thetaLength = PI * 2.0
 	std::shared_ptr<Torus> torus = std::make_shared<Torus>(0.5, 0.1, 128, 128);
+	std::shared_ptr<TorusKnot> torusKnot = std::make_shared<TorusKnot>(0.5, 0.1, 100, 6);
 
 	//MATERIAL
 	PBRMaterialSpecification groundSpec;
@@ -199,6 +194,8 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<RenderObject> ringObj = std::make_shared<RenderObject>("Ring", ring, coneMat);
 
 	std::shared_ptr<RenderObject> torusObj = std::make_shared<RenderObject>("Torus", torus, torusMat);
+	std::shared_ptr<RenderObject> torusKnotObj = std::make_shared<RenderObject>("TorusKnot", torusKnot, torusMat);
+	torusKnotObj->setRotation(90, 0, 0);
 
 	std::shared_ptr<RenderObject> box1 = std::make_shared<RenderObject>("box1", cube, pbrMat2);
 	std::shared_ptr<RenderObject> box2 = std::make_shared<RenderObject>("box2", cube, metallicMat);
@@ -207,7 +204,7 @@ Application::Application(uint width, uint height, const char* title)
 	box2->setRotation(0, 25, 0);
 	box2->setScale(0.5);
 	scene->addTransparencyObject({ sphere2, sphere3, sphere4 });
-	scene->addRenderObject({ ground, sphere5, sphere6, capsuleObj, cylinderObj, coneObj, ringObj, torusObj });
+	scene->addRenderObject({ ground, sphere5, sphere6, capsuleObj, cylinderObj, coneObj, ringObj, torusObj, torusKnotObj });
 	
 	//model
 	/*Model model("models/backpack/backpack.obj");

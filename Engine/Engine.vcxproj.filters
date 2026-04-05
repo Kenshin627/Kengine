@@ -249,6 +249,9 @@
     <ClCompile Include="core\geometry\torus.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\geometry\torusKnot.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -501,6 +504,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="core\geometry\torus.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\geometry\torusKnot.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
