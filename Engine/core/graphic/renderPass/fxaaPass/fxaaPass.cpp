@@ -30,9 +30,20 @@ FXAA::FXAA(Renderer* r, const RenderState& state)
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureFilter::NEAREST,
 			TextureFilter::NEAREST
+		},
+		//debugView
+		{
+			AttachmentType::Color,
+			TextureInternalFormat::RGB8,
+			TextureDataFormat::RGB,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureWarpMode::CLAMP_TO_EDGE,
+			TextureFilter::NEAREST,
+			TextureFilter::NEAREST
 		}
 	};
 	mFrameBuffer = std::make_shared<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, spec);
+	mRenderPassKey = RenderPassKey::FXAA;
 }
 
 FXAA::~FXAA()
@@ -45,7 +56,7 @@ void FXAA::beginPass()
 	auto pass = mOwner->getRenderPass(RenderPassKey::TONEMAPPING);
 	Texture* tex = pass->getCurrentFrameBuffer()->getColorAttachment(0);
 	tex->bind(0);
-	glm::vec2 texelSize = 1.0f / glm::vec2(tex->width(), tex->height());
+	glm::vec2 texelSize = glm::vec2(1.0f) / glm::vec2(tex->width(), tex->height());
 	mProgram->setUniform("screenMap", 0);
 	mProgram->setUniform("texelSize", texelSize);
 	mProgram->setUniform("fxaaConfig", mFxaaConfig);
@@ -63,4 +74,39 @@ void FXAA::runPass(Scene* scene)
 	quad->beginDraw();
 	quad->draw();
 	quad->endDraw();
+}
+
+Texture* FXAA::getDebugView() const
+{
+	return mFrameBuffer->getColorAttachment(1);
+}
+
+void FXAA::setFixThreshold(float threshold)
+{
+	mFxaaConfig.x = threshold;
+}
+
+void FXAA::setRelativeThreshold(float threshold)
+{
+	mFxaaConfig.y = threshold;
+}
+
+void FXAA::setBlendFactor(float factor)
+{
+	mFxaaConfig.z = factor;
+}
+
+float FXAA::getFixTreshold() const
+{
+	return mFxaaConfig.x;
+}
+
+float FXAA::getRelativeThreshold() const
+{
+	return mFxaaConfig.y;
+}
+
+float FXAA::getBlendFactor() const
+{
+	return mFxaaConfig.z;
 }

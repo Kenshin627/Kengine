@@ -35,6 +35,7 @@ GaussianBlur::GaussianBlur(const GaussianBlurSpecification& spec, Renderer* r, c
 	mDoubleBuffers.push_back(std::make_shared<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, fboSpec));
 	mDoubleBuffers.push_back(std::make_shared<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, fboSpec));
 	generateKernel();
+	mRenderPassKey = RenderPassKey::SSAOBLUR;
 }
 
 GaussianBlur::~GaussianBlur()

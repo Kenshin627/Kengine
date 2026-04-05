@@ -88,6 +88,7 @@ GeometryPass::GeometryPass(Renderer* r, const RenderState& state)
 		{ "core/graphic/shaderSrc/deferredRendering/geometryPassShader/vs.glsl", ShaderType::Vertex },
 		{ "core/graphic/shaderSrc/deferredRendering/geometryPassShader/fs.glsl", ShaderType::Fragment }
 	});
+	mRenderPassKey = RenderPassKey::GEOMETRY;
 }
 
 void GeometryPass::beginPass()

@@ -31,6 +31,7 @@ LightingPass::LightingPass(Renderer* r, const RenderState& state)
 		}
 	};
 	mFrameBuffer = std::make_shared<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, specs);
+	mRenderPassKey = RenderPassKey::DEFFEREDSHADING;
 }
 
 void LightingPass::runPass(Scene* scene)

@@ -45,6 +45,8 @@ struct RenderPipeLine
 	bool							  debugSelection		  { false					  };
 	bool							  enablePCSS			  { false					  };
 	bool							  debugPCSS				  { false					  };
+	bool							  enableFXAA			  { false					  };
+	bool							  debugFXAA				  { false					  };
 };
 
 struct RenderKeyPass
@@ -145,6 +147,10 @@ public:
 
 	//selection
 	void enableSelection(bool enable);
+
+	//FXAA
+	void enableFXAA(bool enable);
+
 	//TODO: edge color edge width blurAmount
 	RenderPass* addRenderPass(RenderPassKey key, const RenderState& state, RenderPass* where);
 private:

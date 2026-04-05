@@ -1,15 +1,15 @@
 #version 460 core
-
-in vec2			  vTexcoord;
-uniform sampler2D screenMap;
-uniform vec2	  texelSize;
-
 //x: fixThreshold	    [Range(0.0312f, 0.0833f)
 //y: relativeThreshold  [Range(0.063f, 0.333f)]
 //z: blendFactor        [Range(0.0f, 1.0f)]
 uniform vec4	  fxaaConfig; 
-uniform int		  fxaaQuality;   //0: low 1: medium 2:high
-out vec4		  FragColor;
+uniform sampler2D screenMap;
+uniform vec2	  texelSize;
+
+in vec2			  vTexcoord;
+
+layout(location = 0) out vec4 fragColor;
+layout(location = 1) out vec4 debugView;
 
 struct LumaNeighborhood 
 {
@@ -24,19 +24,19 @@ struct FXAAEdge
 	float lumaGradient, otherLuma;
 };
 
-#if defined(FXAA_QUALITY_LOW)
-	#define EXTRA_EDGE_STEPS 3
-	#define EDGE_STEP_SIZES 1.5, 2.0, 2.0
-	#define LAST_EDGE_STEP_GUESS 8.0
-#elif defined(FXAA_QUALITY_MEDIUM)
-	#define EXTRA_EDGE_STEPS 8
-	#define EDGE_STEP_SIZES 1.5, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 4.0
-	#define LAST_EDGE_STEP_GUESS 8.0
-#else
+//#if defined(FXAA_QUALITY_LOW)
+//	#define EXTRA_EDGE_STEPS 3
+//	#define EDGE_STEP_SIZES 1.5, 2.0, 2.0
+//	#define LAST_EDGE_STEP_GUESS 8.0
+//#elif defined(FXAA_QUALITY_MEDIUM)
+//	#define EXTRA_EDGE_STEPS 8
+//	#define EDGE_STEP_SIZES 1.5, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 4.0
+//	#define LAST_EDGE_STEP_GUESS 8.0
+//#else
 	#define EXTRA_EDGE_STEPS 10
 	#define EDGE_STEP_SIZES 1.0, 1.0, 1.0, 1.0, 1.5, 2.0, 2.0, 2.0, 2.0, 4.0
 	#define LAST_EDGE_STEP_GUESS 8.0
-#endif
+//#endif
 
 const float edgeStepSizes[EXTRA_EDGE_STEPS] = { EDGE_STEP_SIZES };
 
@@ -48,7 +48,7 @@ vec4 GetSource(vec2 uv)
 float GetLuma(vec2 uv, float uOffset = 0.0, float vOffset = 0.0) 
 {
 	uv += vec2(uOffset, vOffset) * texelSize;
-	return GetSource(uv).g;
+	return dot(GetSource(uv).rgb, vec3(0.2126729f,  0.7151522f, 0.0721750f));
 }
 
 LumaNeighborhood GetLumaNeighborhood(vec2 uv) 
@@ -209,8 +209,7 @@ void main()
 	
 	if (CanSkipFXAA(luma)) 
 	{
-		//discard;
-		FragColor = GetSource(vTexcoord);
+		fragColor = GetSource(vTexcoord);
 	}
 	else
 	{
@@ -225,8 +224,8 @@ void main()
 		else {
 			blendUV.x += blendFactor * edge.pixelStep;
 		}
-		FragColor = GetSource(blendUV);
-		//FragColor = vec4(vec3(edge.lumaGradient), 1.0);
+		fragColor = GetSource(blendUV);
+		debugView = vec4(vec3(blendUV, 0.0), 1.0);
 	}
 	
 }

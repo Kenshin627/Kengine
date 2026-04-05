@@ -32,6 +32,7 @@ ForwardShadingPass::ForwardShadingPass(Renderer* r, const RenderState& state)
 		};
 		mFrameBuffer = std::make_unique<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, spec);
 	}
+	mRenderPassKey = RenderPassKey::FORWARDSHADING;
 }
 
 void ForwardShadingPass::runPass(Scene* scene)

@@ -55,6 +55,7 @@ CascadeShadowMapPass::CascadeShadowMapPass(const CascadeShadowMapPassSpecificati
 		{ "core/graphic/shaderSrc/cascadeShadowMap/fs.glsl", ShaderType::Fragment }
 	};
 	mProgram->buildFromFiles(files);		
+	mRenderPassKey = RenderPassKey::CSM;
 }
 
 CascadeShadowMapPass::~CascadeShadowMapPass()

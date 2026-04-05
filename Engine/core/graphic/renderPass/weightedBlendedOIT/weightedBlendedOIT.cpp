@@ -60,6 +60,7 @@ WeightedBlendedOIT::WeightedBlendedOIT(Renderer* r, const RenderState& state)
 
     //TODO:Blit depth
     mAccumulateFBO = std::make_unique<FrameBuffer>(glm::vec3{ state.viewport.z,state.viewport.w, 0 }, accumSpecs);
+	mRenderPassKey = RenderPassKey::WEIGHTEDBLENDEDOIT;
 }
 
 WeightedBlendedOIT::~WeightedBlendedOIT()

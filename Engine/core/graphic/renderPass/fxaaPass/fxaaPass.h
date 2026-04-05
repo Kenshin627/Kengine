@@ -7,11 +7,18 @@ public:
 	~FXAA();
 	virtual void beginPass() override;
 	virtual void runPass(Scene* scene) override;
+	virtual Texture* getDebugView() const override;
+	void setFixThreshold(float threshold);
+	void setRelativeThreshold(float threshold);
+	void setBlendFactor(float factor);
+	float getFixTreshold() const;
+	float getRelativeThreshold() const;
+	float getBlendFactor() const;
 private:
 	//x: fixThreshold	    [Range(0.0312f, 0.0833f)
 	//y: relativeThreshold  [Range(0.063f, 0.333f)]
 	//z: blendFactor        [Range(0.0f, 1.0f)]
-	glm::vec4 mFxaaConfig{ 0.0833f, 0.333f, 1.0f, 0.0f };
+	glm::vec4 mFxaaConfig{ 0.0312f, 0.063f, 1.0f, 0.0f };
 	//0: low 1: medium 2:high
 	int		  mFxaaQuality{1};
 	glm::vec2 mTexelSize;

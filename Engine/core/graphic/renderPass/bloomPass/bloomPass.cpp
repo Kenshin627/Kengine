@@ -27,6 +27,7 @@ BloomPass::BloomPass(Renderer* r, const RenderState& state)
     });
     
     buildDownUpSampleTexture(state.viewport.z, state.viewport.w);
+	mRenderPassKey = RenderPassKey::BLOOM;
 }
 
 BloomPass::~BloomPass()

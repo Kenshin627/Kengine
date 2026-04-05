@@ -53,6 +53,7 @@ PCSS::PCSS(Renderer* r, const RenderState& state)
 	};
 	mProgram->buildFromFiles(shaders);
 	updateLightViewMatrix();
+	mRenderPassKey = RenderPassKey::PCSS;
 }
 
 PCSS::~PCSS()

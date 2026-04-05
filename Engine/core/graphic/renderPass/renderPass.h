@@ -95,6 +95,7 @@ public:
 	void deActive();
 	bool isActive() const;
 	virtual Texture* getDebugView() const { return nullptr; };
+	RenderPassKey getRenderPassKey() const { return mRenderPassKey; }
 protected:
 	virtual bool checkFrameBuffer();
 protected:
@@ -107,4 +108,5 @@ protected:
 	RenderPass*									 mNextPass{ nullptr };
 	Renderer*									 mOwner   { nullptr };
 	bool										 mIsActive{ true    };
+	RenderPassKey								 mRenderPassKey;
 };

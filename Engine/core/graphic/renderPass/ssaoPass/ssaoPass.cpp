@@ -41,6 +41,7 @@ SSAOPass::SSAOPass(const SSAOSpecification& spec, Renderer* r, const RenderState
 		}
 	};
 	mFrameBuffer = std::make_unique<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, specs);
+	mRenderPassKey = RenderPassKey::SSAO;
 }
 
 void SSAOPass::setKernelSize(uint kernelSize)

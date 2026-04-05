@@ -711,6 +711,25 @@ void Renderer::enableSelection(bool enable)
 	}
 }
 
+void Renderer::enableFXAA(bool enable)
+{
+	if (mRenderPipeLine.enableFXAA != enable)
+	{
+		mRenderPipeLine.enableFXAA = enable;
+		if (enable)
+		{
+			RenderState passState = { mViewport, true };
+			passState.clearColor = { 0.0, 0.0, 0.0, 1.0 };
+			addRenderPass(RenderPassKey::FXAA, passState, nullptr);
+		}
+		//TODO remove selection pass
+		else
+		{
+			removePass(RenderPassKey::FXAA);
+		}
+	}
+}
+
 RenderPass* Renderer::addRenderPass(RenderPassKey key, const RenderState& state, RenderPass* where)
 {
 	auto passCacheIter = mPassCache.find(key);
@@ -747,7 +766,7 @@ RenderPass* Renderer::addRenderPass(RenderPassKey key, const RenderState& state,
 		}
 		else 
 		{
-			mCurrentRenderPassGroup.push_front(currentPass.get());
+			mCurrentRenderPassGroup.push_back(currentPass.get());
 		}
 		return currentPass.get();
 	}
@@ -756,6 +775,7 @@ RenderPass* Renderer::addRenderPass(RenderPassKey key, const RenderState& state,
 
 void Renderer::removePass(RenderPassKey key)
 {
+	mCurrentRenderPassGroup.remove_if([=](RenderPass* pass) {return pass->getRenderPassKey() == key; });
 }
 
 void Renderer::renderUI()
@@ -1143,6 +1163,75 @@ void Renderer::renderUI()
 	{
 		ImGui::EndDisabled();
 	}
+
+	//FXAA
+	bool fxaaChecked = mRenderPipeLine.enableFXAA;
+	if (ImGui::Checkbox("FXAA", &fxaaChecked))
+	{
+		enableFXAA(fxaaChecked);
+	}
+	if (!fxaaChecked)
+	{
+		ImGui::BeginDisabled();
+	}
+	//x: fixThreshold	    [Range(0.0312f, 0.0833f)
+	//y: relativeThreshold  [Range(0.063f, 0.333f)]
+	//z: blendFactor        [Range(0.0f, 1.0f)]
+	auto fxaa = static_cast<FXAA*>(getRenderPass(RenderPassKey::FXAA));
+	if (fxaa)
+	{
+		float fixThreshold = fxaa->getFixTreshold();
+		if (ImGui::DragFloat("FixThreshold", &fixThreshold, 0.001, 0.0312f, 0.0833f))
+		{
+			fxaa->setFixThreshold(fixThreshold);
+		}
+
+		float relativeThreshold = fxaa->getRelativeThreshold();
+		if (ImGui::DragFloat("RelativeThreshold", &relativeThreshold, 0.001, 0.063f, 0.333f))
+		{
+			fxaa->setRelativeThreshold(relativeThreshold);
+		}
+
+		float blend = fxaa->getBlendFactor();
+		if (ImGui::DragFloat("BlendFactor", &blend, 0.01, 0.0, 1.0))
+		{
+			fxaa->setBlendFactor(blend);
+		}
+
+		ImGui::PushID("fxaa");
+		bool fxaaDebug = mRenderPipeLine.debugFXAA;
+		if (ImGui::Checkbox("DebugView", &fxaaDebug))
+		{
+			mRenderPipeLine.debugFXAA = fxaaDebug;
+			if (fxaaDebug)
+			{
+				Texture* tex = getRenderPass(RenderPassKey::FXAA)->getDebugView();
+				mDebugViews.push_back({ tex, RenderPassKey::FXAA });
+			}
+			else
+			{
+				popDebugView(RenderPassKey::FXAA);
+			}
+		}
+		ImGui::PopID();
+	}
+	
+
+	if (!fxaaChecked)
+	{
+		ImGui::EndDisabled();
+	}
+
+	if (!fxaaChecked)
+	{
+		if (mRenderPipeLine.debugFXAA)
+		{
+			popDebugView(RenderPassKey::FXAA);
+			mRenderPipeLine.debugFXAA = false;
+		}
+	}
+
+	ImGui::Separator();
 
 	ImGui::End();
 

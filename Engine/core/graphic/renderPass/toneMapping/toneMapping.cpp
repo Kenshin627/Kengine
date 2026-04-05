@@ -30,11 +30,12 @@ ToneMapping::ToneMapping(float exposure, Renderer* r, const RenderState& state)
 			TextureDataFormat::RGB,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,
-			TextureFilter::NEAREST,
-			TextureFilter::NEAREST
+			TextureFilter::LINEAR,
+			TextureFilter::LINEAR
 		}
 	};
 	mFrameBuffer = std::make_shared<FrameBuffer>(glm::vec3{ mSize.x, mSize.y ,0 }, spec);
+	mRenderPassKey = RenderPassKey::TONEMAPPING;
 }
 
 ToneMapping::~ToneMapping()
