@@ -1,8 +1,6 @@
 #pragma once
 #include "geometry.h"
 
-#define PI 3.1415926535897932384626433832795f
-
 class Cylinder :public Geometry
 {
 public:
@@ -15,8 +13,7 @@ public:
 		bool openEnded = false, 
 		float thetaStart = 0, 
 		float thetaLength = PI * 2);
-	~Cylinder() {};
-	virtual void buildGeometry() override;
+	virtual ~Cylinder() {};
 private:
 	void generateTorso(int& index, std::vector<Vertex>& vertices, std::vector<int>& indices);
 	void generateCap(bool top, int& index, std::vector<Vertex>& vertices, std::vector<int>& indices);

@@ -42,12 +42,6 @@ Cylinder::Cylinder(float radiusTop, float radiusBottom, float height, int radial
 	setVAO(std::move(vao));
 }
 
-void Cylinder::buildGeometry()
-{
-	
-	
-}
-
 void Cylinder::generateTorso(int& index, std::vector<Vertex>& vertices, std::vector<int>& indices)
 {
 

@@ -34,6 +34,9 @@
 #include "material/grassMaterial.h"
 #include "geometry/capsule.h"
 #include "geometry/cylinder.h"
+#include "geometry/cone.h"
+#include "geometry/ring.h"
+#include "geometry/torus.h"
 
 constexpr int shadowMapResolution = 4096;
 
@@ -62,8 +65,18 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<GrassMaterial> grassMat = std::make_shared<GrassMaterial>();
 
 	std::shared_ptr<Capsule> capsule = std::make_shared<Capsule>(0.1f, 0.5f, 32, 32);
-
 	std::shared_ptr<Cylinder> cylinder = std::make_shared<Cylinder>(0.2, 0.2, 0.8);
+	std::shared_ptr<Cone> cone = std::make_shared<Cone>(0.5, 0.8, 32, 32);
+	std::shared_ptr<Ring> ring = std::make_shared<Ring>(0.5, 0.8, 32, 32);
+	//float radius = 1.0,
+	//float tube = 0.4,
+	//int radialSegments = 12,
+	//int tubularSegments = 48,
+	//float arc = PI * 2.0,
+	//float thetaStart = 0,
+	//float thetaLength = PI * 2.0
+	std::shared_ptr<Torus> torus = std::make_shared<Torus>(0.5, 0.1, 128, 128);
+
 	//MATERIAL
 	PBRMaterialSpecification groundSpec;
 	groundSpec.albedoMapPath    = "images/black-white-tile-bl/black-white-tile_albedo.png";
@@ -154,6 +167,17 @@ Application::Application(uint width, uint height, const char* title)
 	wall->setRotation(90, 0, 0);
 	wall->setPosition(0, 0, -10);
 
+	PBRMaterialSpecification conePbr;
+	conePbr.albedoColor = glm::vec3(0.8, 0.1, 0.1);
+	conePbr.metallic = 0.1;
+	conePbr.roughness = 0.8;
+	std::shared_ptr<PBRMaterial> coneMat = std::make_shared<PBRMaterial>(conePbr);
+
+	PBRMaterialSpecification torusPbr;
+	torusPbr.albedoColor = glm::vec3(0.8, 0.8, 0.1);
+	torusPbr.metallic = 1.0;
+	torusPbr.roughness = 0.1;
+	std::shared_ptr<PBRMaterial> torusMat = std::make_shared<PBRMaterial>(torusPbr);
 	/*std::shared_ptr<RenderObject> sphere1 = std::make_shared<RenderObject>("sphere1", sphereGeometry1, wall2Mat);
 	sphere1->setPosition(0.6, 1.0, -0.8);*/
 	std::shared_ptr<RenderObject> sphere2 = std::make_shared<RenderObject>("sphere2", sphereGeometry2, pbrMat5);
@@ -169,7 +193,13 @@ Application::Application(uint width, uint height, const char* title)
 
 	std::shared_ptr<RenderObject> capsuleObj = std::make_shared<RenderObject>("capsule", capsule, metallicMat);
 	std::shared_ptr<RenderObject> cylinderObj = std::make_shared<RenderObject>("cylinder", cylinder, pbrMat2);
+	std::shared_ptr<RenderObject> coneObj = std::make_shared<RenderObject>("cone", cone, coneMat);
 	capsuleObj->setPosition(0.2, 0.8, 1.2);
+
+	std::shared_ptr<RenderObject> ringObj = std::make_shared<RenderObject>("Ring", ring, coneMat);
+
+	std::shared_ptr<RenderObject> torusObj = std::make_shared<RenderObject>("Torus", torus, torusMat);
+
 	std::shared_ptr<RenderObject> box1 = std::make_shared<RenderObject>("box1", cube, pbrMat2);
 	std::shared_ptr<RenderObject> box2 = std::make_shared<RenderObject>("box2", cube, metallicMat);
 	box1->setPosition(-3, 0.5, -4);
@@ -177,7 +207,7 @@ Application::Application(uint width, uint height, const char* title)
 	box2->setRotation(0, 25, 0);
 	box2->setScale(0.5);
 	scene->addTransparencyObject({ sphere2, sphere3, sphere4 });
-	scene->addRenderObject({ ground, sphere5, sphere6, capsuleObj, cylinderObj });
+	scene->addRenderObject({ ground, sphere5, sphere6, capsuleObj, cylinderObj, coneObj, ringObj, torusObj });
 	
 	//model
 	/*Model model("models/backpack/backpack.obj");

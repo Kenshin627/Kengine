@@ -4,6 +4,7 @@
 #include "../graphic/gpuBuffer/vertexArray.h"
 
 #define MAX_BONE_INFLUENCE 4
+#define PI 3.1415926535897932384626433832795
 
 struct Vertex
 {

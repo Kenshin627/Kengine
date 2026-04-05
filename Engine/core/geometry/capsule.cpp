@@ -1,5 +1,4 @@
 #include "capsule.h"
-#define PI 3.14159265358979
 
 Capsule::Capsule(float radius, float height, int capSegments, int radialSegments, int heightSegments)
 	:mRadius(radius),
