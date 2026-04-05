@@ -33,6 +33,7 @@
 #include "geometry/grassGround.h"
 #include "material/grassMaterial.h"
 #include "geometry/capsule.h"
+#include "geometry/cylinder.h"
 
 constexpr int shadowMapResolution = 4096;
 
@@ -61,6 +62,8 @@ Application::Application(uint width, uint height, const char* title)
 	std::shared_ptr<GrassMaterial> grassMat = std::make_shared<GrassMaterial>();
 
 	std::shared_ptr<Capsule> capsule = std::make_shared<Capsule>(0.1f, 0.5f, 32, 32);
+
+	std::shared_ptr<Cylinder> cylinder = std::make_shared<Cylinder>(0.2, 0.2, 0.8);
 	//MATERIAL
 	PBRMaterialSpecification groundSpec;
 	groundSpec.albedoMapPath    = "images/black-white-tile-bl/black-white-tile_albedo.png";
@@ -165,6 +168,7 @@ Application::Application(uint width, uint height, const char* title)
 	sphere6->setPosition(-2.2, 1.0, 0.2);
 
 	std::shared_ptr<RenderObject> capsuleObj = std::make_shared<RenderObject>("capsule", capsule, metallicMat);
+	std::shared_ptr<RenderObject> cylinderObj = std::make_shared<RenderObject>("cylinder", cylinder, pbrMat2);
 	capsuleObj->setPosition(0.2, 0.8, 1.2);
 	std::shared_ptr<RenderObject> box1 = std::make_shared<RenderObject>("box1", cube, pbrMat2);
 	std::shared_ptr<RenderObject> box2 = std::make_shared<RenderObject>("box2", cube, metallicMat);
@@ -173,7 +177,7 @@ Application::Application(uint width, uint height, const char* title)
 	box2->setRotation(0, 25, 0);
 	box2->setScale(0.5);
 	scene->addTransparencyObject({ sphere2, sphere3, sphere4 });
-	scene->addRenderObject({ ground, sphere5, sphere6, capsuleObj });
+	scene->addRenderObject({ ground, sphere5, sphere6, capsuleObj, cylinderObj });
 	
 	//model
 	/*Model model("models/backpack/backpack.obj");

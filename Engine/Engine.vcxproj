@@ -162,6 +162,7 @@
     <ClCompile Include="core\eventSystem\eventDispacher.cpp" />
     <ClCompile Include="core\geometry\capsule.cpp" />
     <ClCompile Include="core\geometry\cube.cpp" />
+    <ClCompile Include="core\geometry\cylinder.cpp" />
     <ClCompile Include="core\geometry\geometry.cpp" />
     <ClCompile Include="core\geometry\grassGround.cpp" />
     <ClCompile Include="core\geometry\rectangle.cpp" />
@@ -240,6 +241,7 @@
     <ClInclude Include="core\eventSystem\eventDispacher.h" />
     <ClInclude Include="core\geometry\capsule.h" />
     <ClInclude Include="core\geometry\cube.h" />
+    <ClInclude Include="core\geometry\cylinder.h" />
     <ClInclude Include="core\geometry\geometry.h" />
     <ClInclude Include="core\geometry\grassGround.h" />
     <ClInclude Include="core\geometry\rectangle.h" />
