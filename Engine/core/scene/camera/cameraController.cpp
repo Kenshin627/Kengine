@@ -344,6 +344,19 @@ void CameraController::onMouseMove(double xpos, double ypos)
 void CameraController::onScroll(double xoffset, double yoffset)
 {
     KS_CORE_TRACE("Mouse scroll: {}, {}", xoffset, yoffset);
+	if (!mEnableZoom)
+	{
+		return;
+	}
+	if (yoffset < 0)
+	{
+		_dollyOut(getZoomScale(yoffset) * 1.3);
+	}
+	else if (yoffset > 0)
+	{
+		_dollyIn(getZoomScale(yoffset) * 1.3);
+	}
+	update();
 }
 
 void CameraController::_handleMouseDownRotate(double x, double y)

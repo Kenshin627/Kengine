@@ -63,7 +63,7 @@ private:
     float       mMinTargetRadius;
     float       mMaxTargetRadius;
     float       mMinPolarAngle{ 0 };
-    float       mMaxPolarAngle{ 3.14159265358979 };
+    float       mMaxPolarAngle{ 3.14159265358979 / 2.0 };
     float       mMinAzimuthalAngle{ std::numeric_limits<float>::infinity() };
     float       mMaxAzimuthalAngle{ std::numeric_limits<float>::infinity() };
     bool        mEnableDamping{ false };
