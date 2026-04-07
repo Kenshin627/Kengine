@@ -8,11 +8,11 @@ Camera::Camera()
 	
 }
 
-Camera::Camera(const glm::vec3& pos, float fov, float aspectRatio, float near, float far)
+Camera::Camera(const glm::vec3& pos, float fov, int width ,int height, float near, float far)
 	:mPosition(pos),
 	 mFovAngle(fov),
-	 mAspectRatio(aspectRatio)
-
+	 mAspectRatio(static_cast<float>(width) / static_cast<float>(height)),
+	 mViewport(width, height)
 {
 	mClippingRange[0] = near;
 	mClippingRange[1] = far;
@@ -65,6 +65,11 @@ float Camera::getAspectRatio() const
 	return mAspectRatio;
 }
 
+const glm::vec2 Camera::getViewport() const
+{
+	return mViewport;
+}
+
 const glm::vec3& Camera::getPosition() const
 {
 	return mPosition;
@@ -83,6 +88,16 @@ const glm::vec3& Camera::getViewUp() const
 float Camera::getFov() const
 {
 	return mFovAngle;
+}
+
+const glm::mat4& Camera::getModelMatrix()
+{
+	if (mViewMatrixDirty)
+	{
+		computeViewMatrix();
+		mViewMatrixDirty = false;
+	}
+	return mModelMatrix;
 }
 
 void Camera::setPosition(const glm::vec3& pos)
@@ -179,8 +194,11 @@ void Camera::setFovAngle(float angle)
 	}
 }
 
-void Camera::setAspectRatio(float ratio)
+void Camera::setAspectRatio(int width, int height)
 {
+	float ratio = static_cast<float>(width) / static_cast<float>(height);
+	mViewport.x = width;
+	mViewport.y = height;
 	if (mAspectRatio != ratio)
 	{
 		mAspectRatio = ratio;
@@ -212,6 +230,7 @@ void Camera::setParallelScale(float scale)
 void Camera::computeViewMatrix()
 {
 	mViewMatrix = glm::lookAt(mPosition, mCenter, mViewUp);
+	mModelMatrix = glm::inverse(mViewMatrix);
 	mViewMatrixDirty = false;
 }
 

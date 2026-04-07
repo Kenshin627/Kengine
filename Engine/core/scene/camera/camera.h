@@ -6,7 +6,7 @@ class Camera
 {
 public:
 	Camera();
-	Camera(const glm::vec3& pos, float fov, float aspectRatio, float near = 0.01f, float far= 100.0f);
+	Camera(const glm::vec3& pos, float fov, int width, int height, float near = 0.01f, float far= 100.0f);
 	~Camera();
 
 	void setPosition(const glm::vec3& pos);
@@ -18,7 +18,7 @@ public:
 	void setViewUp(const glm::vec3& viewUp);
 	void setFovAngle(float angle);
 	//void setClippingRange(const glm::vec2& range);
-	void setAspectRatio(float ratio);
+	void setAspectRatio(int width, int height);
 	void setUseOrthographic(bool enable);
 	void setParallelScale(float scale);
 
@@ -31,12 +31,14 @@ public:
 	const glm::vec3&	getCenter() const;
 	const glm::vec3&	getViewUp() const;
 	float				getFov() const;
+	const glm::mat4&	getModelMatrix();
 	const glm::mat4&	getViewMatrix();
 	const glm::mat4&	getProjectionMatrix();
 	const glm::mat4&	getViewProjectionMatrix();
 	float				getNear() const;
 	float				getFar() const;
 	float			    getAspectRatio() const;
+	const glm::vec2		getViewport() const;
 	bool isViewProjectionDirty() const { return mViewProjectionMatrixDirty; }
 	bool isCameraUniformDirty() const { return mViewMatrixDirty || mProjectionMatrixDirty || mViewProjectionMatrixDirty; }
 private:
@@ -55,6 +57,7 @@ private:
 	float     mThickness;
 	float     mDistance;
 
+	glm::mat4 mModelMatrix			 { 1.0f  };
 	glm::mat4 mViewMatrix            { 1.0f  };
 	glm::mat4 mProjectionMatrix      { 1.0f  };
 	glm::mat4 mViewProjectionMatrix  { 1.0f  };
@@ -66,4 +69,5 @@ private:
 	double mMinDistance				 { 1e-20 };
 	double mMinFovAngle				 { 0.00000001 };
 	double mMaxFovAngle				 { 179.0 };
+	glm::vec2 mViewport				 { 0.0f  };
 };

@@ -38,6 +38,7 @@
 #include "geometry/ring.h"
 #include "geometry/torus.h"
 #include "geometry/torusKnot.h"
+#include "scene/camera/cameraController.h"
 
 constexpr int shadowMapResolution = 4096;
 
@@ -291,9 +292,10 @@ Application::Application(uint width, uint height, const char* title)
 	//scene->addRenderObject(model5.getRenderList());
 	
 	//camera
-	auto camera = std::make_shared<Camera>(glm::vec3(7, 6.4, 6.2), 25.0f, static_cast<float>(mWindow->getWidth()) / static_cast<float>(mWindow->getHeight()), 0.01, 100);
+	auto camera = std::make_shared<Camera>(glm::vec3(7, 6.4, 6.2), 25.0f, mWindow->getWidth(), mWindow->getHeight(), 0.01, 100);
 	scene->setMainCamera(camera);
-
+	auto cameraController = std::make_shared<CameraController>(camera.get());
+	mWindow->setCameraController(cameraController);
 	//light
 	auto light1 = std::make_shared<PointLight>("point Light1", glm::vec3(-0.5f, 1.7f, 0.0f), glm::vec3(500.0f/255.0f, 500.0f/255.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	auto light2 = std::make_shared<PointLight>("point Light2", glm::vec3(0.4f, 1.5f, 1.0f), glm::vec3(0.0f/255.0f, 500.0f/255.0f, 0.0f/255.0f), 1.0f, 0.09f, 0.032f);

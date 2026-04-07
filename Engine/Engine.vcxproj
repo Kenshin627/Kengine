@@ -215,6 +215,8 @@
     <ClCompile Include="core\scene\animation\animation.cpp" />
     <ClCompile Include="core\scene\animation\animator.cpp" />
     <ClCompile Include="core\scene\animation\bone.cpp" />
+    <ClCompile Include="core\scene\camera\cameraController.cpp" />
+    <ClCompile Include="core\scene\camera\spherical.cpp" />
     <ClCompile Include="core\scene\light\light.cpp" />
     <ClCompile Include="core\scene\light\spotLight\spotLight.cpp" />
     <ClCompile Include="core\scene\model\model.cpp" />
@@ -301,6 +303,8 @@
     <ClInclude Include="core\scene\animation\animator.h" />
     <ClInclude Include="core\scene\animation\bone.h" />
     <ClInclude Include="core\scene\assimpGlmHelper.h" />
+    <ClInclude Include="core\scene\camera\cameraController.h" />
+    <ClInclude Include="core\scene\camera\spherical.h" />
     <ClInclude Include="core\scene\light\light.h" />
     <ClInclude Include="core\scene\light\spotLight\spotLight.h" />
     <ClInclude Include="core\scene\model\model.h" />

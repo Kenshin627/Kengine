@@ -2,6 +2,7 @@
 #include <glm.hpp>
 #include "typedef.h"
 
+class CameraController;
 class Renderer;
 class Texture2D;
 struct GLFWwindow;
@@ -12,11 +13,13 @@ public:
 	~Window();
 	void RunLoop();
 	void attachRenderer(std::shared_ptr<Renderer> renderer);
+	void setCameraController(Ref<CameraController> controller);
 	uint getWidth() const { return mWidth; }
 	uint getHeight() const { return mHeight; }
 	void setWidth(uint width);
 	void setHeight(uint height);
 	void setWindSize(uint width, uint height);
+	CameraController* getCameraController() const;
 private:
 	void onWindowSizeChanged(GLFWwindow* window, int width, int height);
 	void onViewportSizeChanged(int width, int height);
@@ -31,4 +34,5 @@ private:
 	double						mlastTime		{ 0.0	  };
 	double						mResizeDelay	{ 0.2	  };
 	double						mLastImGuiRenderTime{ 0.0 };
+	Ref<CameraController> 		mCameraController;
 };

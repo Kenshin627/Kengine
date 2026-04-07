@@ -252,6 +252,12 @@
     <ClCompile Include="core\geometry\torusKnot.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\scene\camera\spherical.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core\scene\camera\cameraController.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -507,6 +513,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="core\geometry\torusKnot.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\scene\camera\spherical.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core\scene\camera\cameraController.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

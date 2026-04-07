@@ -12,6 +12,7 @@
 #include "scene/light/spotLight/spotLight.h"
 #include "graphic/gpuBuffer/frameBuffer.h"
 #include "graphic/texture/texture2D/texture2D.h"
+#include "scene/camera/cameraController.h"
 
 static void windowSizeChanged(GLFWwindow* window, int width, int height)
 {
@@ -26,6 +27,30 @@ static void windowSizeChanged(GLFWwindow* window, int width, int height)
 		return;
 	}
 	//win->setWindSize(width, height);	
+}
+
+static void onMouseButton(GLFWwindow* window, int button, int action, int mods)
+{
+	ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+	Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
+	double x;
+	double y;
+	glfwGetCursorPos(window, &x, &y);
+	win->getCameraController()->onMouseButton(button, action, mods, x, y);
+}
+
+static void onMouseMove(GLFWwindow* window, double xpos, double ypos)
+{	
+	ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+	Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
+	win->getCameraController()->onMouseMove(xpos, ypos);
+}
+
+static void onScroll(GLFWwindow* window, double xoffset, double yoffset)
+{
+	ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+	Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
+	win->getCameraController()->onScroll(xoffset, yoffset);
 }
 
 Window::Window(uint width, uint height, const char* title)
@@ -76,6 +101,9 @@ Window::Window(uint width, uint height, const char* title)
 	//event callbacks
 	glfwSetWindowUserPointer(mWindow, this);
 	glfwSetWindowSizeCallback(mWindow, windowSizeChanged);
+	glfwSetMouseButtonCallback(mWindow, onMouseButton);
+	glfwSetCursorPosCallback(mWindow, onMouseMove);
+	glfwSetScrollCallback(mWindow, onScroll);
 	//default iamge
 	mDefaultImage = std::make_unique<Texture2D>();
 	mDefaultImage->loadFromFile("images/checkboard.png");
@@ -186,6 +214,14 @@ void Window::attachRenderer(std::shared_ptr<Renderer> renderer)
 	}
 }
 
+void Window::setCameraController(Ref<CameraController> controller)
+{
+	if (mCameraController != controller)
+	{
+		mCameraController = controller;
+	}
+}
+
 void Window::setWidth(uint width)
 {
 	if (width != mWidth)
@@ -209,6 +245,11 @@ void Window::setWindSize(uint width, uint height)
 		return;
 	}
 	onWindowSizeChanged(mWindow, width, height);
+}
+
+CameraController* Window::getCameraController() const
+{
+	return mCameraController.get();
 }
 
 void Window::onWindowSizeChanged(GLFWwindow* window, int width, int height)

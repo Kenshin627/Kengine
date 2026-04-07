@@ -67,7 +67,7 @@ void Renderer::onWindowSizeChanged(uint width, uint height)
 		if (camera)
 		{
 			//set dirty, next time update ubo
-			camera->setAspectRatio(static_cast<float>(width) / static_cast<float>(height));
+			camera->setAspectRatio(width, height);
 		}
 	}
 	//update renderPass, because renderPass maybe include fbo & viewport resize 
