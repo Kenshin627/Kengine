@@ -66,7 +66,7 @@ private:
     float       mMaxPolarAngle{ 3.14159265358979 / 2.0 };
     float       mMinAzimuthalAngle{ std::numeric_limits<float>::infinity() };
     float       mMaxAzimuthalAngle{ std::numeric_limits<float>::infinity() };
-    bool        mEnableDamping{ false };
+    bool        mEnableDamping{ true };
     float       mDampingFactor{ 0.01f };
     bool        mEnableZoom{ true };
     float       mZoomSpeed{ 1.0f };

@@ -119,6 +119,7 @@ void Window::RunLoop()
 	while (!glfwWindowShouldClose(mWindow))
 	{
 		glfwPollEvents();
+		mCameraController->update();
 		//IMGUI//////////////////////
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
