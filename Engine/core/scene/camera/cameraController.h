@@ -71,7 +71,7 @@ private:
     bool        mEnableZoom{ true };
     float       mZoomSpeed{ 1.0f };
     bool        mEnableRotate{ true };
-    float       mRotateSpeed{ 0.1f };
+    float       mRotateSpeed{ 1.0f };
     float       mKeyRotateSpeed{ 1.0f };
     bool        mEnablePan{ true };
     float       mPanSpeed{ 1.0f };

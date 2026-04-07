@@ -163,6 +163,7 @@ void CameraController::update()
         mSphericalDelta = { 0, 0, 0 };
         mPanOffset = { 0, 0, 0 };
     }
+    mScale = 1;
 }
 
 double CameraController::getAutoRotationAngle(double deltaTime)
@@ -379,8 +380,29 @@ void CameraController::_handleMouseMoveRotate(double x, double y)
 
 void CameraController::_handleMouseMoveDolly(double x, double y)
 {
+    mDollyEnd = { x, y };
+
+    mDollyDelta = mDollyEnd - mDollyStart;
+    if (mDollyDelta.y > 0)
+    {
+        _dollyOut(getZoomScale(mDollyDelta.y));
+    }
+    else if (mDollyDelta.y < 0)
+    {
+        _dollyIn(getZoomScale(mDollyDelta.y));
+    }
+
+    mDollyStart = mDollyEnd;
+    update();
 }
 
 void CameraController::_handleMouseMovePan(double x, double y)
 {
+	mPanEnd.x = x;
+	mPanEnd.y = y;
+	mPanDelta = mPanEnd - mPanStart;
+	mPanDelta *= mPanSpeed;
+	_pan(mPanDelta.x, mPanDelta.y);
+	mPanStart = mPanEnd;
+	update();
 }
