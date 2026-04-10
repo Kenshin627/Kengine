@@ -577,7 +577,8 @@ void Renderer::enablePCSS(bool enable)
 			RenderState state;
 			state.viewport = { 0, 0, 2048, 2048 };
 			state.cullFaceMode = GL_FRONT;
-			addRenderPass(RenderPassKey::PCSS, state, nullptr);
+			GeometryPass* gpass = static_cast<GeometryPass*>(getRenderPass(RenderPassKey::GEOMETRY));
+			addRenderPass(RenderPassKey::PCSS, state, gpass);
 		}
 		else
 		{
