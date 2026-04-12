@@ -20,6 +20,7 @@
 #include "BloomPass/BloomPass.h"
 #include "weightedBlendedOIT/weightedBlendedOIT.h"
 #include "ssr/ssr.h"
+#include "gtao/gtao.h"
 
 class PassFactory
 {
@@ -73,6 +74,8 @@ public:
 			return std::make_unique<WeightedBlendedOIT>(r, state);
 		case RenderPassKey::SSREFLECTION:
 			return std::make_unique<SSR>(r, state);
+		case RenderPassKey::GTAO:
+			return std::make_unique<GTAO>(r, state);
 		default:
 			break;
 		}

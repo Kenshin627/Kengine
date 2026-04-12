@@ -258,6 +258,9 @@
     <ClCompile Include="core\scene\camera\cameraController.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core\graphic\renderPass\gtao\gtao.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -521,6 +524,9 @@
     <ClInclude Include="core\scene\camera\cameraController.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="core\graphic\renderPass\gtao\gtao.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="core\graphic\shaderSrc\blinnPhong\vs.glsl" />
@@ -581,5 +587,8 @@
     <None Include="core\graphic\shaderSrc\bloom\downSampleComp.glsl" />
     <None Include="core\graphic\shaderSrc\bloom\common.glsl" />
     <None Include="core\graphic\shaderSrc\bloom\upSampleComp.glsl" />
+    <None Include="core\graphic\shaderSrc\gtao\downsampleDepthMipchain.glsl" />
+    <None Include="core\graphic\shaderSrc\gtao\gtao.glsl" />
+    <None Include="core\graphic\shaderSrc\gtao\calcViewspaceZ.glsl" />
   </ItemGroup>
 </Project>

@@ -63,6 +63,7 @@ enum class RenderPassKey
 	PCSS,
 	WEIGHTEDBLENDEDOIT,
 	SSREFLECTION,
+	GTAO
 };
 
 /// <summary>

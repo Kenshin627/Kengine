@@ -20,7 +20,7 @@ GeometryPass::GeometryPass(Renderer* r, const RenderState& state)
 	{
 		{
 			AttachmentType::Color,
-			TextureInternalFormat::RGB16F,
+			TextureInternalFormat::RGBA16F,
 			TextureDataFormat::RGB,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,
@@ -29,7 +29,7 @@ GeometryPass::GeometryPass(Renderer* r, const RenderState& state)
 		},
 		{
 			AttachmentType::Color,
-			TextureInternalFormat::RGB16F,
+			TextureInternalFormat::RGBA16F,
 			TextureDataFormat::RGB,
 			TextureWarpMode::CLAMP_TO_EDGE,
 			TextureWarpMode::CLAMP_TO_EDGE,

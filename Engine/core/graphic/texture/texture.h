@@ -5,6 +5,8 @@
 enum class TextureInternalFormat
 {
 	R8,
+	R16UI,
+	R32F,
 	RG8,
 	RGB8,
 	RGBA8,
@@ -21,6 +23,7 @@ enum class TextureInternalFormat
 enum class TextureDataFormat
 {
 	R,
+	R_INTERGER,
 	RG,
 	RGB,
 	RGBA,
