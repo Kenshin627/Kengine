@@ -15,7 +15,7 @@ struct GTAOSettings
    int           sliceCount;
    int           stepsPerSlice;
    float         depthMIPSamplingOffset;
-   int           depthMipMevls;
+   int           depthMipLevel;
    float         finalValuePow;
    float         occlusionTermScale; 
    float         padding0;
@@ -41,31 +41,14 @@ layout (std140, binding = 0) uniform CameraBuffer
 	vec4 position;
 	vec4 clipRange;
 } cameraBuffer;
-//uniform float         effectRadius;
-//uniform float         radiusMultiplier;
-//uniform float         effectFalloffRange;
-//uniform float         sampleDistributionPower;
-//uniform float         thinOccluderCompensation;
-//uniform int           sliceCount;
-//uniform int           stepsPerSlice;
-//uniform float         depthMIPSamplingOffset;
-//uniform int           depthMipMevls;
-//uniform float         finalValuePow;
-//uniform float         occlusionTermScale;
-
-//uniform vec2          ndcToViewMulXPixelSize;
-//uniform vec2          ndcToViewMul;
-//uniform vec2          ndcToViewAdd;
-//uniform vec2          viewportPixelSize;
-//uniform vec2          depthUnpackConsts;
 
 uniform sampler2D     depthTex;  //viewSpace
 
-layout(binding = 0, rgba16f)   uniform readonly image2D viewSpaceNormalTex;
-layout(binding = 1, r16)       uniform readonly image2D hilbertLUT; //64 * 64
-layout(binding = 2, rgba16f)   uniform readonly image2D viewSpacePositionTex;
-layout(binding = 3, r32f)      uniform writeonly image2D outEdgesTex;
-layout(binding = 4, r32f)      uniform writeonly image2D outAOTex;
+layout(binding = 0, rgba16f)      uniform readonly image2D viewSpaceNormalTex;
+layout(binding = 1, r16ui)          uniform readonly uimage2D hilbertLUT; //64 * 64
+layout(binding = 2, rgba16f)      uniform readonly image2D viewSpacePositionTex;
+layout(binding = 3, r32f)         uniform writeonly image2D outEdgesTex;
+layout(binding = 4, rgba32f)      uniform writeonly image2D outAOTex;
 
 float linearZ(float ndcDepth)
 {
@@ -78,8 +61,8 @@ float linearZ(float ndcDepth)
 vec3 computeViewSpacePosition(vec2 uv, float viewSpaceZ)
 {
     vec3 ret;
-    ret.xy = (gtaoSettingBuffer.gtaoSettings.ndcToViewMul * uv + gtaoSettingBuffer.gtaoSettings.ndcToViewAdd) * viewSpaceZ;
-    ret.z = viewSpaceZ;
+    ret.xy = (gtaoSettingBuffer.gtaoSettings.ndcToViewMul * uv + gtaoSettingBuffer.gtaoSettings.ndcToViewAdd) * -viewSpaceZ;
+    ret.z = -viewSpaceZ;
     return ret;
 }
 
@@ -171,29 +154,28 @@ void main()
     vec2 dx = vec2(gtaoSettingBuffer.gtaoSettings.viewportPixelSize.x, 0);
     vec2 dy = vec2(0, gtaoSettingBuffer.gtaoSettings.viewportPixelSize.y);
 
-    float viewSpaceZ = texture(depthTex, normalizedScreenPos).r;
-    float pixLZ      = texture(depthTex, normalizedScreenPos - dx).r;
-    float pixTZ      = texture(depthTex, normalizedScreenPos + dy).r;
-    float pixRZ      = texture(depthTex, normalizedScreenPos + dx).r;
-    float pixBZ      = texture(depthTex, normalizedScreenPos - dy).r;
+    float viewSpaceZ = textureLod(depthTex, normalizedScreenPos, 0).r;
+    float pixLZ      = textureLod(depthTex, normalizedScreenPos - dx, 0).r;
+    float pixTZ      = textureLod(depthTex, normalizedScreenPos + dy, 0).r;
+    float pixRZ      = textureLod(depthTex, normalizedScreenPos + dx, 0).r;
+    float pixBZ      = textureLod(depthTex, normalizedScreenPos - dy, 0).r;
+    //viewSpaceZ *= 0.99999; 
 
     vec4 edgesLRTB = calculateEdges(viewSpaceZ, pixLZ, pixRZ, pixTZ, pixBZ);
     float packedEdgesData = packEdge(edgesLRTB);
     imageStore(outEdgesTex, pixCoord, vec4(packedEdgesData));
 
-
-    vec3 CENTER     = computeViewSpacePosition(normalizedScreenPos, viewSpaceZ );
+    vec3 viewSpacePosition = /** imageLoad(viewSpacePositionTex, pixCoord).xyz;**/computeViewSpacePosition(normalizedScreenPos, viewSpaceZ );
     vec3 LEFT       = computeViewSpacePosition(normalizedScreenPos + vec2(-1,  0) * gtaoSettingBuffer.gtaoSettings.viewportPixelSize, pixLZ);
     vec3 RIGHT      = computeViewSpacePosition(normalizedScreenPos + vec2( 1,  0) * gtaoSettingBuffer.gtaoSettings.viewportPixelSize, pixRZ);
     vec3 TOP        = computeViewSpacePosition(normalizedScreenPos + vec2( 0,  1) * gtaoSettingBuffer.gtaoSettings.viewportPixelSize, pixTZ);
     vec3 BOTTOM     = computeViewSpacePosition(normalizedScreenPos + vec2( 0, -1) * gtaoSettingBuffer.gtaoSettings.viewportPixelSize, pixBZ);
-    //vec3 viewSpaceNormal = calcViewSpaceNormal(edgesLRTB, CENTER, LEFT, RIGHT, TOP, BOTTOM);
-    vec3 viewSpaceNormal = imageLoad(viewSpaceNormalTex, pixCoord).xyz;
-    viewSpaceNormal = normalize(viewSpaceNormal);
+    vec3 viewSpaceNormal = calcViewSpaceNormal(edgesLRTB, viewSpacePosition, LEFT, RIGHT, TOP, BOTTOM);
+    //vec3 viewSpaceNormal = imageLoad(viewSpaceNormalTex, pixCoord).xyz;
+    viewSpaceNormal = normalize(-viewSpaceNormal);
 
-    viewSpaceZ *= 0.99999; 
-
-    vec3 viewSpacePosition = imageLoad(viewSpacePositionTex, pixCoord).xyz;
+    
+    //vec3 viewSpacePosition = computeViewSpacePosition(normalizedScreenPos, viewSpaceZ);//imageLoad(viewSpacePositionTex, pixCoord).xyz;
     vec3 viewVec = normalize(-viewSpacePosition);
 
     float effRadius = gtaoSettingBuffer.gtaoSettings.effectRadius * gtaoSettingBuffer.gtaoSettings.radiusMultiplier;
@@ -231,27 +213,27 @@ void main()
         float cosPhi = cos(phi);
         float sinPhi = sin(phi);
         //TODO?
-        vec2 omega = vec2(cosPhi, sinPhi);
+        vec2 omega = vec2(cosPhi, -sinPhi);
         omega *= screenSpaceRadius;
-
+    
         vec3 directionVec = vec3(cosPhi, sinPhi, 0);
         vec3 orthoDirectionVec= directionVec - (dot(viewVec, directionVec) * viewVec);
         vec3 axisVec = normalize(cross(orthoDirectionVec, viewVec));
-
+    
         vec3 projectedNormalVec = viewSpaceNormal - axisVec *dot(viewSpaceNormal, axisVec);
-
+    
         float signNorm = sign(dot(orthoDirectionVec, projectedNormalVec));
         float projectedNormalVecLength = length(projectedNormalVec);
-
+    
         float cosNorm = float(clamp(dot(projectedNormalVec, viewVec) / projectedNormalVecLength, 0.0f, 1.0f));
-        float n = signNorm * fastACos(cosNorm);
-
+        float n = signNorm * acos(cosNorm);
+    
         float lowHorizonCos0 = cos(n + HALF_PI);
         float lowHirizonCos1 = cos(n - HALF_PI);
-
+    
         float horizonCos0 = lowHorizonCos0;
         float horizonCos1 = lowHirizonCos1;
-
+    
         for(float step = 0; step < gtaoSettingBuffer.gtaoSettings.stepsPerSlice; ++step)
         {
             float stepBaseNoise = float(slice + step * gtaoSettingBuffer.gtaoSettings.stepsPerSlice) * 0.6180339887498948482; // <- this should unroll
@@ -259,54 +241,54 @@ void main()
             float s = (step + stepNoise) / float(gtaoSettingBuffer.gtaoSettings.stepsPerSlice);
             s = float(pow(s, gtaoSettingBuffer.gtaoSettings.sampleDistributionPower));
             s += minS;
-
+    
             vec2 sampleOffset = s * omega;
             float sampleOffsetLength = length(sampleOffset);
-
-            float mipLevel = clamp(log2(sampleOffsetLength) - gtaoSettingBuffer.gtaoSettings.depthMIPSamplingOffset, 0, gtaoSettingBuffer.gtaoSettings.depthMipMevls);
-
+    
+            float mipLevel = clamp(log2(sampleOffsetLength) - gtaoSettingBuffer.gtaoSettings.depthMIPSamplingOffset, 0, gtaoSettingBuffer.gtaoSettings.depthMipLevel - 1);
+    
             sampleOffset = round(sampleOffset) * gtaoSettingBuffer.gtaoSettings.viewportPixelSize;
-
+    
             vec2 sampleScreenPos0 = normalizedScreenPos + sampleOffset;
             float sz0 = textureLod(depthTex, sampleScreenPos0, mipLevel).r;
             vec3 samplePos0 = computeViewSpacePosition(sampleScreenPos0, sz0);
-
+    
             vec2 sampleScreenPos1 = normalizedScreenPos - sampleOffset;
             float sz1 = textureLod(depthTex, sampleScreenPos1, mipLevel).r;
             vec3 samplePos1 = computeViewSpacePosition(sampleScreenPos1, sz1);
-
+    
             vec3 sampleDelta0 = samplePos0 - viewSpacePosition;
             vec3 sampleDelta1 = samplePos1 - viewSpacePosition;
-
+    
             float sampleDist0 = length(sampleDelta0);
             float sampleDist1 = length(sampleDelta1);
-
+    
             vec3 sampleHorizonVec0 = vec3(sampleDelta0 / sampleDist0);
             vec3 sampleHorizonVec1 = vec3(sampleDelta1 / sampleDist1);
-
+    
             //float weight0 = clamp(sampleDist0 * falloffMul + falloffAdd, 0.0f, 1.0f);
             //float weight1 = clamp(sampleDist1 * falloffMul + falloffAdd, 0.0f, 1.0f);
-
+    
             float falloffBase0 = length(vec3(sampleDelta0.x, sampleDelta0.y, sampleDelta0.z * (1 + gtaoSettingBuffer.gtaoSettings.thinOccluderCompensation)));
             float falloffBase1 = length(vec3(sampleDelta1.x, sampleDelta1.y, sampleDelta1.z * (1 + gtaoSettingBuffer.gtaoSettings.thinOccluderCompensation)));
             float weight0 = clamp(falloffBase0 * falloffMul + falloffAdd, 0.0f, 1.0f);
             float weight1 = clamp(falloffBase1 * falloffMul + falloffAdd, 0.0f, 1.0f);
-
+            //weight0 = weight1 = 1.0;
             float shc0 = dot(sampleHorizonVec0, viewVec);
             float shc1 = dot(sampleHorizonVec1, viewVec);
-
+    
             shc0 = mix(lowHorizonCos0, shc0, weight0);
             shc1 = mix(lowHirizonCos1, shc1, weight1);
-
+    
             horizonCos0 = max(horizonCos0, shc0);
             horizonCos1 = max(horizonCos1, shc1);
         }
         projectedNormalVecLength = mix(projectedNormalVecLength, 1.0f, 0.05f);
-
+    
         //TODO
-        float h0 =  -fastACos(horizonCos1);
-        float h1 =   fastACos(horizonCos0);
-
+        float h0 =  -acos(horizonCos1);
+        float h1 =   acos(horizonCos0);
+    
         float iarc0 = (cosNorm + 2.0f * h0 * sin(n)-cos(2.0f * h0 - n))/4.0f;
         float iarc1 = (cosNorm + 2.0f * h1 * sin(n)-cos(2.0f * h1 - n))/4.0f;
         float localVisibility = projectedNormalVecLength * (iarc0 + iarc1);
@@ -315,6 +297,9 @@ void main()
     visibility /= float(gtaoSettingBuffer.gtaoSettings.sliceCount);
     visibility = pow(visibility, gtaoSettingBuffer.gtaoSettings.finalValuePow);
     visibility = max(0.03f, visibility);
+    
+    
+    //imageStore(outAOTex, pixCoord, vec4(vec3(localNoise.xy, 0.0), 1.0));
     //#endif
     outputWorkingTerm(pixCoord, visibility);
 }

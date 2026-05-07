@@ -624,10 +624,19 @@ void Renderer::enableCannyEdgeDetection(bool enable)
 			{
 				auto gray = addRenderPass(RenderPassKey::GRAYSCALER, RenderState{}, toneMapping);
 				auto gaussianBlur = addRenderPass(RenderPassKey::CANNYBLUR, RenderState{}, gray);
+				gaussianBlur->setRenderPassKey(RenderPassKey::CANNYBLUR);
 				auto sobel = addRenderPass(RenderPassKey::SOBEL, RenderState{}, gaussianBlur);
 				auto nms = addRenderPass(RenderPassKey::NMS, RenderState{}, sobel);
 				auto doubleThreshold = addRenderPass(RenderPassKey::DOUBLETHRESHOLD, RenderState{}, nms);
 			}
+		}
+		else
+		{
+			removePass(RenderPassKey::GRAYSCALER);
+			removePass(RenderPassKey::CANNYBLUR);
+			removePass(RenderPassKey::SOBEL);
+			removePass(RenderPassKey::NMS);
+			removePass(RenderPassKey::DOUBLETHRESHOLD);
 		}
 	}
 }
@@ -709,7 +718,7 @@ void Renderer::enableSelection(bool enable)
 		//TODO remove selection pass
 		else
 		{
-
+			removePass(RenderPassKey::SELECTION);
 		}
 	}
 }
@@ -796,7 +805,7 @@ void Renderer::renderUI()
 		ImGui::BeginDisabled();
 	}
 	float pomScale = mRenderPipeLine.parallaxOcclusionScale;
-	if (ImGui::DragFloat("Parallax Occlusion Scale", &pomScale, 0.001, 0.0, 0.05))
+	if (ImGui::DragFloat("Parallax Occlusions", &pomScale, 0.001, 0.0, 0.05))
 	{
 		setPOMScale(pomScale);
 	}
@@ -1235,6 +1244,72 @@ void Renderer::renderUI()
 	}
 
 	ImGui::Separator();
+
+	auto gtao = static_cast<GTAO*>(getRenderPass(RenderPassKey::GTAO));
+	if (gtao)
+	{
+
+		GTAOSettings& settings = gtao->getSettings();
+		float mipOffset = settings.depthMIPSamplingOffset;
+		if (ImGui::DragFloat("mipOffset", &mipOffset, 0.1, 0.0, 5.0))
+		{
+			settings.depthMIPSamplingOffset = mipOffset;
+		}
+
+		float falloffRange = settings.effectFalloffRange;
+		if (ImGui::DragFloat("falloffRange", &falloffRange, 0.1, 0.1, 5.0))
+		{
+			settings.effectFalloffRange = falloffRange;
+		}
+
+		float radius = settings.effectRadius;
+		if (ImGui::DragFloat("radius", &radius, 0.01, 0.01, 5.0))
+		{
+			settings.effectRadius = radius;
+		}
+
+		float power = settings.finalValuePow;
+		if (ImGui::DragFloat("power", &power, 0.01, 0.01, 5.0))
+		{
+			settings.finalValuePow = power;
+		}
+
+		float occlustionScale = settings.occlusionTermScale;
+		if (ImGui::DragFloat("occlustionScale", &occlustionScale, 0.01, 0.01, 5.0))
+		{
+			settings.occlusionTermScale = occlustionScale;
+		}
+
+		float multiplier = settings.radiusMultiplier;
+		if (ImGui::DragFloat("multiplier", &multiplier, 0.01, 0.01, 5.0))
+		{
+			settings.radiusMultiplier = multiplier;
+		}
+
+		float distribution = settings.sampleDistributionPower;
+		if (ImGui::DragFloat("distribution", &distribution, 0.01, 0.01, 5.0))
+		{
+			settings.sampleDistributionPower = distribution;
+		}
+
+		float sliceCount = settings.sliceCount;
+		if (ImGui::DragFloat("sliceCount", &sliceCount, 1, 2, 10))
+		{
+			settings.sliceCount = sliceCount;
+		}
+
+		float stepsPerSlice = settings.stepsPerSlice;
+		if (ImGui::DragFloat("stepsPerSlice", &stepsPerSlice, 1, 2, 10))
+		{
+			settings.stepsPerSlice = stepsPerSlice;
+		}
+
+		float thinOccluderCompensation = settings.thinOccluderCompensation;
+		if (ImGui::DragFloat("thinOccluderCompensation", &thinOccluderCompensation, 0.01, 0.0, 5.0))
+		{
+			settings.thinOccluderCompensation = thinOccluderCompensation;
+		}
+	}
 
 	ImGui::End();
 

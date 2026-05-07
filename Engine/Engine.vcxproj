@@ -364,6 +364,8 @@
     <None Include="core\graphic\shaderSrc\grass\tcs.glsl" />
     <None Include="core\graphic\shaderSrc\grass\tes.glsl" />
     <None Include="core\graphic\shaderSrc\grass\vs.glsl" />
+    <None Include="core\graphic\shaderSrc\gtao2\gtaofs.glsl" />
+    <None Include="core\graphic\shaderSrc\gtao2\gtaovs.glsl" />
     <None Include="core\graphic\shaderSrc\gtao\calcViewspaceZ.glsl" />
     <None Include="core\graphic\shaderSrc\gtao\downsampleDepthMipchain.glsl" />
     <None Include="core\graphic\shaderSrc\gtao\gtao.glsl" />

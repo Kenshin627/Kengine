@@ -28,6 +28,7 @@ SelectionPass::SelectionPass(Renderer* s, const RenderState& state)
 		}
 	};
 	mFrameBuffer = std::make_unique<FrameBuffer>(glm::vec3{ mSize.x, mSize.y , 0 }, specs);
+	mRenderPassKey = RenderPassKey::SELECTION;
 }
 
 SelectionPass::~SelectionPass()

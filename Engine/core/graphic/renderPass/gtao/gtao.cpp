@@ -48,11 +48,9 @@ GTAO::~GTAO()
 
 void GTAO::beginPass()
 {
-    //
     mSettingBuffer->bind();
 	mSettings.viewportPixelSize = glm::vec2(1.0f) / glm::vec2(mSize);
     //TODO
-    //mSettings.depthUnpackConsts
     float fov = mOwner->getCurrentScene()->getCurrentCamera()->getFov();
 	float aspectRatio = mOwner->getCurrentScene()->getCurrentCamera()->getAspectRatio();
 	float tanHalfFovY = tan(glm::radians(fov * 0.5f));
@@ -61,11 +59,16 @@ void GTAO::beginPass()
 	mSettings.ndcToViewMul = glm::vec2(2.0 * tanHalfFovX, 2.0 * tanHalfFovY);
 	mSettings.ndcToViewAdd = glm::vec2(-tanHalfFovX, -tanHalfFovY);
 	mSettings.ndcToViewMulXPixelSize = mSettings.ndcToViewMul * mSettings.viewportPixelSize;
-    
-    //mSettings.sliceCount = 9;
-    //mSettings.stepsPerSlice = 9;
-    
 	mSettingBuffer->setData(sizeof(GTAOSettings), &mSettings);
+
+    float depthClearColor = 1.0;
+    for (int i = 0; i < mDepthMipChainLevels; ++i)
+    {
+        glClearTexImage(mDepthMipChain->id(), i, GL_RED, GL_FLOAT, &depthClearColor);
+    }
+    
+    float aoClearColor = 0.0;
+    glClearTexImage(mGTAOTex->id(), 0, GL_RGBA, GL_FLOAT, &aoClearColor);
 }
 
 void GTAO::endPass()
@@ -124,7 +127,7 @@ void GTAO::runPass(Scene* scene)
 
 Texture* GTAO::getDebugView() const
 {
-    return mFrameBuffer->getColorAttachment(0);
+    return mGTAOTex.get();
 }
 
 void GTAO::resize(uint width, uint height)
@@ -205,8 +208,8 @@ void GTAO::createTextures()
 
 	TextureSpecification gtaoSpec;
     gtaoSpec.chanel = 1;
-    gtaoSpec.dataFormat = TextureDataFormat::R;
-    gtaoSpec.internalFormat = TextureInternalFormat::R32F;
+    gtaoSpec.dataFormat = TextureDataFormat::RGBA;
+    gtaoSpec.internalFormat = TextureInternalFormat::RGBA32F;
     gtaoSpec.magFilter = TextureFilter::LINEAR;
     gtaoSpec.minFilter = TextureFilter::LINEAR_MIPMAP_LINEAR;
     gtaoSpec.depth = 1;
@@ -216,7 +219,8 @@ void GTAO::createTextures()
     gtaoSpec.height = mSize.y;
     gtaoSpec.mipmapLevel = 1;
 	mGTAOTex = std::make_unique<Texture2D>(gtaoSpec);
-    glTextureStorage2D(mGTAOTex->id(), 1, Texture::convertToGLInternalFormat(TextureInternalFormat::R32F), mSize.x, mSize.y);
+    glTextureStorage2D(mGTAOTex->id(), 1, Texture::convertToGLInternalFormat(TextureInternalFormat::RGBA32F), mSize.x, mSize.y);
+    gtaoSpec.internalFormat = TextureInternalFormat::R32F;
     mEdgesTex = std::make_unique<Texture2D>(gtaoSpec);
     glTextureStorage2D(mEdgesTex->id(), 1, Texture::convertToGLInternalFormat(TextureInternalFormat::R32F), mSize.x, mSize.y);
 }

@@ -14,5 +14,5 @@ public:
 	float getHighThreshold() const;
 private:
 	float mLowThreshold { 0.1f };
-	float mHighThreshold{ 0.3f };
+	float mHighThreshold{ 0.03f };
 };

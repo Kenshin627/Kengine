@@ -11,7 +11,7 @@ struct GTAOSettings
     int           sliceCount{9}; //2 3 9
     int           stepsPerSlice{3}; // 2 3
     float         depthMIPSamplingOffset{ 3.30f };
-    int           depthMipMevls{5};
+    int           depthMipLevel{5};
     float         finalValuePow{ 2.2f };
     float         occlusionTermScale{1.5f};
     float         padding0;
@@ -34,6 +34,7 @@ public:
     virtual void runPass(Scene* scene) override;
     virtual Texture* getDebugView() const override;
     virtual void resize(uint width, uint height) override;
+    GTAOSettings& getSettings() { return mSettings; }
 private:
     uint hilbertIndex(uint posX, uint posY);
     void generateHilbertLUT();

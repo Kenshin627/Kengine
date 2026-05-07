@@ -97,6 +97,7 @@ public:
 	bool isActive() const;
 	virtual Texture* getDebugView() const { return nullptr; };
 	RenderPassKey getRenderPassKey() const { return mRenderPassKey; }
+	void setRenderPassKey(RenderPassKey key) { mRenderPassKey = key; }
 protected:
 	virtual bool checkFrameBuffer();
 protected:

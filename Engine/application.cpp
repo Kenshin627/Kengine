@@ -188,14 +188,18 @@ Application::Application(uint width, uint height, const char* title)
 	sphere6->setPosition(-2.2, 1.0, 0.2);
 
 	std::shared_ptr<RenderObject> capsuleObj = std::make_shared<RenderObject>("capsule", capsule, metallicMat);
-	std::shared_ptr<RenderObject> cylinderObj = std::make_shared<RenderObject>("cylinder", cylinder, pbrMat2);
-	std::shared_ptr<RenderObject> coneObj = std::make_shared<RenderObject>("cone", cone, coneMat);
 	capsuleObj->setPosition(0.2, 0.8, 1.2);
+	std::shared_ptr<RenderObject> cylinderObj = std::make_shared<RenderObject>("cylinder", cylinder, metallicMat);
+	cylinderObj->setPosition(-1.0, 0.5, 1.4);
+	std::shared_ptr<RenderObject> coneObj = std::make_shared<RenderObject>("cone", cone, coneMat);
+	coneObj->setPosition(1.0, 0.2, -0.8);
 
 	std::shared_ptr<RenderObject> ringObj = std::make_shared<RenderObject>("Ring", ring, coneMat);
 
-	std::shared_ptr<RenderObject> torusObj = std::make_shared<RenderObject>("Torus", torus, torusMat);
-	std::shared_ptr<RenderObject> torusKnotObj = std::make_shared<RenderObject>("TorusKnot", torusKnot, torusMat);
+	std::shared_ptr<RenderObject> torusObj = std::make_shared<RenderObject>("Torus", torus, metallicMat);
+	torusObj->setPosition(2.2, 1.2, 0.0);
+	std::shared_ptr<RenderObject> torusKnotObj = std::make_shared<RenderObject>("TorusKnot", torusKnot, metallicMat);
+	torusKnotObj->setPosition(0.2, 0.6, 1.8);
 	torusKnotObj->setRotation(90, 0, 0);
 
 	std::shared_ptr<RenderObject> box1 = std::make_shared<RenderObject>("box1", cube, pbrMat2);
@@ -292,14 +296,14 @@ Application::Application(uint width, uint height, const char* title)
 	//scene->addRenderObject(model5.getRenderList());
 	
 	//camera
-	auto camera = std::make_shared<Camera>(glm::vec3(7, 6.4, 6.2), 25.0f, mWindow->getWidth(), mWindow->getHeight(), 0.01, 100);
+	auto camera = std::make_shared<Camera>(glm::vec3(5, 7.4, 7), 38.0f, mWindow->getWidth(), mWindow->getHeight(), 0.01, 100);
 	scene->setMainCamera(camera);
 	auto cameraController = std::make_shared<CameraController>(camera.get());
 	mWindow->setCameraController(cameraController);
 	//light
-	auto light1 = std::make_shared<PointLight>("point Light1", glm::vec3(-0.5f, 1.7f, 0.0f), glm::vec3(500.0f/255.0f, 500.0f/255.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	auto light1 = std::make_shared<PointLight>("point Light1", glm::vec3(-0.4f, 1.7f, 0.0f), glm::vec3(500.0f/255.0f, 500.0f/255.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	auto light2 = std::make_shared<PointLight>("point Light2", glm::vec3(0.4f, 1.5f, 1.0f), glm::vec3(0.0f/255.0f, 500.0f/255.0f, 0.0f/255.0f), 1.0f, 0.09f, 0.032f);
-	auto light3 = std::make_shared<PointLight>("point Light3", glm::vec3(-0.6f, 1.9f, -0.4f), glm::vec3(0.0f/255.0f, 510.0f/255.0f, 765.0f/255.0f), 1.0f, 0.09f, 0.032f);
+	auto light3 = std::make_shared<PointLight>("point Light3", glm::vec3(-0.6f, 3.4f, -0.4f), glm::vec3(0.0f/255.0f, 1020.0f/255.0f, 1275.0f/255.0f), 1.0f, 0.09f, 0.032f);
 	auto spotLight1 = std::make_shared<SpotLight>("spot Light1", glm::vec3(3.0f, 2.0f, 2.0f), glm::vec3(-3.0f, -2.0f, -2.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, 17.f, 15.5f);
 	auto spotLight2 = std::make_shared<SpotLight>("spot Light2", glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(10.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f, 17.5f, 15.5f);
 	auto spotLight3 = std::make_shared<SpotLight>("spot Light3", glm::vec3(0.0f, 2.0f, 10.0f), glm::vec3(0.0f, -2.0f, -10.0f), glm::vec3(5.0f, 5.0f, 5.0f), 1.0f, 0.09f, 0.032f, 17.5f, 15.5f);
